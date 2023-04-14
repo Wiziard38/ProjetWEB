@@ -1,0 +1,96 @@
+stages:                 # Les étapes associées au projet.
+  - lint                # Pour la vérification statique du code 
+  - test                # tests avec supertest
+  - deploy              # Deploiement
+
+lint-js:                # Vérification de la qualité du code javascript
+  stage: lint           # Dans l'étape lint (s'exécutera en parallèle de lint-html-css)
+  tags:
+    - docker
+  image: node
+  script:
+    # install eslint
+    - cd backendsqlite && npm install --save-dev eslint-config-standard
+    #- cd backendsqlite && npm i
+    # Run eslint
+    - npx eslint src/*/*.js > ../js_report.txt
+  artifacts:            # Le rapport sera disponible pour d'autres jobs
+    paths:
+      - js_report.txt
+
+
+# jobcypress:
+#   stage: test
+#   tags:
+#     - docker  # Comme on utilise une image pour isoler on doit utiliser un runner docker 
+#   image: cypress/base:16.18.1 # Image fournie par cypress avec ce qu'il faut
+#   script:
+#     - cd backendsqlite && npm i # Installe ce qui est décrit dans package.json
+#     - npm run startdev & # Lance le serveur
+#     - npx cypress run > ../cypress_report.txt # Lance les tests
+#     # - kill -9 $(ps | grep node | awk '{print $1}') # Cette ligne pourrait permettre de tuer serve
+#   artifacts:            # Le rapport sera disponible pour d'autres jobs
+#     paths:
+#       - cypress_report.txt
+
+
+# jobsuppertest:
+#   stage: test
+#   tags:
+#     - docker  # Comme on utilise une image pour isoler on doit utiliser un runner docker 
+#   image: node
+#   script:
+#     - cd backendsqlite && npm i # Installe ce qui est décrit dans package.json
+#     - npm run test 2> ../Jtest_report.txt
+#   artifacts:            # Le rapport sera disponible pour d'autres jobs
+#     paths:
+#       - Jtest_report.txt
+
+# on peut aussi ouvrir la page ici : https://exercice-60.osc-fr1.scalingo.io/frontend/
+# pages:
+#   stage: deploy
+#   script:
+#     # Création du répertoire public
+#     - mkdir -p public 
+#     # Copie des fichiers
+#     - cp backendsqlite/src/frontend/* public
+#   artifacts:
+#     paths:
+#       - public 
+#   when: on_success
+
+# scalingo:
+#   stage: deploy
+#   tags:
+#     - docker
+#   variables:
+#     SCALINGO_APP_NAME: projet-lg-gitlab # le nom de votre appli chez scalingo
+#     SCALINGO_REGION: osc-fr1 # l'instance de scalingo sur laquelle votre appli est déployée
+#     GIT_DEPTH: 0
+#     PROJECT_DIR: Backend # Le répertoire dans le dépôt où est le backend
+#   image: ruby:3.1.3 # car dpl est codé en Ruby
+#   script:
+#     - gem install dpl --pre # gem est le gestionnaire de paquets pour Ruby
+#     - curl -O https://cli-dl.scalingo.com/install && bash install # scalingo CLI est installé
+#     - scalingo --app=$SCALINGO_APP_NAME env-set PROJECT_DIR=$PROJECT_DIR # Pour indiquer sur le dépôt distant où est le backend (s'il est à la racine du projet ceci est facultatif, et il est possible de le faire une fois pour toute directement dans l'interface web de scalingo)
+#     - dpl --provider=scalingo --app=$SCALINGO_APP_NAME --api-token=$SCALINGO_API_TOKEN --region=$SCALINGO_REGION --branch=refs/heads/main
+#   when: on_success
+
+# badges:
+#   stage: deploy
+#   before_script:
+#     - chmod +x backendsqlite/genere_badges.sh
+#   script:
+#     # The code cannot be run on a single line so we use a shell script.
+#     - ./backendsqlite/genere_badges.sh
+#   dependencies:
+#     - lint-js
+#     - jobcypress
+#     - jobsuppertest
+#   artifacts:
+#     paths:
+#       # These svg will be used by gitlab for displaying badges.
+#       - js_lint.svg
+#       - Jtests.svg
+#       - cy_tests.svg
+#   when: always      # Et quoiqu'il arrive la génération des badges devra se faire.

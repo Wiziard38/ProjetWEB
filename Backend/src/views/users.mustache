@@ -1,0 +1,18 @@
+<h2> Liste des users </h2>
+
+<table style="width: 230px; border-collapse: collapse; margin-bottom: 20px;">
+  <thead>
+    <tr>
+      <th>ID</th>
+      <th>Username</th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#data}}
+    <tr>
+      <td style="text-align: center;"> {{id}} </td>
+      <td style="text-align: center;"> {{username}} </td>
+    </tr>
+    {{/data}}
+  </tbody>
+</table>
