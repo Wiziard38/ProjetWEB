@@ -102,8 +102,12 @@ export default function LoginForm(props) {
                   props.setErrorTextValue(
                     "Le champ password ne peut être vide"
                   );
+                } else if (username.length > 32) {
+                  props.setErrorTextValue("L'username est trop long !");
+                } else if (password.length > 60) {
+                  props.setErrorTextValue("Le password est trop long !");
                 } else {
-                  props.onConnect(username, password);
+                  props.onConnect(username, password); //TODO ne pas envoyer le mdp en clair ?
                 }
               }}
             />

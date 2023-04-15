@@ -56,9 +56,23 @@ module.exports = {
 
   async signin(req, res) {
     const { username, password } = req.body;
-    console.log(username, password);
 
-    // Retrieve user record from database
+    // Verify fields
+    if (
+      username.length < 1 ||
+      username.length > 32 ||
+      password.length < 1 ||
+      password.length > 60
+    ) {
+      res
+        .status(401)
+        .json({
+          status: false,
+          message: "Username or password length invalid",
+        });
+    }
+
+    // check if username already exists
     const user = await userModel.findOne({ where: { username: username } });
 
     if (!user) {

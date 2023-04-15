@@ -67,7 +67,7 @@ export default function App() {
             onDisconnect={disconnect}
           />
 
-          <Text>Test</Text>
+          <Text>A implémenter</Text>
         </View>
       )}
       <StatusBar />
