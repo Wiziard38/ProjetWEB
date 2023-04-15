@@ -1,5 +1,6 @@
 const Sequelize = require("sequelize");
 const db = require("./database.js");
+const bcrypt = require('bcrypt');
 
 const users = db.define(
   "users",
@@ -18,8 +19,10 @@ const users = db.define(
     },
     password: {
       type: Sequelize.STRING(60),
-      validate: {
-        is: /^[0-9a-z\\/$.]{60}$/i,
+      allowNull: false,
+      set(value) {
+        const hash = bcrypt.hashSync(value, 10);
+        this.setDataValue('password', hash);
       },
     },
   },

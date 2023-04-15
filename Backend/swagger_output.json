@@ -13,41 +13,30 @@
   "paths": {
     "/login": {
       "post": {
-        "tags": [
-          "login"
-        ],
-        "summary": "Log in user",
         "description": "",
         "parameters": [
           {
-            "name": "obj",
+            "name": "body",
             "in": "body",
-            "description": "username and password",
             "schema": {
               "type": "object",
               "properties": {
                 "username": {
-                  "type": "string",
-                  "example": "John_Doe"
+                  "example": "any"
                 },
                 "password": {
-                  "type": "string",
-                  "example": "qwerty123"
+                  "example": "any"
                 }
-              },
-              "required": [
-                "username",
-                "password"
-              ]
+              }
             }
           }
         ],
         "responses": {
-          "201": {
-            "description": "Created"
+          "200": {
+            "description": "OK"
           },
-          "304": {
-            "description": "Not Modified"
+          "401": {
+            "description": "Unauthorized"
           }
         }
       }

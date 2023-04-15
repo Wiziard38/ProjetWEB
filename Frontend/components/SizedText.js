@@ -2,7 +2,7 @@ import { View, Text, Dimensions } from "react-native";
 
 const { width } = Dimensions.get("window");
 
-export default function ResizedText({ label, size, textStyle }) {
+export default function Sizedtext({ label, size, textStyle }) {
 
   let textSize;
 

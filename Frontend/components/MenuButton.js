@@ -1,11 +1,11 @@
 import { StyleSheet, View, Pressable } from "react-native";
-import ResizedText from "./ResizedText";
+import Sizedtext from "./Sizedtext";
 
 export default function MenuButton({ label, onPress }) {
   return (
     <View>
       <Pressable onPress={onPress}>
-        <ResizedText label={label} size="mini" textStyle={styles.buttonLabel} />
+        <Sizedtext label={label} size="mini" textStyle={styles.buttonLabel} />
       </Pressable>
     </View>
   );

@@ -28,24 +28,27 @@ const jws = require("jws");
 // }
 
 module.exports = {
-  async login (req, res) {
-    // Extract username and password from URL parameters
-    const username = request.body.username;
-	  const password = request.body.password;
-  
-    res.status(201).json({ message: username });
+  async login(req, res) {
+    const { username, password } = req.body;
+    
+    // Retrieve user record from database
+    const user = await userModel.findOne({ where: { username: username } });
 
-    // // Call the userModel to perform authentication logic
-    // const authenticatedUser = userModel.authenticateUser(username, password);
-  
-    // // Check if user is authenticated
-    // if (authenticatedUser) {
-    //   // Send success response
-    //   res.json({ data: { token: authenticatedUser.token } });
-    // } else {
-    //   // Send error response
-    //   res.status(401).json({ error: "Bad authentication" });
-    // }
+    if (user) {
+      // Compare stored password with input password
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+
+      if (isPasswordValid) {
+        // Password is correct, generate and return token
+        res.json({ data: { username: user.username, token: "test" } });
+      } else {
+        // Password is incorrect
+        res.status(401).json({ error: "Invalid password" }); // TODO change for security
+      }
+    } else {
+      // User not found
+      res.status(401).json({ error: "Invalid username" });
+    }
   },
 
   // async getToken (req, res) {

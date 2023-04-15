@@ -1,14 +1,14 @@
-import { StyleSheet, TextInput, View, ImageBackground } from "react-native";
+import { StyleSheet, TextInput, View, ImageBackground, Pressable } from "react-native";
 import { useState, useEffect } from "react";
 import { manipulateAsync } from "expo-image-manipulator";
 import FormButton from "./FormButton";
-import ResizedText from "./ResizedText";
+import Sizedtext from "./Sizedtext";
 
-export default function LoginForm({ onConnect }) {
-  const [username, setUsername] = useState("Testeur");
-  const [password, setPassword] = useState("oui");
+export default function LoginForm({ onConnect, errorTextValue, mode, changeMode }) {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [imageUri, setImageUri] = useState(null);
-
+    
   // Resize background image using manipulateAsync
   useEffect(() => {
     const resizeImage = async () => {
@@ -28,6 +28,21 @@ export default function LoginForm({ onConnect }) {
     resizeImage();
   }, []); // Empty dependency array to run the effect only once
 
+
+  const [descriptionText, setDescriptionText] = useState("Je me connecte");
+  const [switchText, setSwitchText] = useState("Je m'inscrit");
+  // Change login mode
+  useEffect(() => {
+    if (mode) {
+      setDescriptionText("Je me connecte")
+      setSwitchText("Je m'inscris")
+    } else {
+      setDescriptionText("Je créé un compte")
+      setSwitchText("Je me connecte")
+    }
+  }, [mode]); // Dependency array to run the effect each time mode is changed
+
+
   return (
     <View style={styles.container}>
       {/* Background image */}
@@ -39,10 +54,16 @@ export default function LoginForm({ onConnect }) {
         {/* Login Form */}
         <View style={styles.formContainer}>
           <View style={styles.formBackground}>
-            <ResizedText
-              label="Connectez-vous"
+            <Sizedtext
+              label={descriptionText}
               size="xlarge"
               textStyle={styles.loginTitle}
+            />
+
+            <Sizedtext
+              label={errorTextValue}
+              size="small"
+              textStyle={styles.errorMessage}
             />
 
             <TextInput
@@ -67,6 +88,15 @@ export default function LoginForm({ onConnect }) {
               label="Se connecter"
               onPress={() => onConnect(username, password)}
             />
+
+            <Pressable onPress={() => changeMode()}>
+              <Sizedtext
+                label={switchText}
+                size="mini"
+                textStyle={styles.switchButton}
+              />
+            </Pressable>
+
           </View>
         </View>
       </ImageBackground>
@@ -116,4 +146,13 @@ const styles = StyleSheet.create({
     textAlign: "center",
     marginBottom: 20,
   },
+  errorMessage: {
+    color: "red",
+  },
+  switchButton: {
+    color: "#383838",
+    fontStyle: "italic",
+    textAlign: "center",
+    marginTop: 10,
+  }
 });
