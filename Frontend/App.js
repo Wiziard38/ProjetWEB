@@ -10,11 +10,12 @@ const { BACKEND } = config;
 export default function App() {
   const [token, setToken] = useState(null);
   const [loginState, setLoginState] = useState(true);
-  const [errorTextValue, setErrorTextValue] = useState('');
-  const [username, setUsername] = useState('');
+  const [errorTextValue, setErrorTextValue] = useState("");
+  const [connectedUsername, setConnectedUsername] = useState("");
 
   function connect(username, password) {
-    fetch(`${BACKEND}/login`, {
+    const loginURL = loginState ? `${BACKEND}/login` : `${BACKEND}/signin`;
+    fetch(loginURL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -24,57 +25,47 @@ export default function App() {
     })
       .then((response) => response.json())
       .then((json) => {
-        if (json.data.token) {
-          setErrorTextValue("")
-          setUsername(json.data.username)
+        if (!json.status) {
+          setErrorTextValue(json.message);
+        } else if (json.data.token) {
+          setErrorTextValue("");
+          setConnectedUsername(json.data.username);
           setToken(json.data.token);
+          if (!loginState) {
+            alert(`Bienvenue ${connectedUsername}, vous avez été inscrit.`);
+          }
         } else {
-          setErrorTextValue("Mauvais identifiants")
+          setErrorTextValue("Server error, should not happen");
         }
       })
-      .catch((error) => {setErrorTextValue("Mauvais identifiants")});
-  }
-
-  function signin(username, password) {
-    fetch(`${BACKEND}/signin`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Access-Control-Allow-Origin": BACKEND,
-      },
-      body: JSON.stringify({ username, password }),
-    })
-      .then((response) => response.json())
-      .then((json) => {
-        if (json.data.token) {
-          setErrorTextValue("")
-          setUsername(json.data.username)
-          setToken(json.data.token);
-        } else {
-          setErrorTextValue("Mauvais identifiants")
-        }
-      })
-      .catch((error) => {setErrorTextValue("Mauvais identifiants")});
+      .catch((error) => {
+        setErrorTextValue("Erreur serveur");
+        console.log(error);
+      });
   }
 
   function disconnect() {
     setToken(null);
   }
 
-  function switchLoginMode() {
-    setLoginState(!loginState)
-  }
-
-
   return (
     <View style={styles.container}>
       {!token ? (
         // If no token (user non connected)
-        <LoginForm onConnect={connect} errorTextValue={errorTextValue} mode={loginState} changeMode={switchLoginMode}></LoginForm>
+        <LoginForm
+          onConnect={connect}
+          errorTextValue={errorTextValue}
+          setErrorTextValue={setErrorTextValue}
+          loginState={loginState}
+          setLoginState={setLoginState}
+        />
       ) : (
         // If token (user connected)
         <View style={styles.container}>
-          <ConnectedHeader username={username} onDisconnect={disconnect} />
+          <ConnectedHeader
+            username={connectedUsername}
+            onDisconnect={disconnect}
+          />
 
           <Text>Test</Text>
         </View>

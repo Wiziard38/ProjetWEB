@@ -30,7 +30,7 @@ const jws = require("jws");
 module.exports = {
   async login(req, res) {
     const { username, password } = req.body;
-    
+
     // Retrieve user record from database
     const user = await userModel.findOne({ where: { username: username } });
 
@@ -40,14 +40,42 @@ module.exports = {
 
       if (isPasswordValid) {
         // Password is correct, generate and return token
-        res.json({ data: { username: user.username, token: "test" } });
+        res.json({
+          status: true,
+          data: { username: user.username, token: "test" },
+        });
       } else {
         // Password is incorrect
-        res.status(401).json({ error: "Invalid password" }); // TODO change for security
+        res.status(401).json({ status: false, message: "Invalid password" }); // TODO change for security
       }
     } else {
       // User not found
-      res.status(401).json({ error: "Invalid username" });
+      res.status(401).json({ status: false, message: "Invalid username" });
+    }
+  },
+
+  async signin(req, res) {
+    const { username, password } = req.body;
+    console.log(username, password);
+
+    // Retrieve user record from database
+    const user = await userModel.findOne({ where: { username: username } });
+
+    if (!user) {
+      // Add user to database
+      const newUser = await userModel.create({
+        username: username,
+        password: password,
+      });
+
+      res.json({
+        status: true,
+        data: { username: newUser.username, token: "signed in user" },
+      });
+    } else {
+      res
+        .status(401)
+        .json({ status: false, message: "Username already exists" });
     }
   },
 
