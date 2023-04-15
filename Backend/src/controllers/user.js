@@ -1,10 +1,10 @@
-const status = require('http-status')
-const userModel = require('../models/users.js')
-const tagModel = require('../models/tags.js')
-const has = require('has-keys')
-const CodeError = require('../util/CodeError.js')
-const bcrypt = require('bcrypt')
-const jws = require('jws')
+const status = require("http-status");
+const userModel = require("../models/users.js");
+const tagModel = require("../models/tags.js");
+const has = require("has-keys");
+const CodeError = require("../util/CodeError.js");
+const bcrypt = require("bcrypt");
+const jws = require("jws");
 // require('mandatoryenv').load(['TOKENSECRET'])
 
 // async function tokenAnalyse (req) {
@@ -29,19 +29,24 @@ const jws = require('jws')
 // }
 
 module.exports = {
-
-  async login (req, res) {
+  async login(req, res) {
     // #swagger.tags = ['login']
     // #swagger.summary = 'Log in user'
     // #swagger.parameters['obj'] = { in: 'body', description:'username and password', schema: { $username: 'John_Doe', $password: 'qwerty123'}}
-    const jreq = JSON.parse(req.body.data)
+    const jreq = JSON.parse(req.body.data);
 
-    if (!has(jreq, ['username'])) res.status(304).json()
-    const { username } = jreq
-    if (username.length < 1 || username.length > 32) res.status(304).json()
+    if (!has(jreq, ["username"])) res.status(304).json();
+    const { username } = jreq;
+    if (username.length < 1 || username.length > 32) res.status(304).json();
     // if (!validPassword(password)) throw new CodeError('Weak password!', status.BAD_REQUEST)
 
-    res.status(201).json({ status: true, message: 'User Logged in', data:{test: "test", token: "test-token"} })
+    res
+      .status(201)
+      .json({
+        status: true,
+        message: "User Logged in",
+        data: { test: "test", token: "test-token" },
+      });
   },
 
   // async getToken (req, res) {
@@ -208,4 +213,4 @@ module.exports = {
   //   }
   //   res.status(403).message({ message: 'invalid token or user not found' })
   // }
-}
+};
