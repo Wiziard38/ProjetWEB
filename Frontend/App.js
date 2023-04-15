@@ -1,7 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import { useState, useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import MonBouton from "./components/MonBouton";
 import LoginForm from "./components/LoginForm";
 import ConnectedHeader from "./components/ConnectedHeader";
 
@@ -15,7 +14,6 @@ export default function App() {
     fetch(`${BACKEND}/login`, {
       method: "POST",
       headers: {
-        "Content-Type": "application/json",
         "Content-Type": "application/x-www-form-urlencoded",
         "Access-Control-Allow-Origin": BACKEND,
       },

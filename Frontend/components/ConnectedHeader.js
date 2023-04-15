@@ -1,5 +1,5 @@
 import { StyleSheet, View } from "react-native";
-import MonBouton from "./MonBouton";
+import MenuButton from "./MenuButton";
 import ResizedText from "./ResizedText";
 
 export default function ConnectedHeader({ onDisconnect }) {
@@ -11,7 +11,7 @@ export default function ConnectedHeader({ onDisconnect }) {
         textStyle={styles.welcomeText}
       />
 
-      <MonBouton label={"Deconnecter"} onPress={() => onDisconnect()} />
+      <MenuButton style={styles.disconnectButton} label={"Deconnection"} onPress={() => onDisconnect()} />
     </View>
   );
 }
@@ -25,8 +25,9 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 16,
     backgroundColor: "rgb(78, 78, 78)",
+    padding: 5,
   },
   welcomeText: {
     color: "white",
-  },
+  },  
 });

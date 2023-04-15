@@ -1,7 +1,7 @@
 import { StyleSheet, TextInput, View, ImageBackground } from "react-native";
 import { useState, useEffect } from "react";
 import { manipulateAsync } from "expo-image-manipulator";
-import MonBouton from "./MonBouton";
+import FormButton from "./FormButton";
 import ResizedText from "./ResizedText";
 
 export default function LoginForm({ onConnect }) {
@@ -62,7 +62,7 @@ export default function LoginForm({ onConnect }) {
               placeholder="Password"
             />
 
-            <MonBouton
+            <FormButton
               nativeID="connect"
               label="Se connecter"
               onPress={() => onConnect(username, password)}
