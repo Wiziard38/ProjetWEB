@@ -1,5 +1,4 @@
-import { StyleSheet, View } from "react-native";
-import MenuButton from "./MenuButton";
+import { StyleSheet, View, Pressable } from "react-native";
 import Sizedtext from "./Sizedtext";
 
 export default function ConnectedHeader({ username, onDisconnect }) {
@@ -21,7 +20,13 @@ export default function ConnectedHeader({ username, onDisconnect }) {
         />
       </View>
 
-      <MenuButton style={styles.disconnectButton} label={"Deconnection"} onPress={() => onDisconnect()} />
+      <Pressable onPress={() => onDisconnect()}>
+        <Sizedtext
+          label={"Deconnection"}
+          size="mini"
+          textStyle={styles.disconnectButtonLabel}
+        />
+      </Pressable>
     </View>
   );
 }
@@ -39,9 +44,17 @@ const styles = StyleSheet.create({
     alignItems: "center",
     paddingHorizontal: 16,
     backgroundColor: "rgb(78, 78, 78)",
-    padding: 5,
+    padding: 10,
   },
   welcomeText: {
     color: "white",
-  },  
+  },
+  disconnectButtonLabel: {
+    color: "white",
+    backgroundColor: "black",
+    borderRadius: 10,
+    padding: 5,
+    borderWidth: 1,
+    borderColor: "white",
+  },
 });

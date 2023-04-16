@@ -4,10 +4,10 @@ import {
   View,
   ImageBackground,
   Pressable,
+  Dimensions,
 } from "react-native";
 import { useState, useEffect } from "react";
 import { manipulateAsync } from "expo-image-manipulator";
-import FormButton from "./FormButton";
 import Sizedtext from "./Sizedtext";
 
 export default function LoginForm(props) {
@@ -19,9 +19,10 @@ export default function LoginForm(props) {
   useEffect(() => {
     const resizeImage = async () => {
       try {
+        const imageSize = Dimensions.get("window").width / 4;
         const result = await manipulateAsync(
           require("../assets/werewolf.png"), // Input image URI
-          [{ resize: { width: 100, height: 100 } }], // Array of transformation options
+          [{ resize: { width: imageSize, height: imageSize } }], // Array of transformation options
           { format: "jpeg", compress: 0.8 } // Output options
         );
         setImageUri(result.uri); // Set the resized image URI to state
@@ -90,9 +91,7 @@ export default function LoginForm(props) {
               placeholder="Password"
             />
 
-            <FormButton
-              nativeID="connect"
-              label={submitText}
+            <Pressable
               onPress={() => {
                 if (username === "") {
                   props.setErrorTextValue(
@@ -110,7 +109,13 @@ export default function LoginForm(props) {
                   props.onConnect(username, password); //TODO ne pas envoyer le mdp en clair ?
                 }
               }}
-            />
+            >
+              <Sizedtext
+                label={submitText}
+                size="normal"
+                textStyle={styles.submitButtonLabel}
+              />
+            </Pressable>
 
             <Pressable onPress={() => props.setLoginState(!props.loginState)}>
               <Sizedtext
@@ -176,5 +181,14 @@ const styles = StyleSheet.create({
     fontStyle: "italic",
     textAlign: "center",
     marginTop: 10,
+  },
+  submitButtonLabel: {
+    color: "white",
+    backgroundColor: "black",
+    borderRadius: 10,
+    padding: 10,
+    borderWidth: 2,
+    borderColor: "red",
+    marginTop: 15,
   },
 });
