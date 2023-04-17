@@ -3,6 +3,7 @@ const { inject, errorHandler } = require("express-custom-error");
 inject(); // Patch express in order to use async / await syntax
 // Require Dependencies
 const express = require("express");
+const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 const cors = require("cors");
 const helmet = require("helmet");
@@ -10,6 +11,9 @@ const logger = require("./util/logger");
 
 // Instantiate an Express Application
 const app = express();
+
+// Middleware for parsing JSON request bodies
+app.use(bodyParser.json());
 
 // Allow requests from any origin during development
 app.use(cors());

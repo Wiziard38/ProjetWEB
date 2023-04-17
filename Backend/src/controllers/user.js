@@ -1,6 +1,5 @@
 const status = require("http-status");
 const userModel = require("../models/users.js");
-const tagModel = require("../models/tags.js");
 const has = require("has-keys");
 const CodeError = require("../util/CodeError.js");
 const bcrypt = require("bcrypt");
@@ -30,23 +29,68 @@ const jws = require("jws");
 
 module.exports = {
   async login(req, res) {
-    // #swagger.tags = ['login']
-    // #swagger.summary = 'Log in user'
-    // #swagger.parameters['obj'] = { in: 'body', description:'username and password', schema: { $username: 'John_Doe', $password: 'qwerty123'}}
-    const jreq = JSON.parse(req.body.data);
+    const { username, password } = req.body;
 
-    if (!has(jreq, ["username"])) res.status(304).json();
-    const { username } = jreq;
-    if (username.length < 1 || username.length > 32) res.status(304).json();
-    // if (!validPassword(password)) throw new CodeError('Weak password!', status.BAD_REQUEST)
+    // Retrieve user record from database
+    const user = await userModel.findOne({ where: { username: username } });
 
-    res
-      .status(201)
-      .json({
-        status: true,
-        message: "User Logged in",
-        data: { test: "test", token: "test-token" },
+    if (user) {
+      // Compare stored password with input password
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+
+      if (isPasswordValid) {
+        // Password is correct, generate and return token
+        res.json({
+          status: true,
+          data: { username: user.username, token: "test" },
+        });
+      } else {
+        // Password is incorrect
+        res.status(401).json({ status: false, message: "Invalid password" }); // TODO change for security
+      }
+    } else {
+      // User not found
+      res.status(401).json({ status: false, message: "Invalid username" });
+    }
+  },
+
+  async signin(req, res) {
+    const { username, password } = req.body;
+
+    // Verify fields
+    if (
+      username.length < 1 ||
+      username.length > 32 ||
+      password.length < 1 ||
+      password.length > 60
+    ) {
+      res
+        .status(401)
+        .json({
+          status: false,
+          message: "Username or password length invalid",
+        });
+    }
+
+    // check if username already exists
+    const user = await userModel.findOne({ where: { username: username } });
+
+    if (!user) {
+      // Add user to database
+      const newUser = await userModel.create({
+        username: username,
+        password: password,
       });
+
+      res.json({
+        status: true,
+        data: { username: newUser.username, token: "signed in user" },
+      });
+    } else {
+      res
+        .status(401)
+        .json({ status: false, message: "Username already exists" });
+    }
   },
 
   // async getToken (req, res) {

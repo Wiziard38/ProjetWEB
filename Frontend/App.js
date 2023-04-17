@@ -1,35 +1,49 @@
 import { StatusBar } from "expo-status-bar";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
-import MonBouton from "./components/MonBouton";
 import LoginForm from "./components/LoginForm";
+import MenuSelection from "./components/MenuSelection";
 import ConnectedHeader from "./components/ConnectedHeader";
 
-const config = require("../config");
+const config = require("./config.js");
 const { BACKEND } = config;
 
 export default function App() {
   const [token, setToken] = useState(null);
+  const [loggingState, setLoggingState] = useState(true);
+  const [menuState, setMenuState] = useState(0);
+  const [errorTextValue, setErrorTextValue] = useState("");
+  const [connectedUsername, setConnectedUsername] = useState("");
 
   function connect(username, password) {
-    fetch(`${BACKEND}/login`, {
+    const loginURL = loggingState ? `${BACKEND}/login` : `${BACKEND}/signin`;
+    fetch(loginURL, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "Content-Type": "application/x-www-form-urlencoded",
         "Access-Control-Allow-Origin": BACKEND,
       },
-      body: "data=" + JSON.stringify({ username, password }),
+      body: JSON.stringify({ username, password }),
     })
       .then((response) => response.json())
       .then((json) => {
-        if (json.data.token) {
+        if (!json.status) {
+          setErrorTextValue(json.message);
+        } else if (json.data.token) {
+          setErrorTextValue("");
+          setConnectedUsername(json.data.username);
           setToken(json.data.token);
+          if (!loggingState) {
+            alert(`Bienvenue ${connectedUsername}, vous avez été inscrit.`);
+          }
         } else {
-          alert("Bad authentification");
+          setErrorTextValue("Server error, should not happen");
         }
       })
-      .catch((error) => alert("Server error", error));
+      .catch((error) => {
+        setErrorTextValue("Erreur serveur");
+        console.log(error);
+      });
   }
 
   function disconnect() {
@@ -37,20 +51,37 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container}>
-      {!token ? (
-        // If not token (user non connected)
-        <LoginForm onConnect={connect}></LoginForm>
-      ) : (
-        // If token (user connected)
-        <View style={styles.container}>
-          <ConnectedHeader onDisconnect={disconnect} />
+      <View style={styles.container}>
+        {!token ? (
+          // If no token (user non connected)
+          <LoginForm
+            onConnect={connect}
+            errorTextValue={errorTextValue}
+            setErrorTextValue={setErrorTextValue}
+            loggingState={loggingState}
+            setLoggingState={setLoggingState}
+          />
+        ) : (
+          // If token (user connected)
+          <View style={styles.container}>
+            <ConnectedHeader
+              username={connectedUsername}
+              onDisconnect={disconnect}
+              menuState={menuState}
+              onMenu={() => setMenuState(0)}
+            />
 
-          <Text> Test </Text>
-        </View>
-      )}
-      <StatusBar />
-    </View>
+            {menuState === 0 ? (
+              <MenuSelection onMenuChoose={setMenuState} />
+            ) : menuState === 1 ? (
+              <Text>Je consulte de nouvelles parties</Text>
+            ) : (
+              <Text>Je consulte mes parties</Text>
+            )}
+          </View>
+        )}
+        <StatusBar />
+      </View>
   );
 }
 
