@@ -189,11 +189,11 @@ const styles = StyleSheet.create({
   },
   // Button for changing mode (log in / sign in)
   switchButton: {
-    textAlign: "center",
     marginTop: 5,
   },
   switchButtonLabel: {
     color: "#383838",
     fontStyle: "italic",
+    textAlign: "center",
   },
 });

@@ -26,6 +26,7 @@ const styles = StyleSheet.create({
     padding: 5,
     borderWidth: 1,
     borderColor: "white",
+    marginHorizontal: 5,
   },
   headerButtonLabel: {
     color: "white",

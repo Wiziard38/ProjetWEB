@@ -1,36 +1,42 @@
-import { StyleSheet, View, Pressable } from "react-native";
+import { StyleSheet, View, SafeAreaView } from "react-native";
 import Sizedtext from "./SizedText";
 import HeaderButton from "./HeaderButton.js";
 
-export default function ConnectedHeader({ username, onDisconnect, menuState, onMenu }) {
+export default function ConnectedHeader({
+  username,
+  onDisconnect,
+  menuState,
+  onMenu,
+}) {
   return (
-    <View style={styles.header}>
-      <View style={styles.container}>
-        {/* Greetings */}
-        <Sizedtext
-          label="Bonjour "
-          size="large"
-          textStyle={styles.welcomeText}
-        />
+    <SafeAreaView style={{ backgroundColor: "white" }}>
+      <View style={styles.header}>
+        <View style={styles.container}>
+          {/* Greetings */}
+          <Sizedtext
+            label="Bonjour "
+            size="large"
+            textStyle={styles.welcomeText}
+          />
 
-        {/* Connected user's username */}
-        <Sizedtext
-          label={username}
-          size="large"
-          textStyle={styles.welcomeText}
-        />
+          {/* Connected user's username */}
+          <Sizedtext
+            label={username}
+            size="large"
+            textStyle={styles.welcomeText}
+          />
+        </View>
+
+        <View style={styles.container}>
+          {menuState !== 0 ? (
+            <HeaderButton label={"Menu"} onPress={onMenu} />
+          ) : (
+            <></>
+          )}
+          <HeaderButton label={"Deconnexion"} onPress={onDisconnect} />
+        </View>
       </View>
-
-      <View style={styles.container}>
-        {(menuState !== 0) ? (
-          <HeaderButton label={"Menu"} onPress={onMenu}/>
-        ) : (
-          <></>
-        )}
-        <HeaderButton label={"Deconnexion"} onPress={onDisconnect}/>
-      </View>
-
-    </View>
+    </SafeAreaView>
   );
 }
 

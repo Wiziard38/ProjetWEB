@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import LoginForm from "./components/LoginForm";
 import MenuSelection from "./components/MenuSelection";
@@ -51,39 +51,37 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container}>
-      {!token ? (
-        // If no token (user non connected)
-        <LoginForm
-          onConnect={connect}
-          errorTextValue={errorTextValue}
-          setErrorTextValue={setErrorTextValue}
-          loggingState={loggingState}
-          setLoggingState={setLoggingState}
-        />
-      ) : (
-        // If token (user connected)
-        <View style={styles.container}>
-          <ConnectedHeader
-            username={connectedUsername}
-            onDisconnect={disconnect}
-            menuState={menuState}
-            onMenu={() => setMenuState(0)}
+      <View style={styles.container}>
+        {!token ? (
+          // If no token (user non connected)
+          <LoginForm
+            onConnect={connect}
+            errorTextValue={errorTextValue}
+            setErrorTextValue={setErrorTextValue}
+            loggingState={loggingState}
+            setLoggingState={setLoggingState}
           />
+        ) : (
+          // If token (user connected)
+          <View style={styles.container}>
+            <ConnectedHeader
+              username={connectedUsername}
+              onDisconnect={disconnect}
+              menuState={menuState}
+              onMenu={() => setMenuState(0)}
+            />
 
-          {(menuState === 0) ? (
-            <MenuSelection onMenuChoose={setMenuState}/>
-          ) : ((menuState === 1) ? (
-            <Text>Je consulte de nouvelles parties</Text>
-          ) : (
-            <Text>Je consulte mes parties</Text>
-          ))}
-
-        </View>
-
-      )}
-      <StatusBar />
-    </View>
+            {menuState === 0 ? (
+              <MenuSelection onMenuChoose={setMenuState} />
+            ) : menuState === 1 ? (
+              <Text>Je consulte de nouvelles parties</Text>
+            ) : (
+              <Text>Je consulte mes parties</Text>
+            )}
+          </View>
+        )}
+        <StatusBar />
+      </View>
   );
 }
 
