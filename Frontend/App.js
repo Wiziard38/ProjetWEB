@@ -2,19 +2,21 @@ import { StatusBar } from "expo-status-bar";
 import { useState, useEffect } from "react";
 import { StyleSheet, Text, View } from "react-native";
 import LoginForm from "./components/LoginForm";
+import MenuSelection from "./components/MenuSelection";
 import ConnectedHeader from "./components/ConnectedHeader";
 
-const config = require("../config");
+const config = require("./config.js");
 const { BACKEND } = config;
 
 export default function App() {
   const [token, setToken] = useState(null);
-  const [loginState, setLoginState] = useState(true);
+  const [loggingState, setLoggingState] = useState(true);
+  const [menuState, setMenuState] = useState(0);
   const [errorTextValue, setErrorTextValue] = useState("");
   const [connectedUsername, setConnectedUsername] = useState("");
 
   function connect(username, password) {
-    const loginURL = loginState ? `${BACKEND}/login` : `${BACKEND}/signin`;
+    const loginURL = loggingState ? `${BACKEND}/login` : `${BACKEND}/signin`;
     fetch(loginURL, {
       method: "POST",
       headers: {
@@ -31,7 +33,7 @@ export default function App() {
           setErrorTextValue("");
           setConnectedUsername(json.data.username);
           setToken(json.data.token);
-          if (!loginState) {
+          if (!loggingState) {
             alert(`Bienvenue ${connectedUsername}, vous avez été inscrit.`);
           }
         } else {
@@ -56,8 +58,8 @@ export default function App() {
           onConnect={connect}
           errorTextValue={errorTextValue}
           setErrorTextValue={setErrorTextValue}
-          loginState={loginState}
-          setLoginState={setLoginState}
+          loggingState={loggingState}
+          setLoggingState={setLoggingState}
         />
       ) : (
         // If token (user connected)
@@ -65,10 +67,20 @@ export default function App() {
           <ConnectedHeader
             username={connectedUsername}
             onDisconnect={disconnect}
+            menuState={menuState}
+            onMenu={() => setMenuState(0)}
           />
 
-          <Text>A implémenter</Text>
+          {(menuState === 0) ? (
+            <MenuSelection onMenuChoose={setMenuState}/>
+          ) : ((menuState === 1) ? (
+            <Text>Je consulte de nouvelles parties</Text>
+          ) : (
+            <Text>Je consulte mes parties</Text>
+          ))}
+
         </View>
+
       )}
       <StatusBar />
     </View>

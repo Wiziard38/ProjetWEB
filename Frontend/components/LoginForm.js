@@ -3,12 +3,12 @@ import {
   TextInput,
   View,
   ImageBackground,
-  Pressable,
   Dimensions,
 } from "react-native";
 import { useState, useEffect } from "react";
 import { manipulateAsync } from "expo-image-manipulator";
-import Sizedtext from "./Sizedtext";
+import Sizedtext from "./SizedText";
+import SizedButton from "./SizedButton.js";
 
 export default function LoginForm(props) {
   const [username, setUsername] = useState("");
@@ -40,16 +40,18 @@ export default function LoginForm(props) {
   const [submitText, setSubmitText] = useState("Se connecter");
   // Change login mode
   useEffect(() => {
-    if (props.loginState) {
+    if (props.loggingState) {
       setDescriptionText("Je me connecte");
       setSubmitText("Se connecter");
       setSwitchText("Je m'inscris");
+      props.setErrorTextValue("");
     } else {
       setDescriptionText("Je créé un compte");
       setSubmitText("S'inscrire");
       setSwitchText("Je me connecte");
+      props.setErrorTextValue("");
     }
-  }, [props.loginState]); // Dependency array to run the effect each time mode is changed
+  }, [props.loggingState]); // Dependency array to run the effect each time mode is changed
 
   return (
     <View style={styles.container}>
@@ -91,7 +93,11 @@ export default function LoginForm(props) {
               placeholder="Password"
             />
 
-            <Pressable
+            <SizedButton
+              buttonLabel={submitText}
+              size={"normal"}
+              buttonStyle={styles.submitButton}
+              buttonLabelStyle={styles.submitButtonLabel}
               onPress={() => {
                 if (username === "") {
                   props.setErrorTextValue(
@@ -109,21 +115,15 @@ export default function LoginForm(props) {
                   props.onConnect(username, password); //TODO ne pas envoyer le mdp en clair ?
                 }
               }}
-            >
-              <Sizedtext
-                label={submitText}
-                size="normal"
-                textStyle={styles.submitButtonLabel}
-              />
-            </Pressable>
+            />
 
-            <Pressable onPress={() => props.setLoginState(!props.loginState)}>
-              <Sizedtext
-                label={switchText}
-                size="mini"
-                textStyle={styles.switchButton}
-              />
-            </Pressable>
+            <SizedButton
+              buttonLabel={switchText}
+              size={"mini"}
+              buttonStyle={styles.switchButton}
+              buttonLabelStyle={styles.switchButtonLabel}
+              onPress={() => props.setLoggingState(!props.loggingState)}
+            />
           </View>
         </View>
       </ImageBackground>
@@ -176,19 +176,24 @@ const styles = StyleSheet.create({
   errorMessage: {
     color: "red",
   },
-  switchButton: {
-    color: "#383838",
-    fontStyle: "italic",
-    textAlign: "center",
-    marginTop: 10,
+  // Button for submission
+  submitButton: {
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: "red",
+    backgroundColor: "black",
+    padding: 10,
   },
   submitButtonLabel: {
     color: "white",
-    backgroundColor: "black",
-    borderRadius: 10,
-    padding: 10,
-    borderWidth: 2,
-    borderColor: "red",
-    marginTop: 15,
+  },
+  // Button for changing mode (log in / sign in)
+  switchButton: {
+    textAlign: "center",
+    marginTop: 5,
+  },
+  switchButtonLabel: {
+    color: "#383838",
+    fontStyle: "italic",
   },
 });

@@ -1,32 +1,35 @@
 import { StyleSheet, View, Pressable } from "react-native";
-import Sizedtext from "./Sizedtext";
+import Sizedtext from "./SizedText";
+import HeaderButton from "./HeaderButton.js";
 
-export default function ConnectedHeader({ username, onDisconnect }) {
+export default function ConnectedHeader({ username, onDisconnect, menuState, onMenu }) {
   return (
     <View style={styles.header}>
       <View style={styles.container}>
         {/* Greetings */}
         <Sizedtext
           label="Bonjour "
-          size="xlarge"
+          size="large"
           textStyle={styles.welcomeText}
         />
 
         {/* Connected user's username */}
         <Sizedtext
           label={username}
-          size="xlarge"
+          size="large"
           textStyle={styles.welcomeText}
         />
       </View>
 
-      <Pressable onPress={() => onDisconnect()}>
-        <Sizedtext
-          label={"Deconnection"}
-          size="mini"
-          textStyle={styles.disconnectButtonLabel}
-        />
-      </Pressable>
+      <View style={styles.container}>
+        {(menuState !== 0) ? (
+          <HeaderButton label={"Menu"} onPress={onMenu}/>
+        ) : (
+          <></>
+        )}
+        <HeaderButton label={"Deconnexion"} onPress={onDisconnect}/>
+      </View>
+
     </View>
   );
 }
@@ -42,7 +45,6 @@ const styles = StyleSheet.create({
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 16,
     backgroundColor: "rgb(78, 78, 78)",
     padding: 10,
   },
