@@ -1,32 +1,68 @@
-import { StyleSheet, View } from "react-native";
-import MonBouton from "./MonBouton";
-import ResizedText from "./ResizedText";
+import { StyleSheet, View, SafeAreaView } from "react-native";
+import Sizedtext from "./SizedText";
+import HeaderButton from "./HeaderButton.js";
 
-export default function ConnectedHeader({ onDisconnect }) {
+export default function ConnectedHeader({
+  username,
+  onDisconnect,
+  menuState,
+  onMenu,
+}) {
   return (
-    <View style={styles.header}>
-      <ResizedText
-        label="Bonjour moi"
-        size="xlarge"
-        textStyle={styles.welcomeText}
-      />
+    <SafeAreaView style={{ backgroundColor: "white" }}>
+      <View style={styles.header}>
+        <View style={styles.container}>
+          {/* Greetings */}
+          <Sizedtext
+            label="Bonjour "
+            size="large"
+            textStyle={styles.welcomeText}
+          />
 
-      <MonBouton label={"Deconnecter"} onPress={() => onDisconnect()} />
-    </View>
+          {/* Connected user's username */}
+          <Sizedtext
+            label={username}
+            size="large"
+            textStyle={styles.welcomeText}
+          />
+        </View>
+
+        <View style={styles.container}>
+          {menuState !== 0 ? (
+            <HeaderButton label={"Menu"} onPress={onMenu} />
+          ) : (
+            <></>
+          )}
+          <HeaderButton label={"Deconnexion"} onPress={onDisconnect} />
+        </View>
+      </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    display: "flex",
+    flexDirection: "row",
+  },
   header: {
     width: "100%",
     top: 0,
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
-    paddingHorizontal: 16,
     backgroundColor: "rgb(78, 78, 78)",
+    padding: 10,
   },
   welcomeText: {
     color: "white",
+  },
+  disconnectButtonLabel: {
+    color: "white",
+    backgroundColor: "black",
+    borderRadius: 10,
+    padding: 5,
+    borderWidth: 1,
+    borderColor: "white",
   },
 });

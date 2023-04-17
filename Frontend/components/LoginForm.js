@@ -1,21 +1,28 @@
-import { StyleSheet, TextInput, View, ImageBackground } from "react-native";
+import {
+  StyleSheet,
+  TextInput,
+  View,
+  ImageBackground,
+  Dimensions,
+} from "react-native";
 import { useState, useEffect } from "react";
 import { manipulateAsync } from "expo-image-manipulator";
-import MonBouton from "./MonBouton";
-import ResizedText from "./ResizedText";
+import Sizedtext from "./SizedText";
+import SizedButton from "./SizedButton.js";
 
-export default function LoginForm({ onConnect }) {
-  const [username, setUsername] = useState("Testeur");
-  const [password, setPassword] = useState("oui");
+export default function LoginForm(props) {
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [imageUri, setImageUri] = useState(null);
 
   // Resize background image using manipulateAsync
   useEffect(() => {
     const resizeImage = async () => {
       try {
+        const imageSize = Dimensions.get("window").width / 4;
         const result = await manipulateAsync(
           require("../assets/werewolf.png"), // Input image URI
-          [{ resize: { width: 100, height: 100 } }], // Array of transformation options
+          [{ resize: { width: imageSize, height: imageSize } }], // Array of transformation options
           { format: "jpeg", compress: 0.8 } // Output options
         );
         setImageUri(result.uri); // Set the resized image URI to state
@@ -28,6 +35,24 @@ export default function LoginForm({ onConnect }) {
     resizeImage();
   }, []); // Empty dependency array to run the effect only once
 
+  const [descriptionText, setDescriptionText] = useState("Je me connecte");
+  const [switchText, setSwitchText] = useState("Je m'inscrit");
+  const [submitText, setSubmitText] = useState("Se connecter");
+  // Change login mode
+  useEffect(() => {
+    if (props.loggingState) {
+      setDescriptionText("Je me connecte");
+      setSubmitText("Se connecter");
+      setSwitchText("Je m'inscris");
+      props.setErrorTextValue("");
+    } else {
+      setDescriptionText("Je créé un compte");
+      setSubmitText("S'inscrire");
+      setSwitchText("Je me connecte");
+      props.setErrorTextValue("");
+    }
+  }, [props.loggingState]); // Dependency array to run the effect each time mode is changed
+
   return (
     <View style={styles.container}>
       {/* Background image */}
@@ -39,10 +64,16 @@ export default function LoginForm({ onConnect }) {
         {/* Login Form */}
         <View style={styles.formContainer}>
           <View style={styles.formBackground}>
-            <ResizedText
-              label="Connectez-vous"
+            <Sizedtext
+              label={descriptionText}
               size="xlarge"
               textStyle={styles.loginTitle}
+            />
+
+            <Sizedtext
+              label={props.errorTextValue}
+              size="small"
+              textStyle={styles.errorMessage}
             />
 
             <TextInput
@@ -62,10 +93,36 @@ export default function LoginForm({ onConnect }) {
               placeholder="Password"
             />
 
-            <MonBouton
-              nativeID="connect"
-              label="Se connecter"
-              onPress={() => onConnect(username, password)}
+            <SizedButton
+              buttonLabel={submitText}
+              size={"normal"}
+              buttonStyle={styles.submitButton}
+              buttonLabelStyle={styles.submitButtonLabel}
+              onPress={() => {
+                if (username === "") {
+                  props.setErrorTextValue(
+                    "Le champ username ne peut être vide"
+                  );
+                } else if (password === "") {
+                  props.setErrorTextValue(
+                    "Le champ password ne peut être vide"
+                  );
+                } else if (username.length > 32) {
+                  props.setErrorTextValue("L'username est trop long !");
+                } else if (password.length > 60) {
+                  props.setErrorTextValue("Le password est trop long !");
+                } else {
+                  props.onConnect(username, password); //TODO ne pas envoyer le mdp en clair ?
+                }
+              }}
+            />
+
+            <SizedButton
+              buttonLabel={switchText}
+              size={"mini"}
+              buttonStyle={styles.switchButton}
+              buttonLabelStyle={styles.switchButtonLabel}
+              onPress={() => props.setLoggingState(!props.loggingState)}
             />
           </View>
         </View>
@@ -115,5 +172,28 @@ const styles = StyleSheet.create({
   loginTitle: {
     textAlign: "center",
     marginBottom: 20,
+  },
+  errorMessage: {
+    color: "red",
+  },
+  // Button for submission
+  submitButton: {
+    borderRadius: 10,
+    borderWidth: 2,
+    borderColor: "red",
+    backgroundColor: "black",
+    padding: 10,
+  },
+  submitButtonLabel: {
+    color: "white",
+  },
+  // Button for changing mode (log in / sign in)
+  switchButton: {
+    marginTop: 5,
+  },
+  switchButtonLabel: {
+    color: "#383838",
+    fontStyle: "italic",
+    textAlign: "center",
   },
 });
