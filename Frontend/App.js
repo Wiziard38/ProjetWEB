@@ -4,7 +4,7 @@ import { StyleSheet, Text, View } from "react-native";
 import LoginForm from "./components/LoginForm";
 import MenuSelection from "./components/MenuSelection";
 import ConnectedHeader from "./components/ConnectedHeader";
-
+import CreateNewGame from "./components/CreateNewGame";
 const config = require("./config.js");
 const { BACKEND } = config;
 
@@ -52,7 +52,7 @@ export default function App() {
 
   return (
       <View style={styles.container}>
-        {!token ? (
+        {token ? (
           // If no token (user non connected)
           <LoginForm
             onConnect={connect}
@@ -75,8 +75,10 @@ export default function App() {
               <MenuSelection onMenuChoose={setMenuState} />
             ) : menuState === 1 ? (
               <Text>Je consulte de nouvelles parties</Text>
-            ) : (
+            ) : menuState === 2 ? (
               <Text>Je consulte mes parties</Text>
+            ) : (
+              <CreateNewGame/>
             )}
           </View>
         )}
