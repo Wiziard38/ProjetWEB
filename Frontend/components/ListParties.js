@@ -131,9 +131,9 @@ const styles = StyleSheet.create({
 });
 
 ListParties.propTypes = {
-  parties: PropTypes.object.isRequired,
+  parties: PropTypes.array.isRequired,
   onPress: PropTypes.func.isRequired,
   onPressLabel: PropTypes.string.isRequired,
-  selectedId: PropTypes.number.isRequired,
+  selectedId: PropTypes.number,
   setSelectedId: PropTypes.func.isRequired,
 };

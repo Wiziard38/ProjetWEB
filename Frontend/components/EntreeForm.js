@@ -23,9 +23,9 @@ export default function EntreeForm({
 }
 
 EntreeForm.propTypes = {
-  label: PropTypes.string.isRequired,
+  label: PropTypes.string, // isRequired ?
   onChange: PropTypes.func.isRequired,
-  keyboardType: PropTypes.string.isRequired,
+  keyboardType: PropTypes.string, // isRequired ?
   style: PropTypes.object,
   dataName: PropTypes.string,
 };

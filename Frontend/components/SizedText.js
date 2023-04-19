@@ -29,7 +29,7 @@ export default function SizedText({ label, size, textStyle }) {
 
 SizedText.propTypes = {
   label: PropTypes.string.isRequired,
-  size: PropTypes.oneOf(["mini", "small", "medium", "large", "xlarge"])
+  size: PropTypes.oneOf(["mini", "small", "normal", "large", "xlarge"])
     .isRequired,
   textStyle: PropTypes.object,
 };

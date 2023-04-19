@@ -73,5 +73,5 @@ ConnectedHeader.propTypes = {
   username: PropTypes.string.isRequired,
   onDisconnect: PropTypes.func.isRequired,
   menuState: PropTypes.number.isRequired,
-  onMenu: PropTypes.function.isRequired,
+  onMenu: PropTypes.func.isRequired,
 };

@@ -65,10 +65,20 @@ module.exports = {
         password,
       });
 
-      res.json({
-        status: true,
-        data: { username: newUser.username, token: "signed in user" },
-      });
+      const token = jws.sign(
+        {
+          header: { alg: "HS256" },
+          payload: newUser.username,
+          secret: process.env.JWS_SECRET,
+        },
+        {
+          expiresIn: process.env.JWS_EXPIRES_IN,
+        }
+      );
+
+      res
+        .status(201)
+        .json({ status: true, data: { token, username: newUser.username } });
     } else {
       res
         .status(401)
