@@ -1,9 +1,3 @@
-const status = require("http-status");
-const userModel = require("../models/users.js");
-const has = require("has-keys");
-const CodeError = require("../util/CodeError.js");
-const bcrypt = require("bcrypt");
-const jws = require("jws");
 const partie = require("../models/partie");
 
 module.exports = {

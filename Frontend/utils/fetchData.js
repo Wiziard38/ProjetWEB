@@ -9,8 +9,8 @@ export async function fetchData(path, method, body) {
     "x-access-token": token,
   };
   const options = {
-    method: method,
-    headers: headers,
+    method,
+    headers,
     body: JSON.stringify(body),
   };
   const response = await fetch(`${BACKEND}/${path}`, options);

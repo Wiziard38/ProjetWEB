@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { useState } from "react";
+import { useState, React } from "react";
 import { StyleSheet, View } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoginForm from "./components/LoginForm";
@@ -40,7 +40,7 @@ export default function App() {
             .then(() => console.log("Token stored successfully"))
             .catch((error) => console.log(error));
           if (!loggingState) {
-            alert(`Bienvenue ${connectedUsername}, vous avez été inscrit.`);
+            window.alert(`Bienvenue ${connectedUsername}, vous avez été inscrit.`);
           }
         } else {
           setErrorTextValue("Server error, should not happen");

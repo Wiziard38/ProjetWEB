@@ -1,6 +1,8 @@
+import React from "react";
 import { StyleSheet, View, SafeAreaView } from "react-native";
 import SizedText from "./SizedText";
 import HeaderButton from "./HeaderButton.js";
+import PropTypes from "prop-types";
 
 export default function ConnectedHeader({
   username,
@@ -66,3 +68,10 @@ const styles = StyleSheet.create({
     borderColor: "white",
   },
 });
+
+ConnectedHeader.propTypes = {
+  username: PropTypes.string.isRequired,
+  onDisconnect: PropTypes.func.isRequired,
+  menuState: PropTypes.number.isRequired,
+  onMenu: PropTypes.function.isRequired,
+};

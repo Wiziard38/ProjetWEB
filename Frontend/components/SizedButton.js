@@ -1,5 +1,7 @@
+import React from "react";
 import { View, Pressable } from "react-native";
 import SizedText from "./SizedText";
+import PropTypes from "prop-types";
 
 export default function SizedButton({
   buttonLabel,
@@ -20,3 +22,12 @@ export default function SizedButton({
     </View>
   );
 }
+
+SizedButton.propTypes = {
+  buttonLabel: PropTypes.string.isRequired,
+  onPress: PropTypes.func.isRequired,
+  size: PropTypes.oneOf(["mini", "small", "medium", "large", "xlarge"])
+    .isRequired,
+  buttonStyle: PropTypes.object,
+  buttonLabelStyle: PropTypes.object,
+};

@@ -10,9 +10,9 @@ lint-js-front:                # Vérification de la qualité du code javascript 
   image: node
   script:
     # install eslint
-    - cd Frontend && npm install --save-dev eslint-config-standard
+    - cd Frontend && npm i
     # Run eslint
-    - find . -name "*.js" -type f | xargs npx eslint > ../js_report_front.txt
+    - find . -name "*.js" -type f -not -path "./node_modules/*" | xargs npx eslint
   artifacts:            # Le rapport sera disponible pour d'autres jobs
     paths:
       - js_report_front.txt
@@ -24,9 +24,9 @@ lint-js-back:                # Vérification de la qualité du code javascript p
   image: node
   script:
     # install eslint
-    - cd Frontend && npm install --save-dev eslint-config-standard
+    - cd Backend && npm i
     # Run eslint
-    - find . -name "*.js" -type f | xargs npx eslint > ../js_report_back.txt
+    - find . -name "*.js" -type f -not -path "./node_modules/*" -not -path "./cypress/*" -not -path "**/__tests__/*" | xargs npx eslint
   artifacts:            # Le rapport sera disponible pour d'autres jobs
     paths:
       - js_report_back.txt

@@ -1,4 +1,4 @@
-import { useState, useContext } from "react";
+import { useState, React } from "react";
 import {
   StyleSheet,
   View,
@@ -10,9 +10,6 @@ import {
 import { fetchData } from "../utils/fetchData";
 import SizedButton from "./SizedButton";
 import EntreeForm from "./EntreeForm";
-
-const config = require("../config");
-const { BACKEND } = config;
 
 export default function CreateNewGame() {
   const [nbJoueur, setNbJoueur] = useState("");
@@ -33,7 +30,7 @@ export default function CreateNewGame() {
     if (
       parseInt(nbJoueur) <= 4 ||
       parseInt(nbJoueur) > 20 ||
-      nbJoueur.replace(",", ".").indexOf(".") != -1
+      nbJoueur.replace(",", ".").indexOf(".") !== -1
     ) {
       setTextError(
         "Le nombre de joueur doit être un entier compris entre 1 et 25"
@@ -41,12 +38,12 @@ export default function CreateNewGame() {
       setModalVisible(true);
       return false;
     }
-    if (dureeJour.replace(",", ".").indexOf(".") != -1) {
+    if (dureeJour.replace(",", ".").indexOf(".") !== -1) {
       setTextError("La durée du jour ne doît pas être nulle et dépasser 23h");
       setModalVisible(true);
       return false;
     }
-    if (dureeNuit.replace(",", ".").indexOf(".") != -1) {
+    if (dureeNuit.replace(",", ".").indexOf(".") !== -1) {
       setTextError(
         "La durée de la nuit ne doît pas être nulle et dépasser 23h"
       );
@@ -55,7 +52,7 @@ export default function CreateNewGame() {
     }
     if (
       parseInt(dateDebAnnee) < 2023 ||
-      dateDebAnnee.replace(",", ".").indexOf(".") != -1
+      dateDebAnnee.replace(",", ".").indexOf(".") !== -1
     ) {
       setTextError("L'année de début rentrée est incorect");
       setModalVisible(true);
@@ -64,7 +61,7 @@ export default function CreateNewGame() {
     if (
       parseInt(dateDebMois) <= 1 ||
       parseInt(nbJoueur) > 12 ||
-      dateDebMois.replace(",", ".").indexOf(".") != -1
+      dateDebMois.replace(",", ".").indexOf(".") !== -1
     ) {
       setTextError(
         "Le mois de début rentrée doît être un entier compris entre 1 et 12"
@@ -75,7 +72,7 @@ export default function CreateNewGame() {
     if (
       parseInt(dateDebJour) <= 0 ||
       parseInt(dateDebJour) > 25 ||
-      dateDebJour.replace(",", ".").indexOf(".") != -1
+      dateDebJour.replace(",", ".").indexOf(".") !== -1
     ) {
       setTextError(
         "Le jour de début rentrée doît être un entier compris entre 1 et 31"
@@ -86,7 +83,7 @@ export default function CreateNewGame() {
     if (
       parseInt(HeureDeb) < 0 ||
       parseInt(HeureDeb) > 24 ||
-      HeureDeb.replace(",", ".").indexOf(".") != -1
+      HeureDeb.replace(",", ".").indexOf(".") !== -1
     ) {
       setTextError("L'heure de début doît être un entier entre 0 et 23");
       setModalVisible(true);
@@ -95,7 +92,7 @@ export default function CreateNewGame() {
     if (
       parseInt(MinDeb) < 0 ||
       parseInt(MinDeb) > 59 ||
-      MinDeb.replace(",", ".").indexOf(".") != -1
+      MinDeb.replace(",", ".").indexOf(".") !== -1
     ) {
       setTextError("Les minutes de début doît être un entier entre 0 et 59");
       setModalVisible(true);
@@ -146,7 +143,6 @@ export default function CreateNewGame() {
       // .then(res=> res.json())
       // .then(json => console.log(json))
       // .catch(error=>console.log(error));
-    } else {
     }
   }
 

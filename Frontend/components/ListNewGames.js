@@ -1,11 +1,8 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, React } from "react";
 import { SafeAreaView, StyleSheet, View } from "react-native";
 import ListParties from "./ListParties";
 import SizedText from "./SizedText";
 import { fetchData } from "../utils/fetchData";
-
-const config = require("../config");
-const { BACKEND } = config;
 
 export default function ListNewGames() {
   const [parties, setParties] = useState([]);

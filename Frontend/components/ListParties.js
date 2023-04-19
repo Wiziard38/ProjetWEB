@@ -1,6 +1,8 @@
+import React from "react";
 import { View, StyleSheet, FlatList, TouchableOpacity } from "react-native";
 import SizedText from "./SizedText";
 import SizedButton from "./SizedButton";
+import PropTypes from "prop-types";
 
 export default function ListParties({
   parties,
@@ -20,12 +22,12 @@ export default function ListParties({
     return (
       <TouchableOpacity
         onPress={() => selectItem(item)}
-        style={[styles.item, { backgroundColor: backgroundColor }]}
+        style={[styles.item, { backgroundColor }]}
       >
         <SizedText
           label={`Partie n˚ ${item.id}`}
           size={"large"}
-          textStyle={{ color: color }}
+          textStyle={{ color }}
         />
 
         {item.id === selectedId && (
@@ -127,3 +129,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
   },
 });
+
+ListParties.propTypes = {
+  parties: PropTypes.object.isRequired,
+  onPress: PropTypes.func.isRequired,
+  onPressLabel: PropTypes.string.isRequired,
+  selectedId: PropTypes.number.isRequired,
+  setSelectedId: PropTypes.func.isRequired,
+};

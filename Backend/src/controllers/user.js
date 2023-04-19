@@ -1,7 +1,4 @@
-const status = require("http-status");
 const userModel = require("../models/users.js");
-const has = require("has-keys");
-const CodeError = require("../util/CodeError.js");
 const bcrypt = require("bcrypt");
 const jws = require("jws");
 
@@ -10,7 +7,7 @@ module.exports = {
     const { username, password } = req.body;
 
     // Retrieve user record from database
-    const user = await userModel.findOne({ where: { username: username } });
+    const user = await userModel.findOne({ where: { username } });
 
     if (user) {
       // Compare stored password with input password
@@ -59,13 +56,13 @@ module.exports = {
     }
 
     // check if username already exists
-    const user = await userModel.findOne({ where: { username: username } });
+    const user = await userModel.findOne({ where: { username } });
 
     if (!user) {
       // Add user to database
       const newUser = await userModel.create({
-        username: username,
-        password: password,
+        username,
+        password,
       });
 
       res.json({
