@@ -1,5 +1,5 @@
 import { View, Pressable } from "react-native";
-import Sizedtext from "./SizedText";
+import SizedText from "./SizedText";
 
 export default function SizedButton({
   buttonLabel,
@@ -11,7 +11,7 @@ export default function SizedButton({
   return (
     <View>
       <Pressable style={buttonStyle} onPress={() => onPress()}>
-        <Sizedtext
+        <SizedText
           label={buttonLabel}
           size={size}
           textStyle={buttonLabelStyle}

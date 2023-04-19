@@ -29,5 +29,15 @@ module.exports = {
         probaLoup: data.probaLoup
     });
     res.json({status: true})
-  }
+  },
+  async listParties(req, res) {
+    try {
+      const allRecords = await partie.findAll();
+      console.log(allRecords)
+      res.json(allRecords);
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
+  },
 };

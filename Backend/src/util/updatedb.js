@@ -32,6 +32,16 @@ const bcrypt = require('bcrypt');
     password: "2",
   });
 
+  await partie.create({
+    id: 1,
+    nbJoueur: 7,
+    dureeJour: 1,
+    dureeNuit: 1,
+    dateDeb: '2022-01-17T04:33:12.000Z',
+    probaPouv: 0,
+    probaLoup: 0,
+  });
+
   await partie.sync({force: true});
 
   // Ajouter ici le code permettant d'initialiser par défaut la base de donnée
