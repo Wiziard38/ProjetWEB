@@ -1,8 +1,9 @@
 import { useState } from "react";
-import { StyleSheet, View, SafeAreaView, Text,TextInput,} from "react-native";
+import { StyleSheet, View, SafeAreaView, Text,TextInput, Modal, Pressable} from "react-native";
 import Sizedtext from "./SizedText";
 import HeaderButton from "./HeaderButton.js";
 import SizedButton from "./SizedButton";
+import EntreeForm from "./EntreeForm";
 
 const config = require('../config');
 const {BACKEND} = config;
@@ -11,148 +12,253 @@ export default function CreateNewGame() {
     const [nbJoueur, setNbJoueur] = useState("");
     const [dureeJour, setDureeJour] = useState("");
     const [dureeNuit, setDureeNuit] = useState("");
-    const [dateDeb, setDateDeb] = useState("");
+    const [dateDebJour, setDateDebJour] = useState("");
+    const [dateDebMois, setDateMois] = useState("");
+    const [dateDebAnnee, setDateDebAnnee] = useState("");
     const [HeureDeb, setHeureDeb] = useState("");
     const [MinDeb, setMinDeb] = useState("");
     const [probaPouv, setProbaPouv] = useState("");
     const [probaLoup, setProbaLoup] = useState("");
-    
-    function calculerNb(text) {
-        console.log("text",text);
-        let index = 0;
-        let number = 0;
-        const [ent,dec] = text.replace(",", ".").split(".")
-        console.log(dec);
-        if (ent) {
-            for (letter of ent.split('').reverse().join('')) {
-                console.log("letter",letter)
-                number += parseInt(letter)*(10**index);
-                index += 1;
-                }
+    const [modalVisible, setModalVisible] = useState(false);
+    const [textError, setTextError] = useState("");
+
+    function verificationDonnee() {
+        console.log(parseInt(nbJoueur))
+        if (parseInt(nbJoueur)<= 0 || parseInt(nbJoueur) >25 || isNaN(parseInt(nbJoueur))) {
+            setTextError("Le nombre de joueur doit être un entier compris entre 1 et 25");
+            setModalVisible(true)
+            return false;
         }
-        index = -1;
-        if (dec) {
-            for (letter of dec) {
-                console.log("letter", letter);
-                number += parseInt(letter)*(10**index);
-                index -= 1;
-            }
+        if (parseInt(dureeJour)<= 0 || parseInt(dureeJour) >24 || isNaN(parseInt(dureeJour))) {
+            setTextError("La durée du jour ne doît pas être nulle et dépasser 23h");
+            setModalVisible(true)
+            return false;
         }
-        return number;
-    }
+        if (parseInt(dureeNuit)<= 0 || parseInt(dureeNuit) >24 || isNaN(parseInt(dureeNuit))) {
+            setTextError("La durée de la nuit ne doît pas être nulle et dépasser 23h");
+            setModalVisible(true)
+            return false;
+        }
+        if (parseInt(dateDebAnnee)< 2023 || isNaN(parseInt(dateDebAnnee))) {
+            setTextError("L'année de début rentrée est incorect");
+            setModalVisible(true)
+            return false;
+        }
+        if (parseInt(dateDebMois)<= 1 || parseInt(nbJoueur) >12 || isNaN(parseInt(nbJoueur))) {
+            setTextError("Le mois de début rentrée doît être un entier compris entre 1 et 12");
+            setModalVisible(true)
+            return false;
+        }
+        if (parseInt(dateDebJour)<= 0 || parseInt(dateDebJour) >25 || isNaN(parseInt(dateDebJour))){
+            setTextError("Le jour de début rentrée doît être un entier compris entre 1 et 31");
+            setModalVisible(true)
+            return false;
+        }
+        if (parseInt(HeureDeb)< 0 || parseInt(HeureDeb) >24 || isNaN(parseInt(HeureDeb))) {
+            setTextError("L'heure de début doît être un entier entre 0 et 23");
+            setModalVisible(true)
+            return false;
+        }
+        if (parseInt(MinDeb)< 0 || parseInt(MinDeb) >59 || isNaN(parseInt(MinDeb))) {
+            setTextError("Les minutes de début doît être un entier entre 0 et 59");
+            setModalVisible(true)
+            return false;
+        }
+        if (parseFloat(probaLoup)< 0 || parseFloat(probaLoup) >1 || isNaN(parseFloat(probaLoup))) {
+            setTextError("La proba d'apparition des loups garoux doît être un nombre flottant compris entre 0 et 1");
+            setModalVisible(true)
+            return false;
+        }
+        if (parseInt(probaPouv)< 0 || parseInt(probaPouv) >1 || isNaN(parseInt(probaPouv))) {
+            setTextError("La proba d'apparition des pouvoir doît être un nombre flottant compris entre 0 et 1");
+            setModalVisible(true)
+            return false;
+        }
+        return true;
+    };
 
     function creationPartie() {
         console.log("creation partie")
-        const nbJoueurRentree = calculerNb(nbJoueur);
-        const dureeJourRentree = calculerNb(dureeJour);
-        const dureeNuitRentree = calculerNb(dureeNuit);
-        const probaPouvRentree = calculerNb(probaPouv);
-        const probaLoupRentree = calculerNb(probaLoup);
-        const data = {
-            nbJoueur: nbJoueurRentree,
-            dureeJour: dureeJourRentree,
-            dureeNuit: dureeNuitRentree,
-            dateDeb: dateDeb+":"+HeureDeb+":"+MinDeb,
-            probaPouv: probaPouvRentree,
-            probaLoup: probaLoupRentree
-        };
-        console.log(data)
-        fetch(`${BACKEND}/partie`, {
-            method: "POST",
-            headers: {"content-type": "application/x-www-form-urlencoded; charset=UTF-8"},
-            body: "data=" + JSON.stringify(data)
-        })
-        .then(res=> res.json())
-        .then(json => console.log(json))
-        .catch(error=>console.log(error));
+        if (verificationDonnee()) {
+            const data = {
+                nbJoueur: parseInt(nbJoueur),
+                dureeJour: parseInt(dureeJour),
+                dureeNuit: parseInt(dureeNuit),
+                dateDebJour: parseInt(dateDebJour),
+                dateDebMois: parseInt(dateDebMois),
+                dateDebAnnee: parseInt(dateDebAnnee),
+                MinDeb: parseInt(MinDeb),
+                HeureDeb: parseInt(HeureDeb),
+                probaPouv: parseFloat(probaPouv),
+                probaLoup: parseFloat(probaLoup),
+            };
+            console.log(data)
+            fetch(`${BACKEND}/partie`, {
+                method: "POST",
+                headers: {"content-type": "application/x-www-form-urlencoded; charset=UTF-8"},
+                body: "data=" + JSON.stringify(data)
+            })
+            .then(res=> res.json())
+            .then(json => console.log(json))
+            .catch(error=>console.log(error));
+        }
+        else {
+
+        }
+        
     }
+    
     return (
         <SafeAreaView style={{ backgroundColor: "white" }}>
-        <View style={styles.container}>
-            <View
-            style={{flex:1, flexDirection: 'row'}}>
-                <Text>Nombre de Joueur: </Text>
-                <TextInput
-                keyboardType="numeric"
-                onChangeText={setNbJoueur}
-                value={nbJoueur}
-                style = {styles.input}/>
-            </View>               
-            <View
-            style={{flex:1, flexDirection: 'row'}}>
-                <Text>Durée du jour: </Text>
-                <TextInput
-                keyboardType="numeric"
-                onChangeText={setDureeJour}
-                value={dureeJour}
-                style = {styles.input}/>
-            </View>               
-            <View
-            style={{flex:1, flexDirection: 'row'}}>
-                <Text>Durée de la nuit: </Text>
-                <TextInput
-                keyboardType="numeric"
-                onChangeText={setDureeNuit}
-                value={dureeNuit}
-                style = {styles.input}/>
-            </View>                
-            <View
-            style={{flex:1, flexDirection: 'row'}}>
-                <Text>Date de Début: </Text>
-                <TextInput
-                onChangeText={setDateDeb}
-                value={dateDeb}
-                style = {styles.input}/>                
-            </View>
-            <View>
-                <Text>Minute de Début: </Text>
-                <TextInput
-                onChangeText={setHeureDeb}
-                value={HeureDeb}
-                style = {styles.input}/>
-            </View>
-            <View>
-                <Text>Minute de Début: </Text>
-                <TextInput
-                onChangeText={setMinDeb}
-                value={MinDeb}
-                style = {styles.input}/>
-            </View>                
-            <View
-            style={{flex:1, flexDirection: 'row'}}>
-                <Text>Probabilité d'apparition du pouvoir: </Text>
-                <TextInput
-                keyboardType="decimal-pad"
-                onChangeText={setProbaPouv}
-                value={probaPouv}
-                style = {styles.input}/>
-            </View>
-            <View
-            style={{flex:1, flexDirection: 'row'}}>
-                <Text>Probabilité d'apparition des Loups Garou: </Text>
-                <TextInput
-                keyboardType="decimal-pad"
-                onChangeText={setProbaLoup}
-                value={probaLoup}
-                style = {styles.input}/>
-            </View>
-            <View
-            style={{flex:1, flexDirection: 'row'}}>
-                <SizedButton 
-                buttonLabel={"Créer Partie"}
-                onPress = {() => creationPartie()}
-                size = {"xlarge"}
-                buttonStyle = {styles.selectionButton}
-                buttonLabelStyle = {styles.selectionButtonLabel}
+            <View style={styles.container}>
+                <Modal
+                animationType="slide"
+                transparent={true}
+                visible={modalVisible}
+                onRequestClose={() => {
+                setModalVisible(!modalVisible);
+                }}>
+                    <View style={styles.centeredView}>
+                        <View style={styles.modalView}>
+                            <Text style={styles.modalText}>{textError}</Text>
+                            <Pressable
+                            style={[styles.button, styles.buttonClose]}
+                            onPress={() => setModalVisible(!modalVisible)}>
+                            <Text style={styles.textStyle}>Fermer</Text>
+                            </Pressable>
+                        </View>
+                    </View>
+                </Modal>
+                <EntreeForm
+                    Label={"Nombre de joueurs: "}
+                    KeyBoardType={"numeric"}
+                    onChange={setNbJoueur}
+                    style={styles.input}
+                    dataName={""}
                 />
+                <EntreeForm
+                    Label={"Durée du jour: "}
+                    KeyBoardType={"numeric"}
+                    onChange={setDureeJour}
+                    style={styles.input}
+                    dataName={""}
+                />
+                <EntreeForm
+                    Label={"Durée de la nuit: "}
+                    KeyBoardType={"numeric"}
+                    onChange={setDureeNuit}
+                    style={styles.input}
+                    dataName={""}
+                />
+                <View style={{flex:1, flexDirection: 'row'}}>
+                    <Text>Date de début: </Text>
+                    <EntreeForm
+                        Label={""}
+                        KeyBoardType={"numeric"}
+                        onChange={setDateDebJour}
+                        style={styles.input}
+                        dataName={"JJ"}
+                    />
+                    <Text> / </Text>
+                    <EntreeForm
+                        Label={""}
+                        KeyBoardType={"numeric"}
+                        onChange={setDateMois}
+                        style={styles.input}
+                        dataName={"MM"}
+                    />
+                    <Text> / </Text>
+                    <EntreeForm
+                        Label={""}
+                        KeyBoardType={"numeric"}
+                        onChange={setDateDebAnnee}
+                        style={styles.input}
+                        dataName={"AAAA"}
+                    />
+                    <Text> : </Text>
+                    <EntreeForm
+                        Label={""}
+                        KeyBoardType={"numeric"}
+                        onChange={setHeureDeb}
+                        style={styles.input}
+                        dataName={"Heures"}
+                    />
+                    <Text> : </Text>
+                    <EntreeForm
+                        Label={""}
+                        KeyBoardType={"numeric"}
+                        onChange={setMinDeb}
+                        style={styles.input}
+                        dataName={"Mins"}
+                    />
+                </View>
+                <EntreeForm
+                    Label={"Probabilité d'apparition des pouvoirs: "}
+                    KeyBoardType={"numeric"}
+                    onChange={setProbaPouv}
+                    style={styles.input}
+                />
+                <EntreeForm
+                    Label={"Probabilité d'apparition des loups: "}
+                    KeyBoardType={"numeric"}
+                    onChange={setProbaLoup}
+                    style={styles.input}
+                />
+                <View style={{flex:1, flexDirection: 'row'}}>
+                    <SizedButton
+                    buttonLabel={"Créer la partie"}
+                    onPress={() => creationPartie()}
+                    size={"small"}
+                    buttonLabelStyle={styles.selectionButton}
+                    buttonStyle={styles.selectionButtonLabel}
+                    />
+                </View>
+                
             </View>
-        </View>
         
         </SafeAreaView>
     );
 }
 
 const styles = StyleSheet.create({
+    centeredView: {
+        flex: 1,
+        justifyContent: 'center',
+        alignItems: 'center',
+        marginTop: 22,
+      },
+      modalView: {
+        margin: 20,
+        backgroundColor: 'white',
+        borderRadius: 20,
+        padding: 35,
+        alignItems: 'center',
+        shadowColor: '#000',
+        shadowOffset: {
+          width: 0,
+          height: 2,
+        },
+        shadowOpacity: 0.25,
+        shadowRadius: 4,
+        elevation: 5,
+      },
+      button: {
+        borderRadius: 20,
+        padding: 10,
+        elevation: 2,
+      },
+      buttonClose: {
+        backgroundColor: '#2196F3',
+      },
+      textStyle: {
+        color: 'white',
+        fontWeight: 'bold',
+        textAlign: 'center',
+      },
+      modalText: {
+        marginBottom: 15,
+        textAlign: 'center',
+      },
     selectionButtonLabel: {
         backgroundColor: "#4f7c7b",
         borderColor: "#000000",
@@ -167,6 +273,7 @@ const styles = StyleSheet.create({
         color: "#000000",
       },
     input : {
+        textAlign: "center",
         borderWidth: 1,
         height: 40,
         width: 50,
