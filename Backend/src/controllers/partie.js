@@ -9,11 +9,17 @@ const partie = require("../models/partie");
 module.exports = {
   async creerPartie(req, res) {
     const data = JSON.parse(req.body.data);
-    const date = new Date(Date.UTC(parseInt(data.dateDeb.substring(6,10)),
-    parseInt(data.dateDeb.substring(3,5))-1,
-    parseInt(data.dateDeb.substring(0,2)),
-    parseInt(data.dateDeb.substring(11,13))-1,
-    parseInt(data.dateDeb.substring(14,16))-1, 0, 0));
+    const date = new Date(
+      Date.UTC(
+        data.dateDebAnnee,
+        data.dateDebMois - 1,
+        data.dateDebJour,
+        data.HeureDeb,
+        data.MinDeb,
+        0,
+        0));
+      console.log(date)
+      console.log(data)
     await partie.create({
         nbJoueur: data.nbJoueur,
         dureeJour: data.dureeJour,
