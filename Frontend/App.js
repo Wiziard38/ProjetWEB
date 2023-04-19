@@ -52,7 +52,7 @@ export default function App() {
 
   return (
       <View style={styles.container}>
-        {token ? (
+        {!token ? (
           // If no token (user non connected)
           <LoginForm
             onConnect={connect}
