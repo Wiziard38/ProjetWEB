@@ -9,16 +9,17 @@ const config = require('../config');
 const {BACKEND} = config;
 
 export default function CreateNewGame() {
-    const [nbJoueur, setNbJoueur] = useState("");
-    const [dureeJour, setDureeJour] = useState("");
-    const [dureeNuit, setDureeNuit] = useState("");
-    const [dateDebJour, setDateDebJour] = useState("");
-    const [dateDebMois, setDateMois] = useState("");
-    const [dateDebAnnee, setDateDebAnnee] = useState("");
-    const [HeureDeb, setHeureDeb] = useState("");
-    const [MinDeb, setMinDeb] = useState("");
-    const [probaPouv, setProbaPouv] = useState("");
-    const [probaLoup, setProbaLoup] = useState("");
+    const dateAct = new Date();
+    const [nbJoueur, setNbJoueur] = useState("5");
+    const [dureeJour, setDureeJour] = useState("14");
+    const [dureeNuit, setDureeNuit] = useState("10");
+    const [dateDebJour, setDateDebJour] = useState(dateAct.getDay().toString() + 1);
+    const [dateDebMois, setDateMois] = useState(dateAct.getMonth().toString());
+    const [dateDebAnnee, setDateDebAnnee] = useState(dateAct.getFullYear().toString());
+    const [HeureDeb, setHeureDeb] = useState("8");
+    const [MinDeb, setMinDeb] = useState("0");
+    const [probaPouv, setProbaPouv] = useState("0");
+    const [probaLoup, setProbaLoup] = useState("0.3");
     const [modalVisible, setModalVisible] = useState(false);
     const [textError, setTextError] = useState("");
 
