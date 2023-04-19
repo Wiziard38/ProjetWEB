@@ -3,20 +3,33 @@ stages:                 # Les étapes associées au projet.
   - test                # tests avec supertest
   - deploy              # Deploiement
 
-lint-js:                # Vérification de la qualité du code javascript
+lint-js-front:                # Vérification de la qualité du code javascript pour le front
   stage: lint           # Dans l'étape lint (s'exécutera en parallèle de lint-html-css)
   tags:
     - docker
   image: node
   script:
     # install eslint
-    - cd backendsqlite && npm install --save-dev eslint-config-standard
-    #- cd backendsqlite && npm i
+    - cd Frontend && npm install --save-dev eslint-config-standard
     # Run eslint
-    - npx eslint src/*/*.js > ../js_report.txt
+    - find . -name "*.js" -type f | xargs npx eslint > ../js_report_front.txt
   artifacts:            # Le rapport sera disponible pour d'autres jobs
     paths:
-      - js_report.txt
+      - js_report_front.txt
+
+lint-js-back:                # Vérification de la qualité du code javascript pour le front
+  stage: lint           # Dans l'étape lint (s'exécutera en parallèle de lint-html-css)
+  tags:
+    - docker
+  image: node
+  script:
+    # install eslint
+    - cd Frontend && npm install --save-dev eslint-config-standard
+    # Run eslint
+    - find . -name "*.js" -type f | xargs npx eslint > ../js_report_back.txt
+  artifacts:            # Le rapport sera disponible pour d'autres jobs
+    paths:
+      - js_report_back.txt
 
 
 # jobcypress:
@@ -76,21 +89,23 @@ lint-js:                # Vérification de la qualité du code javascript
 #     - dpl --provider=scalingo --app=$SCALINGO_APP_NAME --api-token=$SCALINGO_API_TOKEN --region=$SCALINGO_REGION --branch=refs/heads/main
 #   when: on_success
 
-# badges:
-#   stage: deploy
-#   before_script:
-#     - chmod +x backendsqlite/genere_badges.sh
-#   script:
-#     # The code cannot be run on a single line so we use a shell script.
-#     - ./backendsqlite/genere_badges.sh
-#   dependencies:
-#     - lint-js
-#     - jobcypress
-#     - jobsuppertest
-#   artifacts:
-#     paths:
-#       # These svg will be used by gitlab for displaying badges.
-#       - js_lint.svg
-#       - Jtests.svg
-#       - cy_tests.svg
-#   when: always      # Et quoiqu'il arrive la génération des badges devra se faire.
+badges:
+  stage: deploy
+  before_script:
+    - chmod +x genere_badges.sh
+  script:
+    # The code cannot be run on a single line so we use a shell script.
+    - ./genere_badges.sh
+  dependencies:
+    - lint-js-front
+    - lint-js-back
+    # - jobcypress
+    # - jobsuppertest
+  artifacts:
+    paths:
+      # These svg will be used by gitlab for displaying badges.
+      - js_lint_front.svg
+      - js_lint_back.svg
+      # - Jtests.svg
+      # - cy_tests.svg
+  when: always      # Et quoiqu'il arrive la génération des badges devra se faire.
