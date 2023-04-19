@@ -6,11 +6,12 @@ import SizedText from "./SizedText";
 const config = require("../config");
 const { BACKEND } = config;
 
-export default function ListNewGames() {
+export default function ListMyGames() {
   const [parties, setParties] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
+    // TODO, uniquement parties auxquelles joueur X participe
     fetch(`${BACKEND}/partie`, {
       headers: {
         "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
@@ -21,7 +22,7 @@ export default function ListNewGames() {
       .catch((error) => console.log(error));
   }, []);
 
-  function joinNewGame() {
+  function joinMyGame() {
     // TODO
 
     console.log(selectedId);
@@ -40,7 +41,7 @@ export default function ListNewGames() {
     <SafeAreaView style={{ backgroundColor: "white" }}>
       <View style={styles.container}>
         <SizedText
-          label={"Liste des parties que vous pouvez rejoindre :"}
+          label={"Liste des parties auxquelles vous participez déjà : (TODO)"}
           size={"large"}
           textStyle={styles.title}
         />
@@ -48,8 +49,8 @@ export default function ListNewGames() {
           parties={parties}
           selectedId={selectedId}
           setSelectedId={setSelectedId}
-          onPress={joinNewGame}
-          onPressLabel={"Je rejoins !"}
+          onPress={joinMyGame}
+          onPressLabel={"Je lance la partie"}
         />
       </View>
     </SafeAreaView>

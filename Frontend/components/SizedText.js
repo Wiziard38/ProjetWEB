@@ -2,8 +2,7 @@ import { View, Text, Dimensions } from "react-native";
 
 const { width } = Dimensions.get("window");
 
-export default function Sizedtext({ label, size, textStyle }) {
-
+export default function SizedText({ label, size, textStyle }) {
   let textSize;
 
   // Set textSize based on size prop

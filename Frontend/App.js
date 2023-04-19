@@ -6,6 +6,7 @@ import MenuSelection from "./components/MenuSelection";
 import ConnectedHeader from "./components/ConnectedHeader";
 import CreateNewGame from "./components/CreateNewGame";
 import ListNewGames from "./components/ListNewGames";
+import ListMyGames from "./components/ListMyGames";
 const config = require("./config.js");
 const { BACKEND } = config;
 
@@ -52,39 +53,39 @@ export default function App() {
   }
 
   return (
-      <View style={styles.container}>
-        {!token ? (
-          // If no token (user non connected)
-          <LoginForm
-            onConnect={connect}
-            errorTextValue={errorTextValue}
-            setErrorTextValue={setErrorTextValue}
-            loggingState={loggingState}
-            setLoggingState={setLoggingState}
+    <View style={styles.container}>
+      {!token ? (
+        // If no token (user non connected)
+        <LoginForm
+          onConnect={connect}
+          errorTextValue={errorTextValue}
+          setErrorTextValue={setErrorTextValue}
+          loggingState={loggingState}
+          setLoggingState={setLoggingState}
+        />
+      ) : (
+        // If token (user connected)
+        <View style={styles.container}>
+          <ConnectedHeader
+            username={connectedUsername}
+            onDisconnect={disconnect}
+            menuState={menuState}
+            onMenu={() => setMenuState(0)}
           />
-        ) : (
-          // If token (user connected)
-          <View style={styles.container}>
-            <ConnectedHeader
-              username={connectedUsername}
-              onDisconnect={disconnect}
-              menuState={menuState}
-              onMenu={() => setMenuState(0)}
-            />
 
-            {menuState === 0 ? (
-              <MenuSelection onMenuChoose={setMenuState} />
-            ) : menuState === 1 ? (
-              <ListNewGames/>
-            ) : menuState === 2 ? (
-              <Text>Je consulte mes parties</Text>
-            ) : (
-              <CreateNewGame/>
-            )}
-          </View>
-        )}
-        <StatusBar />
-      </View>
+          {menuState === 0 ? (
+            <MenuSelection onMenuChoose={setMenuState} />
+          ) : menuState === 1 ? (
+            <ListNewGames />
+          ) : menuState === 2 ? (
+            <ListMyGames />
+          ) : (
+            <CreateNewGame />
+          )}
+        </View>
+      )}
+      <StatusBar />
+    </View>
   );
 }
 

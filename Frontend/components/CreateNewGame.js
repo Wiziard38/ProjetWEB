@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { StyleSheet, View, SafeAreaView, Text,TextInput, Modal, Pressable} from "react-native";
-import Sizedtext from "./SizedText";
+import SizedText from "./SizedText";
 import HeaderButton from "./HeaderButton.js";
 import SizedButton from "./SizedButton";
 import EntreeForm from "./EntreeForm";

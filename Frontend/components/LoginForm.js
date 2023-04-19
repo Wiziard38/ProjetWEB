@@ -7,7 +7,7 @@ import {
 } from "react-native";
 import { useState, useEffect } from "react";
 import { manipulateAsync } from "expo-image-manipulator";
-import Sizedtext from "./SizedText";
+import SizedText from "./SizedText";
 import SizedButton from "./SizedButton.js";
 
 export default function LoginForm(props) {
@@ -64,13 +64,13 @@ export default function LoginForm(props) {
         {/* Login Form */}
         <View style={styles.formContainer}>
           <View style={styles.formBackground}>
-            <Sizedtext
+            <SizedText
               label={descriptionText}
               size="xlarge"
               textStyle={styles.loginTitle}
             />
 
-            <Sizedtext
+            <SizedText
               label={props.errorTextValue}
               size="small"
               textStyle={styles.errorMessage}
