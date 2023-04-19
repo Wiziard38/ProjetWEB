@@ -24,52 +24,52 @@ export default function CreateNewGame() {
 
     function verificationDonnee() {
         console.log(parseInt(nbJoueur))
-        if (parseInt(nbJoueur)<= 0 || parseInt(nbJoueur) >25 || isNaN(parseInt(nbJoueur))) {
+        if (parseInt(nbJoueur)<= 4 || parseInt(nbJoueur) >20 || nbJoueur.replace(",",".").indexOf(".") != -1) {
             setTextError("Le nombre de joueur doit être un entier compris entre 1 et 25");
             setModalVisible(true)
             return false;
         }
-        if (parseInt(dureeJour)<= 0 || parseInt(dureeJour) >24 || isNaN(parseInt(dureeJour))) {
+        if (dureeJour.replace(",",".").indexOf(".") != -1) {
             setTextError("La durée du jour ne doît pas être nulle et dépasser 23h");
             setModalVisible(true)
             return false;
         }
-        if (parseInt(dureeNuit)<= 0 || parseInt(dureeNuit) >24 || isNaN(parseInt(dureeNuit))) {
+        if (dureeNuit.replace(",",".").indexOf(".") != -1) {
             setTextError("La durée de la nuit ne doît pas être nulle et dépasser 23h");
             setModalVisible(true)
             return false;
         }
-        if (parseInt(dateDebAnnee)< 2023 || isNaN(parseInt(dateDebAnnee))) {
+        if (parseInt(dateDebAnnee)< 2023 || dateDebAnnee.replace(",",".").indexOf(".") != -1) {
             setTextError("L'année de début rentrée est incorect");
             setModalVisible(true)
             return false;
         }
-        if (parseInt(dateDebMois)<= 1 || parseInt(nbJoueur) >12 || isNaN(parseInt(nbJoueur))) {
+        if (parseInt(dateDebMois)<= 1 || parseInt(nbJoueur) >12 || dateDebMois.replace(",",".").indexOf(".") != -1) {
             setTextError("Le mois de début rentrée doît être un entier compris entre 1 et 12");
             setModalVisible(true)
             return false;
         }
-        if (parseInt(dateDebJour)<= 0 || parseInt(dateDebJour) >25 || isNaN(parseInt(dateDebJour))){
+        if (parseInt(dateDebJour)<= 0 || parseInt(dateDebJour) >25 || dateDebJour.replace(",",".").indexOf(".") != -1){
             setTextError("Le jour de début rentrée doît être un entier compris entre 1 et 31");
             setModalVisible(true)
             return false;
         }
-        if (parseInt(HeureDeb)< 0 || parseInt(HeureDeb) >24 || isNaN(parseInt(HeureDeb))) {
+        if (parseInt(HeureDeb)< 0 || parseInt(HeureDeb) >24 || HeureDeb.replace(",",".").indexOf(".") != -1) {
             setTextError("L'heure de début doît être un entier entre 0 et 23");
             setModalVisible(true)
             return false;
         }
-        if (parseInt(MinDeb)< 0 || parseInt(MinDeb) >59 || isNaN(parseInt(MinDeb))) {
+        if (parseInt(MinDeb)< 0 || parseInt(MinDeb) >59 || MinDeb.replace(",",".").indexOf(".") != -1) {
             setTextError("Les minutes de début doît être un entier entre 0 et 59");
             setModalVisible(true)
             return false;
         }
-        if (parseFloat(probaLoup)< 0 || parseFloat(probaLoup) >1 || isNaN(parseFloat(probaLoup))) {
+        if (parseFloat(probaLoup)< 0 || parseFloat(probaLoup) >1) {
             setTextError("La proba d'apparition des loups garoux doît être un nombre flottant compris entre 0 et 1");
             setModalVisible(true)
             return false;
         }
-        if (parseInt(probaPouv)< 0 || parseInt(probaPouv) >1 || isNaN(parseInt(probaPouv))) {
+        if (parseInt(probaPouv)< 0 || parseInt(probaPouv) >1 || probaPouv) {
             setTextError("La proba d'apparition des pouvoir doît être un nombre flottant compris entre 0 et 1");
             setModalVisible(true)
             return false;
