@@ -1,10 +1,10 @@
-const Sequelize = require('sequelize')
-const db = require('./database.js')
-const partie = db.define('partie', {
+const Sequelize = require("sequelize");
+const db = require("./database.js");
+const partie = db.define("partie", {
   id: {
     primaryKey: true,
     type: Sequelize.INTEGER,
-    autoIncrement: true
+    autoIncrement: true,
   },
   nbJoueur: {
     type: Sequelize.INTEGER,
@@ -30,7 +30,6 @@ const partie = db.define('partie', {
     type: Sequelize.FLOAT,
     allowNull: false,
   },
-}
-)
+});
 
-module.exports = partie
+module.exports = partie;

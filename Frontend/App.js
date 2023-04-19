@@ -5,6 +5,7 @@ import LoginForm from "./components/LoginForm";
 import MenuSelection from "./components/MenuSelection";
 import ConnectedHeader from "./components/ConnectedHeader";
 import CreateNewGame from "./components/CreateNewGame";
+import ListNewGames from "./components/ListNewGames";
 const config = require("./config.js");
 const { BACKEND } = config;
 
@@ -74,7 +75,7 @@ export default function App() {
             {menuState === 0 ? (
               <MenuSelection onMenuChoose={setMenuState} />
             ) : menuState === 1 ? (
-              <Text>Je consulte de nouvelles parties</Text>
+              <ListNewGames/>
             ) : menuState === 2 ? (
               <Text>Je consulte mes parties</Text>
             ) : (
