@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { SafeAreaView, StyleSheet, View } from "react-native";
 import ListParties from "./ListParties";
 import SizedText from "./SizedText";
+import { fetchData } from "../utils/fetchData";
 
 const config = require("../config");
 const { BACKEND } = config;
@@ -11,13 +12,8 @@ export default function ListNewGames() {
   const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
-    fetch(`${BACKEND}/partie`, {
-      headers: {
-        "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-      },
-    })
-      .then((res) => res.json())
-      .then((json) => setParties(json))
+    fetchData("partie", "GET")
+      .then((data) => setParties(data))
       .catch((error) => console.log(error));
   }, []);
 

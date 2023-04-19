@@ -8,7 +8,7 @@ const partie = require("../models/partie");
 
 module.exports = {
   async creerPartie(req, res) {
-    const data = JSON.parse(req.body.data);
+    const data = req.body;
     const date = new Date(
       Date.UTC(
         data.dateDebAnnee,
@@ -17,27 +17,27 @@ module.exports = {
         data.HeureDeb,
         data.MinDeb,
         0,
-        0));
-      console.log(date)
-      console.log(data)
+        0
+      )
+    );
+    console.log(data);
     await partie.create({
-        nbJoueur: data.nbJoueur,
-        dureeJour: data.dureeJour,
-        dureeNuit: data.dureeNuit,
-        dateDeb: date,
-        probaPouv: data.probaPouv,
-        probaLoup: data.probaLoup
+      nbJoueur: data.nbJoueur,
+      dureeJour: data.dureeJour,
+      dureeNuit: data.dureeNuit,
+      dateDeb: date,
+      probaPouv: data.probaPouv,
+      probaLoup: data.probaLoup,
     });
-    res.json({status: true})
+    res.json({ status: true });
   },
   async listParties(req, res) {
     try {
       const allRecords = await partie.findAll();
-      console.log(allRecords)
       res.json(allRecords);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: 'Internal server error' });
+      res.status(500).json({ error: "Internal server error" });
     }
   },
 };

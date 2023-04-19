@@ -4,28 +4,6 @@ const has = require("has-keys");
 const CodeError = require("../util/CodeError.js");
 const bcrypt = require("bcrypt");
 const jws = require("jws");
-// require('mandatoryenv').load(['TOKENSECRET'])
-
-// async function tokenAnalyse (req) {
-//   const { 'x-access-token': token } = req.headers
-//   // const { user } = req.params
-//   const valide = jws.verify(token, 'HS256', 'The worst secret ever')
-
-//   if (valide) {
-//     const { payload } = jws.decode(token)
-//     if (await userModel.findOne({ where: { username: payload } }) != null) {
-//       return payload
-//     }
-//   }
-// }
-
-// async function tokenAnalyseUser (req, user) {
-//   const usr = await tokenAnalyse(req)
-//   if (usr === user) {
-//     return true
-//   }
-//   return false
-// }
 
 module.exports = {
   async login(req, res) {
@@ -40,10 +18,20 @@ module.exports = {
 
       if (isPasswordValid) {
         // Password is correct, generate and return token
-        res.json({
-          status: true,
-          data: { username: user.username, token: "test" },
-        });
+        const token = jws.sign(
+          {
+            header: { alg: "HS256" },
+            payload: user.username,
+            secret: process.env.JWS_SECRET,
+          },
+          {
+            expiresIn: process.env.JWS_EXPIRES_IN,
+          }
+        );
+
+        res
+          .status(201)
+          .json({ status: true, data: { token, username: user.username } });
       } else {
         // Password is incorrect
         res.status(401).json({ status: false, message: "Invalid password" }); // TODO change for security
@@ -64,12 +52,10 @@ module.exports = {
       password.length < 1 ||
       password.length > 60
     ) {
-      res
-        .status(401)
-        .json({
-          status: false,
-          message: "Username or password length invalid",
-        });
+      res.status(401).json({
+        status: false,
+        message: "Username or password length invalid",
+      });
     }
 
     // check if username already exists
