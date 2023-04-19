@@ -69,7 +69,7 @@ export default function CreateNewGame() {
             setModalVisible(true)
             return false;
         }
-        if (parseInt(probaPouv)< 0 || parseInt(probaPouv) >1 || probaPouv) {
+        if (parseFloat(probaPouv)< 0 || parseFloat(probaPouv) >1 || probaPouv) {
             setTextError("La proba d'apparition des pouvoir doît être un nombre flottant compris entre 0 et 1");
             setModalVisible(true)
             return false;
