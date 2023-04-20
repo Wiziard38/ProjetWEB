@@ -6,6 +6,7 @@ export default function MenuSelection({ onMenuChoose }) {
     <View style={styles.menu}>
       <GameSelectionButton label={"Consulter de nouvelles parties"} onPress={() => onMenuChoose(1)} />
       <GameSelectionButton label={"Consulter mes parties"} onPress={() => onMenuChoose(2)} />
+      <GameSelectionButton label={"Créer une nouvelle partie"} onPress={() => onMenuChoose(3)} />
     </View>
   );
 }

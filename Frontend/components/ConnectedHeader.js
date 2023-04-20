@@ -1,5 +1,5 @@
 import { StyleSheet, View, SafeAreaView } from "react-native";
-import Sizedtext from "./SizedText";
+import SizedText from "./SizedText";
 import HeaderButton from "./HeaderButton.js";
 
 export default function ConnectedHeader({
@@ -13,14 +13,14 @@ export default function ConnectedHeader({
       <View style={styles.header}>
         <View style={styles.container}>
           {/* Greetings */}
-          <Sizedtext
+          <SizedText
             label="Bonjour "
             size="large"
             textStyle={styles.welcomeText}
           />
 
           {/* Connected user's username */}
-          <Sizedtext
+          <SizedText
             label={username}
             size="large"
             textStyle={styles.welcomeText}
