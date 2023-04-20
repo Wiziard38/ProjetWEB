@@ -1,5 +1,7 @@
+import React from 'react';
 import { StyleSheet, View } from "react-native";
 import SizedButton from "./SizedButton";
+import PropTypes from "prop-types";
 
 export default function GameSelectionButton({ label, onPress }) {
   return (
@@ -34,3 +36,8 @@ const styles = StyleSheet.create({
     color: "#000000",
   },
 });
+
+GameSelectionButton.propTypes = {
+  label: PropTypes.string.isRequired,
+  onPress: PropTypes.func.isRequired,
+};
