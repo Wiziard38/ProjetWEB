@@ -22,6 +22,8 @@ export default function App() {
       socket.emit('eazy', 'bin voui c ez');
     })
   });
+
+  
   const [token, setToken] = useState(null);
   const [loggingState, setLoggingState] = useState(true);
   const [menuState, setMenuState] = useState(0);

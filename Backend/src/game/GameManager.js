@@ -1,5 +1,18 @@
 const io = require('../ws/websockets.js')
 
+const Team = {
+    WEREWOLF: 0,
+    HUMAN: 1,
+    DEATH: 2
+}
+
+const Roles = {
+    CONTAMINATION: 0,
+    SPIRITISM: 1,
+    INSOMNIA: 2,
+    PSYCHIC: 3
+}
+
 const GameManager = {
     dir: new Map(),
 
@@ -31,6 +44,10 @@ const GameManager = {
     //     game.delete(playerId);
     //   }
     // },
+    valideUser(token, gameId) {
+        return true;
+    },
+
     joinGame: function(playerId, gameId) {
 
     },
@@ -38,13 +55,25 @@ const GameManager = {
     createGame: function (gameId) {
         const namespace = io.of('/' + gameId);
 
+        namespace.use((socket, next) => {
+            const token = socket.handshake.auth.token;
+
+            // Check if the user is member of the game. If not, close the socket.
+            if(this.valideUser(token, gameId) === false) {
+                socket.disconnect();
+            }
+
+            next();
+        })
+
         namespace.on('connection', (socket) => {
-            console.log('utilisateur se connecte dans ')
+            console.log('utilisateur se connecte dans ' + gameId);
         })
 
         namespace.on('disconnect', (socket) => {
             // TODO supprimer l'user d'ici
         })
+
         setTimeout( () => {
 
             this.startGame(gameId);
@@ -80,5 +109,7 @@ const GameManager = {
         delete io.npst[gameId];
     }
 }
+
+GameManager.startGame('0');
 
 module.exports = GameManager;
