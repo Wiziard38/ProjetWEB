@@ -1,6 +1,7 @@
 const Sequelize = require("sequelize");
 const db = require("./database.js");
-const partie = db.define("partie", {
+
+const games = db.define("games", {
   id: {
     primaryKey: true,
     type: Sequelize.INTEGER,
@@ -32,4 +33,4 @@ const partie = db.define("partie", {
   },
 });
 
-module.exports = partie;
+module.exports = games;

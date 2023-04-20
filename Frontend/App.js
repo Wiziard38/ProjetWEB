@@ -76,9 +76,9 @@ export default function App() {
           {menuState === 0 ? (
             <MenuSelection onMenuChoose={setMenuState} />
           ) : menuState === 1 ? (
-            <ListNewGames />
+            <ListNewGames token={token} />
           ) : menuState === 2 ? (
-            <ListMyGames />
+            <ListMyGames token={token} />
           ) : (
             <CreateNewGame />
           )}

@@ -6,15 +6,16 @@ import SizedText from "./SizedText";
 const config = require("../config");
 const { BACKEND } = config;
 
-export default function ListMyGames() {
+export default function ListMyGames({token}) {
   const [parties, setParties] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
     // TODO, uniquement parties auxquelles joueur X participe
-    fetch(`${BACKEND}/partie`, {
+    fetch(`${BACKEND}/game`, {
       headers: {
         "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+        "x-access-token": token
       },
     })
       .then((res) => res.json())
@@ -26,7 +27,7 @@ export default function ListMyGames() {
     // TODO
 
     console.log(selectedId);
-    // fetch(`${BACKEND}/partie/${selectedId}`, {
+    // fetch(`${BACKEND}/game/${selectedId}`, {
     //   method: "POST",
     //   headers: {
     //     "content-type": "application/x-www-form-urlencoded; charset=UTF-8",

@@ -93,7 +93,7 @@ export default function CreateNewGame() {
                 probaLoup: parseFloat(probaLoup),
             };
             console.log(data)
-            fetch(`${BACKEND}/partie`, {
+            fetch(`${BACKEND}/game`, {
                 method: "POST",
                 headers: {"content-type": "application/x-www-form-urlencoded; charset=UTF-8"},
                 body: "data=" + JSON.stringify(data)

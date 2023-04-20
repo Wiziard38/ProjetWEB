@@ -6,34 +6,33 @@ import SizedText from "./SizedText";
 const config = require("../config");
 const { BACKEND } = config;
 
-export default function ListNewGames() {
+export default function ListNewGames({token}) {
   const [parties, setParties] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
-    fetch(`${BACKEND}/partie`, {
+    fetch(`${BACKEND}/game/newgame`, {
       headers: {
         "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+        "x-access-token": token
       },
     })
-      .then((res) => res.json())
-      .then((json) => setParties(json))
-      .catch((error) => console.log(error));
+    .then((res) => res.json())
+    .then((json) => setParties(json))
+    .catch((error) => console.log(error));
   }, []);
 
   function joinNewGame() {
-    // TODO
-
-    console.log(selectedId);
-    // fetch(`${BACKEND}/partie/${selectedId}`, {
-    //   method: "POST",
-    //   headers: {
-    //     "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-    //   },
-    // })
-    //   .then((res) => res.json())
-    //   .then((json) => setParties(json))
-    //   .catch((error) => console.log(error));
+    fetch(`${BACKEND}/game/newgame/${selectedId}`, {
+      method: "POST",
+      headers: {
+        "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
+        "x-access-token": token
+      },
+    })
+    .then((res) => res.json())
+    //.then((json) => setParties(json))
+    .catch((error) => console.log(error));
   }
 
   return (
