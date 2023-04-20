@@ -1,4 +1,6 @@
+import React from "react";
 import { View, Text, Dimensions } from "react-native";
+import PropTypes from "prop-types";
 
 const { width } = Dimensions.get("window");
 
@@ -24,3 +26,10 @@ export default function SizedText({ label, size, textStyle }) {
     </View>
   );
 }
+
+SizedText.propTypes = {
+  label: PropTypes.string.isRequired,
+  size: PropTypes.oneOf(["mini", "small", "normal", "large", "xlarge"])
+    .isRequired,
+  textStyle: PropTypes.object,
+};
