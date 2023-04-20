@@ -1,4 +1,4 @@
-import React from "react";
+import { React } from "react";
 import { StyleSheet, View, SafeAreaView } from "react-native";
 import SizedText from "./SizedText";
 import HeaderButton from "./HeaderButton.js";

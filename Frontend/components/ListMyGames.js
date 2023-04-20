@@ -3,11 +3,12 @@ import { SafeAreaView, StyleSheet, View } from "react-native";
 import ListParties from "./ListParties";
 import SizedText from "./SizedText";
 import { fetchData } from "../utils/fetchData";
+import PropTypes from "prop-types";
 
 // const config = require("../config");
 // const { BACKEND } = config;
 
-export default function ListMyGames() {
+export default function ListMyGames({ disconnect }) {
   const [parties, setParties] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
 
@@ -61,3 +62,7 @@ const styles = StyleSheet.create({
     margin: 15,
   },
 });
+
+ListMyGames.propTypes = {
+  onDisconnect: PropTypes.func.isRequired,
+};

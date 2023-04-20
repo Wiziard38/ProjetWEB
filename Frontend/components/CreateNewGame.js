@@ -10,8 +10,9 @@ import {
 import { fetchData } from "../utils/fetchData";
 import SizedButton from "./SizedButton";
 import EntreeForm from "./EntreeForm";
+import PropTypes from "prop-types";
 
-export default function CreateNewGame() {
+export default function CreateNewGame({ disconnect }) {
   const [nbJoueur, setNbJoueur] = useState("");
   const [dureeJour, setDureeJour] = useState("");
   const [dureeNuit, setDureeNuit] = useState("");
@@ -342,3 +343,7 @@ const styles = StyleSheet.create({
     borderColor: "white",
   },
 });
+
+CreateNewGame.propTypes = {
+  onDisconnect: PropTypes.func.isRequired,
+};

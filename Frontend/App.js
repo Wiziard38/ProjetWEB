@@ -40,7 +40,9 @@ export default function App() {
             .then(() => console.log("Token stored successfully"))
             .catch((error) => console.log(error));
           if (!loggingState) {
-            window.alert(`Bienvenue ${connectedUsername}, vous avez été inscrit.`);
+            window.alert(
+              `Bienvenue ${connectedUsername}, vous avez été inscrit.`
+            );
           }
         } else {
           setErrorTextValue("Server error, should not happen");
@@ -61,6 +63,9 @@ export default function App() {
     }
     setMenuState(0);
     setToken(null);
+    setLoggingState(true);
+    setErrorTextValue("");
+    setConnectedUsername("");
   }
 
   return (
@@ -76,24 +81,24 @@ export default function App() {
         />
       ) : (
         // If token (user connected)
-        <View style={styles.container}>
-          <ConnectedHeader
-            username={connectedUsername}
-            onDisconnect={disconnect}
-            menuState={menuState}
-            onMenu={() => setMenuState(0)}
-          />
+          <View style={styles.container}>
+            <ConnectedHeader
+              username={connectedUsername}
+              onDisconnect={disconnect}
+              menuState={menuState}
+              onMenu={() => setMenuState(0)}
+            />
 
-          {menuState === 0 ? (
-            <MenuSelection onMenuChoose={setMenuState} />
-          ) : menuState === 1 ? (
-            <ListNewGames />
-          ) : menuState === 2 ? (
-            <ListMyGames />
-          ) : (
-            <CreateNewGame />
-          )}
-        </View>
+            {menuState === 0 ? (
+              <MenuSelection onMenuChoose={setMenuState} />
+            ) : menuState === 1 ? (
+              <ListNewGames onDisconnect={disconnect} />
+            ) : menuState === 2 ? (
+              <ListMyGames onDisconnect={disconnect} />
+            ) : (
+              <CreateNewGame onDisconnect={disconnect} />
+            )}
+          </View>
       )}
       <StatusBar />
     </View>
