@@ -26,7 +26,7 @@ lint-js-back: # Vérification de la qualité du code javascript pour le front
     # install eslint
     - cd Backend && npm i
     # Run eslint
-    - find . -name "*.js" -type f -not -path "./node_modules/*" -not -path "./cypress/*" -not -path "**/__tests__/*" | xargs npx eslint ../js_report_back.txt
+    - find . -name "*.js" -type f -not -path "./node_modules/*" -not -path "./cypress/*" -not -path "**/__tests__/*" | xargs npx eslint > ../js_report_back.txt
   artifacts: # Le rapport sera disponible pour d'autres jobs
     paths:
       - js_report_back.txt
