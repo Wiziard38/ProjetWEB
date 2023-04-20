@@ -14,12 +14,12 @@ const config = require("./config.js");
 const { BACKEND } = config;
 
 export default function App() {
-  const socket = useRef(SocketIOClient('http://localhost:3000')).current;
+  const socket = useRef(SocketIOClient('http://localhost:3000/0')).current;
   
   useEffect(() => {
     socket.on('connect', () => {
       console.log('Connected to server');
-      socket.emit('eazy', 'bin voui c ez');
+      //socket.emit('eazy', 'bin voui c ez');
     })
   });
 

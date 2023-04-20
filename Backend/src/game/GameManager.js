@@ -1,5 +1,5 @@
 const io = require('../ws/websockets.js')
-
+const initNamespace = require('./Namespace.js')
 const Team = {
     WEREWOLF: 0,
     HUMAN: 1,
@@ -23,93 +23,59 @@ const GameManager = {
     removePlayer: function (playerId) {
         this.dir.delete(playerId);
     },
-    // addPlayer: function(gameId, player) {
-    //   const game = this.dir.get(gameId);
-    //   const playerId = player.getId();
-    //   if(game !== undefined) {
-    //     // A game with that id has been found
-    //     game.set(playerId)
-    //   } else {
-    //     // No game with this id
-    //     const arr = new Map();
-    //     arr.set(playerId)
-    //     this.dir.set(gameId, arr)
-    //   }
-    // },
 
-    // removePlayer: function(gameId, player) {
-    //   const game = this.dir.get(gameId);
-    //   if(game !== undefined) {
-    //     const playerId = player.getId();
-    //     game.delete(playerId);
-    //   }
-    // },
-    valideUser(token, gameId) {
+    validUser: function (token, gameID) {
         return true;
     },
 
-    joinGame: function(playerId, gameId) {
-
+    validUserTeam: function(token, gameID, team) {
+        return true;
     },
 
-    createGame: function (gameId) {
-        const namespace = io.of('/' + gameId);
+    validUserRole: function(token, gameID, role) {
+        return true;
+    },
 
-        namespace.use((socket, next) => {
-            const token = socket.handshake.auth.token;
-
-            // Check if the user is member of the game. If not, close the socket.
-            if(this.valideUser(token, gameId) === false) {
-                socket.disconnect();
-            }
-
-            next();
-        })
-
-        namespace.on('connection', (socket) => {
-            console.log('utilisateur se connecte dans ' + gameId);
-        })
-
-        namespace.on('disconnect', (socket) => {
-            // TODO supprimer l'user d'ici
-        })
-
+    createGame: function (gameID) {
+        initNamespace(gameID);
         setTimeout( () => {
 
-            this.startGame(gameId);
+            this.startGame(gameID);
         }, 4000 /* durée avant le début de la game */);
     },
 
-    startGame: function (gameId) {
-        // const game = this.dir.get(gameId);
-        io.of('/' + gameId).emit('begin', 'La partie commence');
+    startGame: function (gameID) {
+        // const game = this.dir.get(gameID);
+        console.log("La partie commence : " + gameID)
+        io.of('/' + gameID).emit('begin', 'La partie commence');
         const gameUpdate = setInterval(() => {
-            this.changementJour(gameId);
+            this.changementJour(gameID);
 
             setTimeout(() => {
-                this.changementNuit(gameId);
+                this.changementNuit(gameID);
             }, 1000 /* durée d'un jour */);
         }, 5000 /* durée jour + nuit */)
 
     },
 
-    changementJour: function (gameId) {
+    changementJour: function (gameID) {
         // Signale qui indique le changement de jour à nuit
-        io.of('/' + gameId).emit('jour', 'changement nuit -> jour');
+        io.of('/' + gameID).emit('jour', 'changement nuit -> jour');
+        console.log("Changement vers le jour : " + gameID)
     },
 
-    changementNuit: function (gameId) {
-        io.of('/' + gameId).emit('nuit', 'on va faire dodo');
+    changementNuit: function (gameID) {
+        io.of('/' + gameID).emit('nuit', 'on va faire dodo');
+        console.log("Changement vers la nuit : " + gameID)
+
     },
 
-    stopGame: function (gameId) {
+    stopGame: function (gameID) {
         // Remove the namespace
-        io.of('/' + gameId).removeAllListeners();
+        io.of('/' + gameID).removeAllListeners();
         // delete
-        delete io.npst[gameId];
+        delete io.npst[gameID];
     }
 }
-
-GameManager.startGame('0');
 
 module.exports = GameManager;
