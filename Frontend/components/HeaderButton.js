@@ -1,5 +1,7 @@
+import React from "react";
 import { StyleSheet, View } from "react-native";
 import SizedButton from "./SizedButton";
+import PropTypes from "prop-types";
 
 export default function HeaderButton({ label, onPress }) {
   return (
@@ -32,3 +34,8 @@ const styles = StyleSheet.create({
     color: "white",
   },
 });
+
+HeaderButton.propTypes = {
+  label: PropTypes.string.isRequired,
+  onPress: PropTypes.func.isRequired,
+};

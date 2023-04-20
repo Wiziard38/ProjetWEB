@@ -11,6 +11,7 @@
   "dependencies": {
     "@bam.tech/react-native-image-resizer": "^3.0.5",
     "@expo/webpack-config": "^18.0.1",
+    "AsyncStorage": "^0.1.5",
     "expo": "~48.0.10",
     "expo-image-manipulator": "~11.1.1",
     "expo-status-bar": "~1.4.4",
@@ -21,7 +22,14 @@
     "socket.io-client": "^4.6.1"
   },
   "devDependencies": {
-    "@babel/core": "^7.20.0"
+    "@babel/core": "^7.20.0",
+    "eslint": "^8.38.0",
+    "eslint-config-prettier": "^8.8.0",
+    "eslint-config-standard": "^17.0.0",
+    "eslint-plugin-import": "^2.27.5",
+    "eslint-plugin-n": "^15.7.0",
+    "eslint-plugin-promise": "^6.1.1",
+    "eslint-plugin-react": "^7.32.2"
   },
   "private": true
 }

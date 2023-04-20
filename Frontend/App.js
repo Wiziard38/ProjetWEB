@@ -1,7 +1,8 @@
 
 import { StatusBar } from "expo-status-bar";
-import { useState, useRef, useEffect } from "react";
-import { StyleSheet, Text, View } from "react-native";
+import { useState, useRef, useEffect, React } from "react";
+import { StyleSheet, View } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoginForm from "./components/LoginForm";
 import MenuSelection from "./components/MenuSelection";
 import ConnectedHeader from "./components/ConnectedHeader";
@@ -45,8 +46,11 @@ export default function App() {
           setErrorTextValue("");
           setConnectedUsername(json.data.username);
           setToken(json.data.token);
+          AsyncStorage.setItem("token", json.data.token)
+            .then(() => console.log("Token stored successfully"))
+            .catch((error) => console.log(error));
           if (!loggingState) {
-            alert(`Bienvenue ${connectedUsername}, vous avez été inscrit.`);
+            window.alert(`Bienvenue ${connectedUsername}, vous avez été inscrit.`);
           }
         } else {
           setErrorTextValue("Server error, should not happen");
@@ -58,7 +62,14 @@ export default function App() {
       });
   }
 
-  function disconnect() {
+  async function disconnect() {
+    try {
+      await AsyncStorage.removeItem("token");
+      console.log("Removed token from storage succesfully");
+    } catch (e) {
+      console.log("Could not remove token from storage");
+    }
+    setMenuState(0);
     setToken(null);
   }
 

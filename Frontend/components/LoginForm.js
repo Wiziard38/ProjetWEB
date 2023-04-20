@@ -1,3 +1,4 @@
+import { useState, useEffect, React } from "react";
 import {
   StyleSheet,
   TextInput,
@@ -5,10 +6,10 @@ import {
   ImageBackground,
   Dimensions,
 } from "react-native";
-import { useState, useEffect } from "react";
 import { manipulateAsync } from "expo-image-manipulator";
 import SizedText from "./SizedText";
 import SizedButton from "./SizedButton.js";
+import PropTypes from "prop-types";
 
 export default function LoginForm(props) {
   const [username, setUsername] = useState("");
@@ -112,7 +113,7 @@ export default function LoginForm(props) {
                 } else if (password.length > 60) {
                   props.setErrorTextValue("Le password est trop long !");
                 } else {
-                  props.onConnect(username, password); //TODO ne pas envoyer le mdp en clair ?
+                  props.onConnect(username, password); // TODO ne pas envoyer le mdp en clair ?
                 }
               }}
             />
@@ -197,3 +198,11 @@ const styles = StyleSheet.create({
     textAlign: "center",
   },
 });
+
+LoginForm.propTypes = {
+  onConnect: PropTypes.func.isRequired,
+  errorTextValue: PropTypes.string.isRequired,
+  setErrorTextValue: PropTypes.func.isRequired,
+  loggingState: PropTypes.bool.isRequired,
+  setLoggingState: PropTypes.func.isRequired,
+};
