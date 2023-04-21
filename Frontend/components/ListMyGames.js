@@ -38,7 +38,7 @@ export default function ListMyGames() {
     <SafeAreaView style={{ backgroundColor: "white" }}>
       <View style={styles.container}>
         <SizedText
-          label={"Liste des parties auxquelles vous participez déjà : (TODO)"}
+          label={"Liste des parties auxquelles vous participez déjà :"}
           size={"large"}
           textStyle={styles.title}
         />
