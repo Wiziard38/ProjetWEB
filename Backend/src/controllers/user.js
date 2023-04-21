@@ -86,6 +86,18 @@ module.exports = {
     }
   },
 
+  async whoami(req, res) {
+    const { token } = req.body;
+    const { payload } = jws.decode(token);
+    const user = await userModel.findOne({ where: { username: payload } })
+
+    if (user != null) {
+      res.status(201).json({ statue: true, username: payload });
+    } else {
+      res.status(401).json({ statue: false, message: "No user found" });
+    }
+  },
+
   // async getToken (req, res) {
   //   const { user } = req.params
   //   console.log(user)

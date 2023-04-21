@@ -1,5 +1,5 @@
 import { StatusBar } from "expo-status-bar";
-import { useState, React } from "react";
+import { useState, React, useEffect } from "react";
 import { StyleSheet, View } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoginForm from "./components/LoginForm";
@@ -8,6 +8,7 @@ import ConnectedHeader from "./components/ConnectedHeader";
 import CreateNewGame from "./components/CreateNewGame";
 import ListNewGames from "./components/ListNewGames";
 import ListMyGames from "./components/ListMyGames";
+import { fetchData } from "./utils/fetchData";
 const config = require("./config.js");
 const { BACKEND } = config;
 
@@ -17,6 +18,18 @@ export default function App() {
   const [menuState, setMenuState] = useState(0);
   const [errorTextValue, setErrorTextValue] = useState("");
   const [connectedUsername, setConnectedUsername] = useState("");
+
+  useEffect(() => {
+    // Si le token existe deja a la connexion
+    AsyncStorage.getItem("token").then((token) => {
+      if (token != null) {
+        setToken(token);
+        fetchData("whoami", "GET")
+          .then((json) => setConnectedUsername(json.username))
+          .catch((error) => console.log(error));
+      }
+    });
+  }, []);
 
   function connect(username, password) {
     const loginURL = loggingState ? `${BACKEND}/login` : `${BACKEND}/signin`;
@@ -81,24 +94,24 @@ export default function App() {
         />
       ) : (
         // If token (user connected)
-          <View style={styles.container}>
-            <ConnectedHeader
-              username={connectedUsername}
-              onDisconnect={disconnect}
-              menuState={menuState}
-              onMenu={() => setMenuState(0)}
-            />
+        <View style={styles.container}>
+          <ConnectedHeader
+            username={connectedUsername}
+            onDisconnect={disconnect}
+            menuState={menuState}
+            onMenu={() => setMenuState(0)}
+          />
 
-            {menuState === 0 ? (
-              <MenuSelection onMenuChoose={setMenuState} />
-            ) : menuState === 1 ? (
-              <ListNewGames onDisconnect={disconnect} />
-            ) : menuState === 2 ? (
-              <ListMyGames onDisconnect={disconnect} />
-            ) : (
-              <CreateNewGame onDisconnect={disconnect} />
-            )}
-          </View>
+          {menuState === 0 ? (
+            <MenuSelection onMenuChoose={setMenuState} />
+          ) : menuState === 1 ? (
+            <ListNewGames onDisconnect={disconnect} />
+          ) : menuState === 2 ? (
+            <ListMyGames onDisconnect={disconnect} />
+          ) : (
+            <CreateNewGame onDisconnect={disconnect} />
+          )}
+        </View>
       )}
       <StatusBar />
     </View>

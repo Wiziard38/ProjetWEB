@@ -17,6 +17,7 @@ function verifyToken(req, res, next) {
       .status(401)
       .json({ status: false, token: false, message: "Your token is incorrect." });
   }
+  req.body.token = token
   console.log("token ok");
   return next();
 }
