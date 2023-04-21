@@ -4,9 +4,9 @@ import {
   TextInput,
   View,
   ImageBackground,
-  Dimensions,
+  Dimensions, // eslint-disable-line no-unused-vars
 } from "react-native";
-import { manipulateAsync } from "expo-image-manipulator";
+import { manipulateAsync } from "expo-image-manipulator"; // eslint-disable-line no-unused-vars
 import SizedText from "./SizedText";
 import SizedButton from "./SizedButton.js";
 import PropTypes from "prop-types";
@@ -14,7 +14,7 @@ import PropTypes from "prop-types";
 export default function LoginForm(props) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [imageUri, setImageUri] = useState(null);
+  const [imageUri, setImageUri] = useState(null); // eslint-disable-line no-unused-vars
 
   // Resize background image using manipulateAsync
   useEffect(() => {

@@ -15,7 +15,7 @@ export async function fetchData(path, method, body) {
   };
   const response = await fetch(`${BACKEND}/${path}`, options);
   const json = await response.json();
-  if (json.token && json.token == false) {
+  if (json.token && json.token === false) {
     window.alert("You are not authentified, please reconnect")
     
   }

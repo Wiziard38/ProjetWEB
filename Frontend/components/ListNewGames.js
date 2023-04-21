@@ -60,5 +60,5 @@ const styles = StyleSheet.create({
 });
 
 ListNewGames.propTypes = {
-  onDisconnect: PropTypes.func.isRequired,
+  disconnect: PropTypes.func.isRequired,
 };

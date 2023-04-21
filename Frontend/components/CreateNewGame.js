@@ -345,5 +345,5 @@ const styles = StyleSheet.create({
 });
 
 CreateNewGame.propTypes = {
-  onDisconnect: PropTypes.func.isRequired,
+  disconnect: PropTypes.func.isRequired,
 };
