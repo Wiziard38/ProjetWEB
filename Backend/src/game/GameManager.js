@@ -1,19 +1,8 @@
 const io = require('../ws/websockets.js')
 const initNamespace = require('./Namespace.js')
-const Team = {
-    WEREWOLF: 'werewolf',
-    HUMAN: 'human',
-    DEATH: 'death'
-}
-
-const Roles = {
-    CONTAMINATION: 'contamination',
-    SPIRITISM: 'spiritism',
-    INSOMNIA: 'insomnia',
-    PSYCHIC: 'psychic',
-    NONE: 'none'
-}
-
+const Team = require('./Team.js');
+const Roles = require('./Roles.js');
+const State = require('./State.js')
 const GameManager = {
     // A directory linking player's ID to its socketID
     socketDir: new Map(),
@@ -23,6 +12,8 @@ const GameManager = {
     socketToRoles: new Map(),
 
     gameLoopID: new Map(),
+
+    states: new Map(),
     /**
      * Register a player to the directory linking player and socket
      * @param {*} playerID : Database ID
@@ -164,6 +155,7 @@ const GameManager = {
         console.log("La partie commence : " + gameID)
         io.of('/' + gameID).emit('begin', 'La partie commence');
         // Game loop
+        this.states.set(gameID, State.BEGIN)
         const gameUpdate = setInterval(() => {
             this.changementJour(gameID);
 
@@ -180,6 +172,7 @@ const GameManager = {
      * @param {*} gameID 
      */
     changementJour: function (gameID) {
+        this.states.set(gameID, State.DAY)
         // Signale qui indique le changement de jour à nuit
         io.of('/' + gameID).emit('jour', 'changement nuit -> jour');
         console.log("Changement vers le jour : " + gameID)
@@ -190,6 +183,7 @@ const GameManager = {
      * @param {*} gameID 
      */
     changementNuit: function (gameID) {
+        this.states.set(gameID, State.NIGHT)
         io.of('/' + gameID).emit('nuit', 'on va faire dodo');
         console.log("Changement vers la nuit : " + gameID)
 
@@ -201,6 +195,7 @@ const GameManager = {
      */
     stopGame: function (gameID) {
         // Remove the namespace
+        this.states.delete(gameID)
         io.of('/' + gameID).removeAllListeners();
         // delete
         delete io.npst[gameID];

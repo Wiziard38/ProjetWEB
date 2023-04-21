@@ -19,7 +19,7 @@ export default function App() {
   useEffect(() => {
     socket.on('connect', () => {
       console.log('Connected to server');
-      //socket.emit('eazy', 'bin voui c ez');
+      socket.emit('proposal', 'bin voui c ez');
     })
 
     socket.on('game_data', (msg) => {
