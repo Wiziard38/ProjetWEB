@@ -21,6 +21,10 @@ export default function App() {
       console.log('Connected to server');
       //socket.emit('eazy', 'bin voui c ez');
     })
+
+    socket.on('game_data', (msg) => {
+      console.log(msg);
+    })
   });
 
   
