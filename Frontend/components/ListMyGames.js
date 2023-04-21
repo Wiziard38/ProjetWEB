@@ -8,21 +8,22 @@ import { fetchData } from "../utils/fetchData";
 // const { BACKEND } = config;
 
 export default function ListMyGames() {
+  console.log("ListMyGames")
   const [parties, setParties] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
-    // TODO, uniquement parties auxquelles joueur X participe
-    fetchData("partie", "GET")
-      .then((data) => setParties(data))
-      .catch((error) => console.log(error));
+    fetchData("game", "GET")
+    .then((data) => setParties(data))
+    .catch((error) => console.log(error));
   }, []);
 
   function joinMyGame() {
+    console.log("joinMyGame")
     // TODO
 
     console.log(selectedId);
-    // fetch(`${BACKEND}/partie/${selectedId}`, {
+    // fetch(`${BACKEND}/game/${selectedId}`, {
     //   method: "POST",
     //   headers: {
     //     "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
@@ -37,7 +38,7 @@ export default function ListMyGames() {
     <SafeAreaView style={{ backgroundColor: "white" }}>
       <View style={styles.container}>
         <SizedText
-          label={"Liste des parties auxquelles vous participez déjà : (TODO)"}
+          label={"Liste des parties auxquelles vous participez déjà :"}
           size={"large"}
           textStyle={styles.title}
         />

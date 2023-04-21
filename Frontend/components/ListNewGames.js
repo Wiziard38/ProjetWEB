@@ -5,28 +5,23 @@ import SizedText from "./SizedText";
 import { fetchData } from "../utils/fetchData";
 
 export default function ListNewGames() {
+
+  console.log("ListNewGames")
+
   const [parties, setParties] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
-    fetchData("partie", "GET")
-      .then((data) => setParties(data))
-      .catch((error) => console.log(error));
+    fetchData("game/newgame", "GET")
+    .then((data) => setParties(data))
+    .catch((error) => console.log(error));
   }, []);
 
   function joinNewGame() {
-    // TODO
-
-    console.log(selectedId);
-    // fetch(`${BACKEND}/partie/${selectedId}`, {
-    //   method: "POST",
-    //   headers: {
-    //     "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-    //   },
-    // })
-    //   .then((res) => res.json())
-    //   .then((json) => setParties(json))
-    //   .catch((error) => console.log(error));
+    console.log("joinNewGame")
+    fetchData(`game/newgame/${selectedId}`, "POST")
+    //.then((json) => setParties(json))
+    .catch((error) => console.log(error));
   }
 
   return (
