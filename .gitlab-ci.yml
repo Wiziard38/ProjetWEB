@@ -1,28 +1,40 @@
-stages:                 # Les étapes associées au projet.
-  - lint                # Pour la vérification statique du code 
-  - test                # tests avec supertest
-  - deploy              # Deploiement
+stages: # Les étapes associées au projet.
+  - lint # Pour la vérification statique du code
+  - test # tests avec supertest
+  - deploy # Deploiement
 
-lint-js:                # Vérification de la qualité du code javascript
-  stage: lint           # Dans l'étape lint (s'exécutera en parallèle de lint-html-css)
+lint-js-front: # Vérification de la qualité du code javascript pour le front
+  stage: lint # Dans l'étape lint (s'exécutera en parallèle de lint-html-css)
   tags:
     - docker
   image: node
   script:
     # install eslint
-    - cd backendsqlite && npm install --save-dev eslint-config-standard
-    #- cd backendsqlite && npm i
+    - cd Frontend && npm i
     # Run eslint
-    - npx eslint src/*/*.js > ../js_report.txt
-  artifacts:            # Le rapport sera disponible pour d'autres jobs
+    - find . -name "*.js" -type f -not -path "./node_modules/*" | xargs npx eslint > ../js_report_front.txt
+  artifacts: # Le rapport sera disponible pour d'autres jobs
     paths:
-      - js_report.txt
+      - js_report_front.txt
 
+lint-js-back: # Vérification de la qualité du code javascript pour le front
+  stage: lint # Dans l'étape lint (s'exécutera en parallèle de lint-html-css)
+  tags:
+    - docker
+  image: node
+  script:
+    # install eslint
+    - cd Backend && npm i
+    # Run eslint
+    - find . -name "*.js" -type f -not -path "./node_modules/*" -not -path "./cypress/*" -not -path "**/__tests__/*" | xargs npx eslint > ../js_report_back.txt
+  artifacts: # Le rapport sera disponible pour d'autres jobs
+    paths:
+      - js_report_back.txt
 
 # jobcypress:
 #   stage: test
 #   tags:
-#     - docker  # Comme on utilise une image pour isoler on doit utiliser un runner docker 
+#     - docker  # Comme on utilise une image pour isoler on doit utiliser un runner docker
 #   image: cypress/base:16.18.1 # Image fournie par cypress avec ce qu'il faut
 #   script:
 #     - cd backendsqlite && npm i # Installe ce qui est décrit dans package.json
@@ -33,11 +45,10 @@ lint-js:                # Vérification de la qualité du code javascript
 #     paths:
 #       - cypress_report.txt
 
-
 # jobsuppertest:
 #   stage: test
 #   tags:
-#     - docker  # Comme on utilise une image pour isoler on doit utiliser un runner docker 
+#     - docker  # Comme on utilise une image pour isoler on doit utiliser un runner docker
 #   image: node
 #   script:
 #     - cd backendsqlite && npm i # Installe ce qui est décrit dans package.json
@@ -51,12 +62,12 @@ lint-js:                # Vérification de la qualité du code javascript
 #   stage: deploy
 #   script:
 #     # Création du répertoire public
-#     - mkdir -p public 
+#     - mkdir -p public
 #     # Copie des fichiers
 #     - cp backendsqlite/src/frontend/* public
 #   artifacts:
 #     paths:
-#       - public 
+#       - public
 #   when: on_success
 
 # scalingo:
@@ -76,21 +87,23 @@ lint-js:                # Vérification de la qualité du code javascript
 #     - dpl --provider=scalingo --app=$SCALINGO_APP_NAME --api-token=$SCALINGO_API_TOKEN --region=$SCALINGO_REGION --branch=refs/heads/main
 #   when: on_success
 
-# badges:
-#   stage: deploy
-#   before_script:
-#     - chmod +x backendsqlite/genere_badges.sh
-#   script:
-#     # The code cannot be run on a single line so we use a shell script.
-#     - ./backendsqlite/genere_badges.sh
-#   dependencies:
-#     - lint-js
-#     - jobcypress
-#     - jobsuppertest
-#   artifacts:
-#     paths:
-#       # These svg will be used by gitlab for displaying badges.
-#       - js_lint.svg
-#       - Jtests.svg
-#       - cy_tests.svg
-#   when: always      # Et quoiqu'il arrive la génération des badges devra se faire.
+badges:
+  stage: deploy
+  before_script:
+    - chmod +x genere_badges.sh
+  script:
+    # The code cannot be run on a single line so we use a shell script.
+    - ./genere_badges.sh
+  dependencies:
+    - lint-js-front
+    - lint-js-back
+    # - jobcypress
+    # - jobsuppertest
+  artifacts:
+    paths:
+      # These svg will be used by gitlab for displaying badges.
+      - js_lint_front.svg
+      - js_lint_back.svg
+      # - Jtests.svg
+      # - cy_tests.svg
+  when: always # Et quoiqu'il arrive la génération des badges devra se faire.

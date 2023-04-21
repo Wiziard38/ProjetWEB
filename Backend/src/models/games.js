@@ -2,7 +2,7 @@ const Sequelize = require("sequelize");
 const db = require("./database.js");
 
 const games = db.define("games", {
-  id: {
+  idGame: {
     primaryKey: true,
     type: Sequelize.INTEGER,
     autoIncrement: true,

@@ -20,14 +20,14 @@ const usersgames = db.define(
       allowNull: false,
       references: {
         model: games,
-        key: 'id'
+        key: 'idGame'
       }
     },
   },
   { timestamps: false }
 );
 
-users.belongsToMany(games, { through: usersgames });
-games.belongsToMany(users, { through: usersgames });
+//users.belongsToMany(games, { through: usersgames });
+//games.belongsToMany(users, { through: usersgames });
 
 module.exports = usersgames;

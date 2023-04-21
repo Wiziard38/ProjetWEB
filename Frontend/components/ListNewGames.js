@@ -1,36 +1,25 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, React } from "react";
 import { SafeAreaView, StyleSheet, View } from "react-native";
 import ListParties from "./ListParties";
 import SizedText from "./SizedText";
+import { fetchData } from "../utils/fetchData";
 
-const config = require("../config");
-const { BACKEND } = config;
+export default function ListNewGames() {
 
-export default function ListNewGames({token}) {
+  console.log("ListNewGames")
+
   const [parties, setParties] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
-    fetch(`${BACKEND}/game/newgame`, {
-      headers: {
-        "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-        "x-access-token": token
-      },
-    })
-    .then((res) => res.json())
-    .then((json) => setParties(json))
+    fetchData("game/newgame", "GET")
+    .then((data) => setParties(data))
     .catch((error) => console.log(error));
   }, []);
 
   function joinNewGame() {
-    fetch(`${BACKEND}/game/newgame/${selectedId}`, {
-      method: "POST",
-      headers: {
-        "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-        "x-access-token": token
-      },
-    })
-    .then((res) => res.json())
+    console.log("joinNewGame")
+    fetchData(`game/newgame/${selectedId}`, "POST")
     //.then((json) => setParties(json))
     .catch((error) => console.log(error));
   }

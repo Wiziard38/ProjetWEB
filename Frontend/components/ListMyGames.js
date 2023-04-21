@@ -1,29 +1,25 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, React } from "react";
 import { SafeAreaView, StyleSheet, View } from "react-native";
 import ListParties from "./ListParties";
 import SizedText from "./SizedText";
+import { fetchData } from "../utils/fetchData";
 
-const config = require("../config");
-const { BACKEND } = config;
+// const config = require("../config");
+// const { BACKEND } = config;
 
-export default function ListMyGames({token}) {
+export default function ListMyGames() {
+  console.log("ListMyGames")
   const [parties, setParties] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
-    // TODO, uniquement parties auxquelles joueur X participe
-    fetch(`${BACKEND}/game`, {
-      headers: {
-        "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-        "x-access-token": token
-      },
-    })
-      .then((res) => res.json())
-      .then((json) => setParties(json))
-      .catch((error) => console.log(error));
+    fetchData("game", "GET")
+    .then((data) => setParties(data))
+    .catch((error) => console.log(error));
   }, []);
 
   function joinMyGame() {
+    console.log("joinMyGame")
     // TODO
 
     console.log(selectedId);

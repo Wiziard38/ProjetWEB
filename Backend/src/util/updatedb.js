@@ -9,7 +9,7 @@ const bcrypt = require('bcrypt');
 (async () => {
   // Regénère la base de données
   await require("../models/database.js").sync({ force: true });
-  
+
   console.log("Base de données créée.");
   await usersModel.sync({ force: true });
   // Initialise la base avec quelques données
@@ -34,11 +34,11 @@ const bcrypt = require('bcrypt');
   });
 
   await gamesModel.create({
-    id: 1,
+    idGame: 1,
     nbJoueur: 7,
     dureeJour: 1,
     dureeNuit: 1,
-    dateDeb: '2022-01-17T04:33:12.000Z',
+    dateDeb: "2022-01-17T04:33:12.000Z",
     probaPouv: 0,
     probaLoup: 0,
   });

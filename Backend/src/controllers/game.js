@@ -11,40 +11,41 @@ module.exports = {
 
   async createGame(req, res) {
     console.log("createGame");
-    const data = JSON.parse(req.body.data);
-    const date = new Date(
-      Date.UTC(
-        data.dateDebAnnee,
-        data.dateDebMois - 1,
-        data.dateDebJour,
-        data.HeureDeb,
-        data.MinDeb,
-        0,
-        0,
-        ));
-      console.log(date);
-      console.log(data);
-    await gamesModel.create({
+    try {
+      const data = req.body;
+      const date = new Date(
+        Date.UTC(
+          data.dateDebAnnee,
+          data.dateDebMois - 1,
+          data.dateDebJour,
+          data.HeureDeb,
+          data.MinDeb,
+          0,
+          0,
+      ));
+      await gamesModel.create({
         nbJoueur: data.nbJoueur,
         dureeJour: data.dureeJour,
         dureeNuit: data.dureeNuit,
         dateDeb: date,
         probaPouv: data.probaPouv,
         probaLoup: data.probaLoup
-    });
-    res.json({status: true});
+      });
+      res.json({status: true});
+    } catch (error) {
+      console.error(error);
+      res.status(500).json({ error: 'Internal server error' });
+    }
   },
 
   async listMyGames(req, res) {
     console.log("listMyGames");
     try {
       const usernameDecoded = jws.decode(req.headers['x-access-token']).payload;
-      const idGames = await usersgamesModel.findAll({ where: {username: usernameDecoded}, attributes: ['idGame'] });
-      console.log(idGames);
+      const resAll = await usersgamesModel.findAll({ where: {username: usernameDecoded}, attributes: ['idGame'] });
       var records = new Array();
-      for (var idGame in idGames) {
-        console.log(idGame);
-        const record = await gamesModel.findOne({ where: {id: idGame} });
+      for (let i = 0; i < resAll.length; i++) {
+        const record = await gamesModel.findOne({ where: {idGame: resAll[i].idGame} });
         records.push(record);
       }
       console.log(records);
@@ -61,7 +62,7 @@ module.exports = {
     // TODO: vérifier que le joueur n'est pas déjà inscrit dans ces parties
     console.log("listNewGamesAvailable");
     try {
-      const allRecords = await gamesModel.findAll({ where: {}});
+      const allRecords = await gamesModel.findAll();
       console.log(allRecords);
       res.json(allRecords);
     } catch (error) {
