@@ -5,13 +5,20 @@ import SizedText from "./SizedText";
 import { fetchData } from "../utils/fetchData";
 import PropTypes from "prop-types";
 
-export default function ListNewGames({ disconnect }) {
+export default function ListNewGames({ onDisconnect }) {
   const [parties, setParties] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
     fetchData("partie", "GET")
-      .then((data) => setParties(data))
+      .then((data) => {
+        if (data.token === false) {
+          onDisconnect();
+          window.alert("You are not authentified, please reconnect");
+        } else {
+          setParties(data);
+        }
+      })
       .catch((error) => console.log(error));
   }, []);
 
@@ -60,5 +67,5 @@ const styles = StyleSheet.create({
 });
 
 ListNewGames.propTypes = {
-  disconnect: PropTypes.func.isRequired,
+  onDisconnect: PropTypes.func.isRequired,
 };

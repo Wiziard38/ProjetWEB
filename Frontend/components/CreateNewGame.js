@@ -12,7 +12,7 @@ import SizedButton from "./SizedButton";
 import EntreeForm from "./EntreeForm";
 import PropTypes from "prop-types";
 
-export default function CreateNewGame({ disconnect }) {
+export default function CreateNewGame({ onDisconnect }) {
   const [nbJoueur, setNbJoueur] = useState("");
   const [dureeJour, setDureeJour] = useState("");
   const [dureeNuit, setDureeNuit] = useState("");
@@ -133,7 +133,14 @@ export default function CreateNewGame({ disconnect }) {
       };
 
       fetchData("partie", "POST", data)
-        .then((json) => console.log(json))
+        .then((json) => {
+          if (json.token === false) {
+            onDisconnect();
+            window.alert("You are not authentified, please reconnect");
+          } else {
+            console.log(json);
+          }
+        })
         .catch((error) => console.log(error));
 
       // fetch(`${BACKEND}/partie`, {
@@ -345,5 +352,5 @@ const styles = StyleSheet.create({
 });
 
 CreateNewGame.propTypes = {
-  disconnect: PropTypes.func.isRequired,
+  onDisconnect: PropTypes.func.isRequired,
 };

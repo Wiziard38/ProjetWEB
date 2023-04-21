@@ -8,14 +8,21 @@ import PropTypes from "prop-types";
 // const config = require("../config");
 // const { BACKEND } = config;
 
-export default function ListMyGames({ disconnect }) {
+export default function ListMyGames({ onDisconnect }) {
   const [parties, setParties] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
     // TODO, uniquement parties auxquelles joueur X participe
     fetchData("partie", "GET")
-      .then((data) => setParties(data))
+      .then((data) => {
+        if (data.token === false) {
+          onDisconnect();
+          window.alert("You are not authentified, please reconnect")
+        } else {
+          setParties(data);
+        }
+      })
       .catch((error) => console.log(error));
   }, []);
 
@@ -64,5 +71,5 @@ const styles = StyleSheet.create({
 });
 
 ListMyGames.propTypes = {
-  disconnect: PropTypes.func.isRequired,
+  onDisconnect: PropTypes.func.isRequired,
 };
