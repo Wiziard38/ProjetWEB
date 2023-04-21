@@ -48,7 +48,6 @@ module.exports = {
         const record = await gamesModel.findOne({ where: {idGame: resAll[i].idGame} });
         records.push(record);
       }
-      console.log(records);
       res.json(records);
     } catch (error) {
       console.error(error);
@@ -57,14 +56,28 @@ module.exports = {
   },
 
   async listNewGamesAvailable(req, res) {
-    // TODO: vérifier si le temps n'est pas écoulé
-    // TODO: vérifier le nombre de joueurs déjà inscrits
-    // TODO: vérifier que le joueur n'est pas déjà inscrit dans ces parties
     console.log("listNewGamesAvailable");
     try {
+      const usernameDecoded = jws.decode(req.headers['x-access-token']).payload;
       const allRecords = await gamesModel.findAll();
-      console.log(allRecords);
-      res.json(allRecords);
+      var records = new Array();
+      for (let i = 0; i < allRecords.length; i++) {
+        /* on vérifie que le nombre de participants souhaité n'est pas atteint */
+        const nbInscrits = await usersgamesModel.count({ where: {idGame: allRecords[i].idGame} });
+        if (nbInscrits < allRecords[i].nbJoueur) {
+          /* on vérifie que le joueur n'est pas déjà inscrit dans cette partie */
+          const nbInscriptionJoueur = await usersgamesModel.count({ where: {idGame: allRecords[i].idGame, username: usernameDecoded} })
+          if (nbInscriptionJoueur == 0) {
+            /* on vérifie que la date de début de la partie n'est pas passée */
+            const dateActuelle = new Date();
+            console.log(allRecords[i].dateDeb)
+            if (dateActuelle.getTime() < allRecords[i].dateDeb.getTime()) {
+              records.push(allRecords[i])
+            }
+          }
+        }
+      }
+      res.json(records);
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: 'Internal server error' });
