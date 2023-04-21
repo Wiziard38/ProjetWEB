@@ -1,6 +1,6 @@
 import { StatusBar } from "expo-status-bar";
 import { useState, React, useEffect } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, SafeAreaView } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoginForm from "./components/LoginForm";
 import MenuSelection from "./components/MenuSelection";
@@ -54,7 +54,7 @@ export default function App() {
             .catch((error) => console.log(error));
           if (!loggingState) {
             window.alert(
-              `Bienvenue ${connectedUsername}, vous avez été inscrit.`
+              `Bienvenue ${json.data.username}, vous avez été inscrit.`
             );
           }
         } else {
@@ -82,7 +82,9 @@ export default function App() {
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={[styles.container, {backgroundColor: "white"}]}>
+      <StatusBar translucent={false} backgroundColor="rgb(105, 105, 105)"/>
+
       {!token ? (
         // If no token (user non connected)
         <LoginForm
@@ -113,8 +115,7 @@ export default function App() {
           )}
         </View>
       )}
-      <StatusBar />
-    </View>
+    </SafeAreaView>
   );
 }
 
