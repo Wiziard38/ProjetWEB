@@ -11,52 +11,52 @@ export default function ConnectedHeader({
   onMenu,
 }) {
   return (
-      <View style={styles.header}>
-        <View style={styles.headerContainer}>
-          {/* User Name */}
-          <Image
-            style={styles.headerUserIcon}
-            source={require("../assets/user-icon.png")}
-            resizeMethod="scale"
-            resizeMode="contain"
-          />
+    <View style={styles.header}>
+      <View style={styles.headerContainer}>
+        {/* User Name */}
+        <Image
+          style={styles.headerUserIcon}
+          source={require("../assets/user-icon.png")}
+          resizeMethod="scale"
+          resizeMode="contain"
+        />
 
-          {/* <SizedText
+        {/* <SizedText
             label="Bonjour "
             size="large"
             textStyle={styles.welcomeText}
           /> */}
 
-          <SizedText
-            label={
-              username.length >= 20 ? username.slice(0, 18) + "..." : username
-            }
-            size="large"
-            textStyle={styles.usernameLabel}
-          />
-        </View>
-
-        <View style={styles.headerContainer}>
-          {menuState !== 0 && (
-            <SizedButton
-              buttonLabel={"Menu"}
-              onPress={onMenu}
-              size={"mini"}
-              buttonStyle={styles.headerButton}
-              buttonLabelStyle={styles.headerButtonLabel}
-            />
-          )}
-
-          <Pressable onPress={onDisconnect}>
-            <Image
-              style={styles.headerDiconnectIcon}
-              source={require("../assets/logout-icon.png")}
-              resizeMethod="scale"
-              resizeMode="contain"
-            />
-          </Pressable>
-        </View>
+        <SizedText
+          label={
+            username.length >= 20 ? username.slice(0, 18) + "..." : username
+          }
+          size="large"
+          textStyle={styles.usernameLabel}
+        />
       </View>
+
+      <View style={styles.headerContainer}>
+        {menuState !== 0 && (
+          <SizedButton
+            buttonLabel={"Menu"}
+            onPress={onMenu}
+            size={"mini"}
+            buttonStyle={styles.headerButton}
+            buttonLabelStyle={styles.headerButtonLabel}
+          />
+        )}
+
+        <Pressable onPress={onDisconnect}>
+          <Image
+            style={styles.headerDiconnectIcon}
+            source={require("../assets/logout-icon.png")}
+            resizeMethod="scale"
+            resizeMode="contain"
+          />
+        </Pressable>
+      </View>
+    </View>
   );
 }
 

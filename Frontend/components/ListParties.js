@@ -1,5 +1,11 @@
-import React from "react";
-import { View, StyleSheet, FlatList, TouchableOpacity } from "react-native";
+import { React } from "react";
+import {
+  View,
+  StyleSheet,
+  FlatList,
+  TouchableOpacity,
+  Dimensions,
+} from "react-native";
 import SizedText from "./SizedText";
 import SizedButton from "./SizedButton";
 import PropTypes from "prop-types";
@@ -11,6 +17,9 @@ export default function ListParties({
   selectedId,
   setSelectedId,
 }) {
+  const { height } = Dimensions.get("window");
+  const flatListHeight = height * 0.75; // adjust as needed
+
   function selectItem(item) {
     setSelectedId(item.id);
   }
@@ -77,21 +86,22 @@ export default function ListParties({
   };
 
   return (
-    <View style={styles.container}>
+    <View style={styles.listGames}>
       <FlatList
         data={parties}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         extraData={selectedId}
-        style={styles.itemList}
+        style={[styles.itemList, { height: flatListHeight }]}
       />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  listGames: {
     margin: 10,
+    flexGrow: 1,
   },
   title: {
     fontWeight: "bold",

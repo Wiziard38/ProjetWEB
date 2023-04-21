@@ -82,8 +82,8 @@ export default function App() {
   }
 
   return (
-    <SafeAreaView style={[styles.container, {backgroundColor: "white"}]}>
-      <StatusBar translucent={false} backgroundColor="rgb(105, 105, 105)"/>
+    <SafeAreaView style={[styles.container, { backgroundColor: "white" }]}>
+      <StatusBar translucent={false} backgroundColor="rgb(105, 105, 105)" />
 
       {!token ? (
         // If no token (user non connected)
