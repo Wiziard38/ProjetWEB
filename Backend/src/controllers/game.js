@@ -1,11 +1,6 @@
-const status = require("http-status");
-const usersModel = require("../models/users.js");
 const gamesModel = require("../models/games.js");
 const usersgamesModel = require("../models/usersgames.js");
-const has = require("has-keys");
-const CodeError = require("../util/CodeError.js");
 const jws = require("jws");
-const { Op } = require("sequelize");
 
 module.exports = {
   async createGame(req, res) {
@@ -30,7 +25,7 @@ module.exports = {
         where: { username: usernameDecoded },
         attributes: ["idGame"],
       });
-      var records = new Array();
+      const records = [];
       for (let i = 0; i < resAll.length; i++) {
         const record = await gamesModel.findOne({
           where: { idGame: resAll[i].idGame },
@@ -40,7 +35,7 @@ module.exports = {
       res.json(records);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ error });
     }
   },
 
@@ -48,7 +43,7 @@ module.exports = {
     try {
       const usernameDecoded = jws.decode(req.headers["x-access-token"]).payload;
       const allRecords = await gamesModel.findAll();
-      var records = new Array();
+      const records = [];
       for (let i = 0; i < allRecords.length; i++) {
         /* on vérifie que le nombre de participants souhaité n'est pas atteint */
         const nbInscrits = await usersgamesModel.count({
@@ -59,7 +54,7 @@ module.exports = {
           const nbInscriptionJoueur = await usersgamesModel.count({
             where: { idGame: allRecords[i].idGame, username: usernameDecoded },
           });
-          if (nbInscriptionJoueur == 0) {
+          if (nbInscriptionJoueur === 0) {
             /* on vérifie que la date de début de la partie n'est pas passée */
             const dateActuelle = new Date();
             if (dateActuelle.getTime() < allRecords[i].dateDeb.getTime()) {
@@ -71,7 +66,7 @@ module.exports = {
       res.json(records);
     } catch (error) {
       console.error(error);
-      res.status(500).json({ error: "Internal server error" });
+      res.status(500).json({ error });
     }
   },
 

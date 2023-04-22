@@ -24,7 +24,7 @@ export default function ListNewGames({ onDisconnect }) {
   function joinNewGame() {
     console.log("joinNewGame");
     fetchData(`game/newgame/${selectedId}`, "POST")
-      //.then((json) => setParties(json))
+      // .then((json) => setParties(json))
       .catch((error) => console.log(error));
   }
 

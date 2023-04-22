@@ -14,7 +14,7 @@ import BarScrollInt from "./BarScrollInt";
 import Slider from "@react-native-community/slider";
 import DateTimePicker from "@react-native-community/datetimepicker";
 
-export default function CreateNewGame() {
+export default function CreateNewGame({ onDisconnect }) {
   const [date, setDate] = useState(new Date());
   const [mode, setMode] = useState("date");
   const [show, setShow] = useState(false);
@@ -41,15 +41,15 @@ export default function CreateNewGame() {
 
   const onChange = (event, selectedDate) => {
     const currentDate = selectedDate || date;
-    setShow(Platform.OS == "ios");
+    setShow(Platform.OS === "ios");
     setDate(currentDate);
-    let fDate =
+    const fDate =
       currentDate.getDate() +
       "/" +
       (currentDate.getMonth() + 1) +
       "/" +
       currentDate.getFullYear();
-    let fTime =
+    const fTime =
       currentDate.getHours() + "h" + currentDate.getMinutes() + "mins";
     setText(fDate);
     setHorraire(fTime);
@@ -58,9 +58,9 @@ export default function CreateNewGame() {
 
   const onChangeDureeJour = (event, selectedDate) => {
     console.log("dureeJour");
-    setShowDureeJour(Platform.OS == "ios");
+    setShowDureeJour(Platform.OS === "ios");
     setDureeJour(selectedDate);
-    let fTime =
+    const fTime =
       selectedDate.getHours() + "h" + selectedDate.getMinutes() + "mins";
     setTextDureeJour(fTime);
     console.log(fTime);
@@ -68,15 +68,15 @@ export default function CreateNewGame() {
 
   const onChangeDurerNuit = (event, selectedDate) => {
     console.log("dureeNuit");
-    setShowDureeNuit(Platform.OS == "ios");
+    setShowDureeNuit(Platform.OS === "ios");
     setDureeNuit(selectedDate);
-    let fTime =
+    const fTime =
       selectedDate.getHours() + "h" + selectedDate.getMinutes() + "mins";
     setTextDureeNuit(fTime);
     console.log(fTime);
   };
 
-  function verificationDonnee() {
+  function verificationDonnee() { // eslint-disable-line no-unused-vars
     if (nbJoueur.replace(",", ".").indexOf(".") !== -1) {
       setTextError(
         "Le nombre de joueur doit être un entier compris entre 1 et 25"
@@ -129,7 +129,7 @@ export default function CreateNewGame() {
 
   function creationPartie() {
     console.log("creation partie");
-    //if (verificationDonnee()) {
+    // if (verificationDonnee()) {
     const data = {
       nbJoueur: parseInt(nbJoueur),
       dureeJour: dureeJour.getHours() * 3600 + dureeJour.getMinutes() * 60,
@@ -149,7 +149,7 @@ export default function CreateNewGame() {
         }
       })
       .catch((error) => console.log(error));
-    //}
+    // }
   }
 
   return (
@@ -259,7 +259,7 @@ export default function CreateNewGame() {
 
         <View style={{ flex: 1, alignItems: "center" }}>
           <Text style={styles.textGros}>
-            Proba d'apparition des loups: {probaLoup}
+            Proba d&apos;apparition des loups : {probaLoup}
           </Text>
           <Slider
             style={{ width: "100%", height: 10 }}
@@ -274,7 +274,7 @@ export default function CreateNewGame() {
 
         <View style={{ flex: 1, alignItems: "center" }}>
           <Text style={styles.textGros}>
-            Proba d'apparition des pouvoirs: {probaPouv}
+            Proba d&apos;apparition des pouvoirs : {probaPouv}
           </Text>
           <Slider
             style={{ width: "100%", height: 10 }}

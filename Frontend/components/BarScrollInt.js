@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, Text, TextInput, Dimensions, Pressable, StyleSheet, Image } from "react-native";
+import { View, Text, Dimensions, Pressable, StyleSheet, Image } from "react-native";
 import PropTypes from "prop-types";
 const width = parseInt(Dimensions.get("window").width);
 
@@ -93,6 +93,10 @@ const styles = StyleSheet.create({
     backgroundColor: "grey"
 
   }
-
-
 });
+
+
+BarScrollInt.propTypes = {
+  onPress: PropTypes.func.isRequired,
+  title: PropTypes.string.isRequired,
+};
