@@ -1,12 +1,5 @@
 import { useState, React } from "react";
-import {
-  StyleSheet,
-  View,
-  SafeAreaView,
-  Text,
-  Modal,
-  Pressable,
-} from "react-native";
+import { StyleSheet, View, Text, Modal, Pressable } from "react-native";
 import { fetchData } from "../utils/fetchData";
 import SizedButton from "./SizedButton";
 import EntreeForm from "./EntreeForm";
@@ -155,114 +148,112 @@ export default function CreateNewGame({ onDisconnect }) {
   }
 
   return (
-    <SafeAreaView style={{ backgroundColor: "white" }}>
-      <View style={styles.container}>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            setModalVisible(!modalVisible);
-          }}
-        >
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <Text style={styles.modalText}>{textError}</Text>
-              <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={() => setModalVisible(!modalVisible)}
-              >
-                <Text style={styles.textStyle}>Fermer</Text>
-              </Pressable>
-            </View>
+    <View style={styles.container}>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>{textError}</Text>
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => setModalVisible(!modalVisible)}
+            >
+              <Text style={styles.textStyle}>Fermer</Text>
+            </Pressable>
           </View>
-        </Modal>
-        <EntreeForm
-          Label={"Nombre de joueurs: "}
-          KeyBoardType={"numeric"}
-          onChange={setNbJoueur}
-          style={styles.input}
-          dataName={""}
-        />
-        <EntreeForm
-          Label={"Durée du jour: "}
-          KeyBoardType={"numeric"}
-          onChange={setDureeJour}
-          style={styles.input}
-          dataName={""}
-        />
-        <EntreeForm
-          Label={"Durée de la nuit: "}
-          KeyBoardType={"numeric"}
-          onChange={setDureeNuit}
-          style={styles.input}
-          dataName={""}
-        />
-        <View style={{ flex: 1, flexDirection: "row" }}>
-          <Text>Date de début: </Text>
-          <EntreeForm
-            Label={""}
-            KeyBoardType={"numeric"}
-            onChange={setDateDebJour}
-            style={styles.input}
-            dataName={"JJ"}
-          />
-          <Text> / </Text>
-          <EntreeForm
-            Label={""}
-            KeyBoardType={"numeric"}
-            onChange={setDateMois}
-            style={styles.input}
-            dataName={"MM"}
-          />
-          <Text> / </Text>
-          <EntreeForm
-            Label={""}
-            KeyBoardType={"numeric"}
-            onChange={setDateDebAnnee}
-            style={styles.input}
-            dataName={"AAAA"}
-          />
-          <Text> : </Text>
-          <EntreeForm
-            Label={""}
-            KeyBoardType={"numeric"}
-            onChange={setHeureDeb}
-            style={styles.input}
-            dataName={"Heures"}
-          />
-          <Text> : </Text>
-          <EntreeForm
-            Label={""}
-            KeyBoardType={"numeric"}
-            onChange={setMinDeb}
-            style={styles.input}
-            dataName={"Mins"}
-          />
         </View>
+      </Modal>
+      <EntreeForm
+        Label={"Nombre de joueurs: "}
+        KeyBoardType={"numeric"}
+        onChange={setNbJoueur}
+        style={styles.input}
+        dataName={""}
+      />
+      <EntreeForm
+        Label={"Durée du jour: "}
+        KeyBoardType={"numeric"}
+        onChange={setDureeJour}
+        style={styles.input}
+        dataName={""}
+      />
+      <EntreeForm
+        Label={"Durée de la nuit: "}
+        KeyBoardType={"numeric"}
+        onChange={setDureeNuit}
+        style={styles.input}
+        dataName={""}
+      />
+      <View style={{ flex: 1, flexDirection: "row" }}>
+        <Text>Date de début: </Text>
         <EntreeForm
-          Label={"Probabilité d'apparition des pouvoirs: "}
+          Label={""}
           KeyBoardType={"numeric"}
-          onChange={setProbaPouv}
+          onChange={setDateDebJour}
           style={styles.input}
+          dataName={"JJ"}
         />
+        <Text> / </Text>
         <EntreeForm
-          Label={"Probabilité d'apparition des loups: "}
+          Label={""}
           KeyBoardType={"numeric"}
-          onChange={setProbaLoup}
+          onChange={setDateMois}
           style={styles.input}
+          dataName={"MM"}
         />
-        <View style={{ flex: 1, flexDirection: "row" }}>
-          <SizedButton
-            buttonLabel={"Créer la partie"}
-            onPress={() => creationPartie()}
-            size={"small"}
-            buttonLabelStyle={styles.selectionButton}
-            buttonStyle={styles.selectionButtonLabel}
-          />
-        </View>
+        <Text> / </Text>
+        <EntreeForm
+          Label={""}
+          KeyBoardType={"numeric"}
+          onChange={setDateDebAnnee}
+          style={styles.input}
+          dataName={"AAAA"}
+        />
+        <Text> : </Text>
+        <EntreeForm
+          Label={""}
+          KeyBoardType={"numeric"}
+          onChange={setHeureDeb}
+          style={styles.input}
+          dataName={"Heures"}
+        />
+        <Text> : </Text>
+        <EntreeForm
+          Label={""}
+          KeyBoardType={"numeric"}
+          onChange={setMinDeb}
+          style={styles.input}
+          dataName={"Mins"}
+        />
       </View>
-    </SafeAreaView>
+      <EntreeForm
+        Label={"Probabilité d'apparition des pouvoirs: "}
+        KeyBoardType={"numeric"}
+        onChange={setProbaPouv}
+        style={styles.input}
+      />
+      <EntreeForm
+        Label={"Probabilité d'apparition des loups: "}
+        KeyBoardType={"numeric"}
+        onChange={setProbaLoup}
+        style={styles.input}
+      />
+      <View style={{ flex: 1, flexDirection: "row" }}>
+        <SizedButton
+          buttonLabel={"Créer la partie"}
+          onPress={() => creationPartie()}
+          size={"small"}
+          buttonLabelStyle={styles.selectionButton}
+          buttonStyle={styles.selectionButtonLabel}
+        />
+      </View>
+    </View>
   );
 }
 

@@ -1,5 +1,5 @@
 import { useState, useEffect, React } from "react";
-import { SafeAreaView, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import ListParties from "./ListParties";
 import SizedText from "./SizedText";
 import { fetchData } from "../utils/fetchData";
@@ -38,30 +38,22 @@ export default function ListNewGames({ onDisconnect }) {
   }
 
   return (
-    <SafeAreaView style={{ backgroundColor: "white" }}>
-      <View style={styles.container}>
-        <SizedText
-          label={"Liste des parties que vous pouvez rejoindre :"}
-          size={"large"}
-          textStyle={styles.title}
-        />
-        <ListParties
-          parties={parties}
-          selectedId={selectedId}
-          setSelectedId={setSelectedId}
-          onPress={joinNewGame}
-          onPressLabel={"Je rejoins !"}
-        />
-      </View>
-    </SafeAreaView>
+    <View style={styles.container}>
+      <ListParties
+        descriptiveLabel={"Liste des parties que vous pouvez rejoindre :"}
+        parties={parties}
+        selectedId={selectedId}
+        setSelectedId={setSelectedId}
+        onPress={joinNewGame}
+        onPressLabel={"Je rejoins !"}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  title: {
-    fontWeight: "bold",
-  },
   container: {
+    flex: 1,
     margin: 15,
   },
 });

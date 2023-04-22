@@ -1,5 +1,5 @@
 import { useState, useEffect, React } from "react";
-import { SafeAreaView, StyleSheet, View } from "react-native";
+import { StyleSheet, View } from "react-native";
 import ListParties from "./ListParties";
 import SizedText from "./SizedText";
 import { fetchData } from "../utils/fetchData";
@@ -18,7 +18,7 @@ export default function ListMyGames({ onDisconnect }) {
       .then((data) => {
         if (data.token === false) {
           onDisconnect();
-          window.alert("You are not authentified, please reconnect")
+          window.alert("You are not authentified, please reconnect");
         } else {
           setParties(data);
         }
@@ -42,30 +42,22 @@ export default function ListMyGames({ onDisconnect }) {
   }
 
   return (
-    <SafeAreaView style={{ backgroundColor: "white" }}>
-      <View style={styles.container}>
-        <SizedText
-          label={"Liste des parties auxquelles vous participez déjà : (TODO)"}
-          size={"large"}
-          textStyle={styles.title}
-        />
-        <ListParties
-          parties={parties}
-          selectedId={selectedId}
-          setSelectedId={setSelectedId}
-          onPress={joinMyGame}
-          onPressLabel={"Je lance la partie"}
-        />
-      </View>
-    </SafeAreaView>
+    <View style={styles.container}>
+      <ListParties
+        descriptiveLabel={"Liste des parties auxquelles vous participez déjà : (TODO)"}
+        parties={parties}
+        selectedId={selectedId}
+        setSelectedId={setSelectedId}
+        onPress={joinMyGame}
+        onPressLabel={"Je lance la partie"}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  title: {
-    fontWeight: "bold",
-  },
   container: {
+    flex: 1,
     margin: 15,
   },
 });

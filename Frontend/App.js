@@ -21,11 +21,16 @@ export default function App() {
 
   useEffect(() => {
     // Si le token existe deja a la connexion
-    AsyncStorage.getItem("token").then((token) => {
-      if (token != null) {
-        setToken(token);
+    console.log("Trying to retrieve token");
+    AsyncStorage.getItem("token").then((retrievedToken) => {
+      if (retrievedToken != null) {
         fetchData("whoami", "GET")
-          .then((json) => setConnectedUsername(json.username))
+          .then((json) => {
+            if (json.username != null) {
+              setConnectedUsername(json.username);
+              setToken(retrievedToken);
+            }
+          })
           .catch((error) => console.log(error));
       }
     });
@@ -82,7 +87,7 @@ export default function App() {
   }
 
   return (
-    <SafeAreaView style={[styles.container, { backgroundColor: "white" }]}>
+    <SafeAreaView style={styles.container}>
       <StatusBar translucent={false} backgroundColor="rgb(105, 105, 105)" />
 
       {!token ? (
@@ -122,7 +127,5 @@ export default function App() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    height: "100%",
-    width: "100%",
   },
 });

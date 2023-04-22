@@ -92,9 +92,9 @@ module.exports = {
     const user = await userModel.findOne({ where: { username: payload } })
 
     if (user != null) {
-      res.status(201).json({ statue: true, username: payload });
+      res.status(201).json({ status: true, username: payload });
     } else {
-      res.status(401).json({ statue: false, message: "No user found" });
+      res.status(401).json({ status: false, message: "No user found" });
     }
   },
 

@@ -1,3 +1,4 @@
+import { StatusBar } from "expo-status-bar";
 import { React } from "react";
 import {
   View,
@@ -5,12 +6,14 @@ import {
   FlatList,
   TouchableOpacity,
   Dimensions,
+  useWindowDimensions,
 } from "react-native";
 import SizedText from "./SizedText";
 import SizedButton from "./SizedButton";
 import PropTypes from "prop-types";
 
 export default function ListParties({
+  descriptiveLabel,
   parties,
   onPress,
   onPressLabel,
@@ -18,13 +21,18 @@ export default function ListParties({
   setSelectedId,
 }) {
   const { height } = Dimensions.get("window");
-  const flatListHeight = height * 0.75; // adjust as needed
+  const statusBarHeight = StatusBar.currentHeight ?? 0;
+  const headerHeight = 50;
+  const containerVerticalMargins = 15;
+  const textHeight = 48;
+  const flatListHeight =
+    height - statusBarHeight - headerHeight - 2 * containerVerticalMargins;
 
   function selectItem(item) {
     setSelectedId(item.id);
   }
 
-  const renderItem = ({ item }) => {
+  function renderItem({ item }) {
     const backgroundColor = item.id === selectedId ? "#668687" : "#747474";
     const color = item.id === selectedId ? "white" : "black";
 
@@ -83,31 +91,50 @@ export default function ListParties({
         )}
       </TouchableOpacity>
     );
-  };
+  }
+
+  function noGames() {
+    return (
+      <SizedText
+        label={"Il n'y a pas encore de parties, vous pouvez en créer une !"}
+        size={"large"}
+      />
+    );
+  }
 
   return (
-    <View style={styles.listGames}>
+    <View style={{ height: flatListHeight }}>
+      <SizedText
+        label={descriptiveLabel}
+        size={"large"}
+        textStyle={styles.title}
+      />
       <FlatList
         data={parties}
         renderItem={renderItem}
         keyExtractor={(item) => item.id}
         extraData={selectedId}
-        style={[styles.itemList, { height: flatListHeight }]}
+        style={styles.itemList}
+        ListEmptyComponent={noGames}
+        contentContainerStyle={{ flexGrow: 1 }}
       />
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  listGames: {
-    margin: 10,
-    flexGrow: 1,
-  },
   title: {
     fontWeight: "bold",
   },
+  listGames: {
+    flex: 1,
+    margin: 10,
+  },
   itemList: {
     marginTop: 10,
+  },
+  title: {
+    fontWeight: "bold",
   },
   item: {
     paddingVertical: 10,
@@ -141,6 +168,7 @@ const styles = StyleSheet.create({
 });
 
 ListParties.propTypes = {
+  descriptiveLabel: PropTypes.string.isRequired,
   parties: PropTypes.array.isRequired,
   onPress: PropTypes.func.isRequired,
   onPressLabel: PropTypes.string.isRequired,

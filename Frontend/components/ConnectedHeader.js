@@ -15,23 +15,17 @@ export default function ConnectedHeader({
       <View style={styles.headerContainer}>
         {/* User Name */}
         <Image
-          style={styles.headerUserIcon}
+          style={[styles.headerIcon, { marginRight: 10 }]}
           source={require("../assets/user-icon.png")}
           resizeMethod="scale"
           resizeMode="contain"
         />
 
-        {/* <SizedText
-            label="Bonjour "
-            size="large"
-            textStyle={styles.welcomeText}
-          /> */}
-
         <SizedText
           label={
             username.length >= 20 ? username.slice(0, 18) + "..." : username
           }
-          size="large"
+          size="xlarge"
           textStyle={styles.usernameLabel}
         />
       </View>
@@ -49,7 +43,7 @@ export default function ConnectedHeader({
 
         <Pressable onPress={onDisconnect}>
           <Image
-            style={styles.headerDiconnectIcon}
+            style={[styles.headerIcon, { marginLeft: 10 }]}
             source={require("../assets/logout-icon.png")}
             resizeMethod="scale"
             resizeMode="contain"
@@ -65,6 +59,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
+    height: 30,
   },
   header: {
     width: "100%",
@@ -78,15 +73,9 @@ const styles = StyleSheet.create({
   usernameLabel: {
     color: "white",
   },
-  headerUserIcon: {
+  headerIcon: {
     width: 30,
     height: 30,
-    marginRight: 10,
-  },
-  headerDiconnectIcon: {
-    width: 30,
-    height: 30,
-    marginLeft: 10,
   },
   headerButton: {
     backgroundColor: "black",
