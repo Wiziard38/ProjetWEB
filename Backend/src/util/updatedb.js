@@ -1,5 +1,6 @@
 const usersModel = require("../models/users.js");
 const gamesModel = require("../models/games");
+const usersgamesModel = require("../models/usersgames");
 
 // Ajouter ici les nouveaux require des nouveaux modèles
 
@@ -10,6 +11,8 @@ const gamesModel = require("../models/games");
 
   console.log("Base de données créée.");
   await usersModel.sync({ force: true });
+  await gamesModel.sync({force: true});
+  await usersgamesModel.sync({ force: true });
   // Initialise la base avec quelques données
   await usersModel.create({
     username: "luca",
@@ -40,7 +43,6 @@ const gamesModel = require("../models/games");
     probaLoup: 0,
   });
 
-  await gamesModel.sync({force: true});
 
   // Ajouter ici le code permettant d'initialiser par défaut la base de donnée
   

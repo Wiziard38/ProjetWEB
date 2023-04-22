@@ -15,6 +15,7 @@ export async function fetchData(path, method, body) {
   };
   const response = await fetch(`${BACKEND}/${path}`, options);
   const json = await response.json();
+  console.log(json)
 
   return json;
 }
