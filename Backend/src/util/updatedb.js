@@ -1,7 +1,5 @@
 const usersModel = require("../models/users.js");
 const gamesModel = require("../models/games");
-const usersgamesModel = require("../models/usersgames.js");
-const bcrypt = require('bcrypt');
 
 // Ajouter ici les nouveaux require des nouveaux modèles
 
@@ -34,11 +32,10 @@ const bcrypt = require('bcrypt');
   });
 
   await gamesModel.create({
-    idGame: 1,
     nbJoueur: 7,
     dureeJour: 1,
     dureeNuit: 1,
-    dateDeb: "2022-01-17T04:33:12.000Z",
+    dateDeb: "2023-01-17T04:33:12.000Z",
     probaPouv: 0,
     probaLoup: 0,
   });

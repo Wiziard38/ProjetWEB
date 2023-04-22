@@ -12,22 +12,22 @@ const usersgames = db.define(
       allowNull: false,
       references: {
         model: users,
-        key: 'username'
-      }
+        key: "username",
+      },
     },
     idGame: {
       type: Sequelize.INTEGER,
       allowNull: false,
       references: {
         model: games,
-        key: 'idGame'
-      }
+        key: "idGame",
+      },
     },
   },
   { timestamps: false }
 );
 
-//users.belongsToMany(games, { through: usersgames });
-//games.belongsToMany(users, { through: usersgames });
+// users.belongsToMany(games, { through: usersgames });
+// games.belongsToMany(users, { through: usersgames });
 
 module.exports = usersgames;
