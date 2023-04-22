@@ -9,6 +9,7 @@ import CreateNewGame from "./components/CreateNewGame";
 import ListNewGames from "./components/ListNewGames";
 import ListMyGames from "./components/ListMyGames";
 import { fetchData } from "./utils/fetchData";
+
 const config = require("./config.js");
 const { BACKEND } = config;
 

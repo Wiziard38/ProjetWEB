@@ -10,9 +10,9 @@ import {
 } from "react-native";
 import { fetchData } from "../utils/fetchData";
 import SizedButton from "./SizedButton";
-import BarScrollInt from "./BarScrollInt";
-import Slider from "@react-native-community/slider";
+import BarScrollInt from "./CreateGameComp/BarScrollInt";
 import DateTimePicker from "@react-native-community/datetimepicker";
+import ProbaIntSlider from "./CreateGameComp/ProbaIntSlider";
 
 export default function CreateNewGame({ onDisconnect }) {
   const [date, setDate] = useState(new Date());
@@ -76,7 +76,8 @@ export default function CreateNewGame({ onDisconnect }) {
     console.log(fTime);
   };
 
-  function verificationDonnee() { // eslint-disable-line no-unused-vars
+  function verificationDonnee() {
+    // eslint-disable-line no-unused-vars
     if (nbJoueur.replace(",", ".").indexOf(".") !== -1) {
       setTextError(
         "Le nombre de joueur doit être un entier compris entre 1 et 25"
@@ -175,7 +176,9 @@ export default function CreateNewGame({ onDisconnect }) {
             </View>
           </View>
         </Modal>
+
         <BarScrollInt onPress={setNbJoueur} title={"Nombre de joueurs"} />
+
         <View style={{ flex: 1, alignItems: "center" }}>
           <Text style={styles.textGros}>Le jour durera:</Text>
           <View
@@ -257,35 +260,18 @@ export default function CreateNewGame({ onDisconnect }) {
           />
         )}
 
-        <View style={{ flex: 1, alignItems: "center" }}>
-          <Text style={styles.textGros}>
-            Proba d&apos;apparition des loups : {probaLoup}
-          </Text>
-          <Slider
-            style={{ width: "100%", height: 10 }}
-            minimumValue={0}
-            maximumValue={1}
-            minimumTrackTintColor="rgb(255,0,0)"
-            maximumTrackTintColor="rgb(0,0,255)"
-            value={parseFloat(probaLoup)}
-            onValueChange={(value) => setProbaLoup(value.toString())}
-          />
-        </View>
+        <ProbaIntSlider
+          labelProba={"Probabilité d'apparition d'un loup"}
+          proba={probaLoup}
+          setProba={setProbaLoup}
+        />
 
-        <View style={{ flex: 1, alignItems: "center" }}>
-          <Text style={styles.textGros}>
-            Proba d&apos;apparition des pouvoirs : {probaPouv}
-          </Text>
-          <Slider
-            style={{ width: "100%", height: 10 }}
-            minimumValue={0}
-            maximumValue={1}
-            minimumTrackTintColor="rgb(255,0,0)"
-            maximumTrackTintColor="rgb(0,0,255)"
-            value={parseFloat(probaPouv)}
-            onValueChange={(value) => setProbaPouv(value.toString())}
-          />
-        </View>
+        <ProbaIntSlider
+          labelProba={"Probabilité d'obtention d'un pouvoir"}
+          proba={probaPouv}
+          setProba={setProbaPouv}
+        />
+
         <View
           style={{ flex: 1, flexDirection: "row", justifyContent: "center" }}
         >
@@ -369,6 +355,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     height: "100%",
+    marginHorizontal: 15,
     justifyContent: "center",
   },
   header: {
