@@ -1,7 +1,7 @@
-import React from "react";
-import { StyleSheet, View, SafeAreaView } from "react-native";
+import { React } from "react";
+import { StyleSheet, View, Image, Pressable } from "react-native";
 import SizedText from "./SizedText";
-import HeaderButton from "./HeaderButton.js";
+import SizedButton from "./SizedButton";
 import PropTypes from "prop-types";
 
 export default function ConnectedHeader({
@@ -11,41 +11,55 @@ export default function ConnectedHeader({
   onMenu,
 }) {
   return (
-    <SafeAreaView style={{ backgroundColor: "white" }}>
-      <View style={styles.header}>
-        <View style={styles.container}>
-          {/* Greetings */}
-          <SizedText
-            label="Bonjour "
-            size="large"
-            textStyle={styles.welcomeText}
-          />
+    <View style={styles.header}>
+      <View style={styles.headerContainer}>
+        {/* User Name */}
+        <Image
+          style={[styles.headerIcon, { marginRight: 10 }]}
+          source={require("../assets/user-icon.png")}
+          resizeMethod="scale"
+          resizeMode="contain"
+        />
 
-          {/* Connected user's username */}
-          <SizedText
-            label={username}
-            size="large"
-            textStyle={styles.welcomeText}
-          />
-        </View>
-
-        <View style={styles.container}>
-          {menuState !== 0 ? (
-            <HeaderButton label={"Menu"} onPress={onMenu} />
-          ) : (
-            <></>
-          )}
-          <HeaderButton label={"Deconnexion"} onPress={onDisconnect} />
-        </View>
+        <SizedText
+          label={
+            username.length >= 20 ? username.slice(0, 18) + "..." : username
+          }
+          size="xlarge"
+          textStyle={styles.usernameLabel}
+        />
       </View>
-    </SafeAreaView>
+
+      <View style={styles.headerContainer}>
+        {menuState !== 0 && (
+          <SizedButton
+            buttonLabel={"Menu"}
+            onPress={onMenu}
+            size={"mini"}
+            buttonStyle={styles.headerButton}
+            buttonLabelStyle={styles.headerButtonLabel}
+          />
+        )}
+
+        <Pressable onPress={onDisconnect}>
+          <Image
+            style={[styles.headerIcon, { marginLeft: 10 }]}
+            source={require("../assets/logout-icon.png")}
+            resizeMethod="scale"
+            resizeMode="contain"
+          />
+        </Pressable>
+      </View>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
+  headerContainer: {
     display: "flex",
     flexDirection: "row",
+    alignItems: "center",
+    height: 30,
   },
   header: {
     width: "100%",
@@ -56,16 +70,22 @@ const styles = StyleSheet.create({
     backgroundColor: "rgb(78, 78, 78)",
     padding: 10,
   },
-  welcomeText: {
+  usernameLabel: {
     color: "white",
   },
-  disconnectButtonLabel: {
-    color: "white",
+  headerIcon: {
+    width: 30,
+    height: 30,
+  },
+  headerButton: {
     backgroundColor: "black",
     borderRadius: 10,
     padding: 5,
     borderWidth: 1,
     borderColor: "white",
+  },
+  headerButtonLabel: {
+    color: "white",
   },
 });
 

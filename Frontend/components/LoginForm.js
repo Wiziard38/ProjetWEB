@@ -4,9 +4,9 @@ import {
   TextInput,
   View,
   ImageBackground,
-  Dimensions,
+  Dimensions, // eslint-disable-line no-unused-vars
 } from "react-native";
-import { manipulateAsync } from "expo-image-manipulator";
+import { manipulateAsync } from "expo-image-manipulator"; // eslint-disable-line no-unused-vars
 import SizedText from "./SizedText";
 import SizedButton from "./SizedButton.js";
 import PropTypes from "prop-types";
@@ -14,26 +14,26 @@ import PropTypes from "prop-types";
 export default function LoginForm(props) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [imageUri, setImageUri] = useState(null);
+  const [imageUri, setImageUri] = useState(null); // eslint-disable-line no-unused-vars
 
   // Resize background image using manipulateAsync
   useEffect(() => {
-    const resizeImage = async () => {
-      try {
-        const imageSize = Dimensions.get("window").width / 4;
-        const result = await manipulateAsync(
-          require("../assets/werewolf.png"), // Input image URI
-          [{ resize: { width: imageSize, height: imageSize } }], // Array of transformation options
-          { format: "jpeg", compress: 0.8 } // Output options
-        );
-        setImageUri(result.uri); // Set the resized image URI to state
-      } catch (error) {
-        console.error("Failed to resize image:", error);
-      }
-    };
+    // const resizeImage = async () => {
+    //   try {
+    //     const imageSize = Dimensions.get("window").width / 4;
+    //     const result = await manipulateAsync(
+    //       require("../assets/werewolf.png"), // Input image URI
+    //       [{ resize: { width: imageSize, height: imageSize } }], // Array of transformation options
+    //       { format: "jpeg", compress: 0.8 } // Output options
+    //     );
+    //     setImageUri(result.uri); // Set the resized image URI to state
+    //   } catch (error) {
+    //     console.error("Failed to resize image:", error);
+    //   }
+    // };
 
     // Call resizeImage when the component mounts
-    resizeImage();
+    // resizeImage();
   }, []); // Empty dependency array to run the effect only once
 
   const [descriptionText, setDescriptionText] = useState("Je me connecte");

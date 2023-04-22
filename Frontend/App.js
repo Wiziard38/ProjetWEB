@@ -1,7 +1,7 @@
 
 import { StatusBar } from "expo-status-bar";
-import { useState, useRef, useEffect, React } from "react";
-import { StyleSheet, View } from "react-native";
+import { useState, useRef, React, useEffect } from "react";
+import { StyleSheet, View, SafeAreaView } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import LoginForm from "./components/LoginForm";
 import MenuSelection from "./components/MenuSelection";
@@ -10,6 +10,7 @@ import CreateNewGame from "./components/CreateNewGame";
 import ListNewGames from "./components/ListNewGames";
 import ListMyGames from "./components/ListMyGames";
 import SocketIOClient from 'socket.io-client';
+import { fetchData } from "./utils/fetchData";
 const config = require("./config.js");
 const { BACKEND } = config;
 
@@ -27,6 +28,23 @@ export default function App() {
   const [menuState, setMenuState] = useState(0);
   const [errorTextValue, setErrorTextValue] = useState("");
   const [connectedUsername, setConnectedUsername] = useState("");
+
+  useEffect(() => {
+    // Si le token existe deja a la connexion
+    console.log("Trying to retrieve token");
+    AsyncStorage.getItem("token").then((retrievedToken) => {
+      if (retrievedToken != null) {
+        fetchData("whoami", "GET")
+          .then((json) => {
+            if (json.username != null) {
+              setConnectedUsername(json.username);
+              setToken(retrievedToken);
+            }
+          })
+          .catch((error) => console.log(error));
+      }
+    });
+  }, []);
 
   function connect(username, password) {
     const loginURL = loggingState ? `${BACKEND}/login` : `${BACKEND}/signin`;
@@ -50,7 +68,9 @@ export default function App() {
             .then(() => console.log("Token stored successfully"))
             .catch((error) => console.log(error));
           if (!loggingState) {
-            window.alert(`Bienvenue ${connectedUsername}, vous avez été inscrit.`);
+            window.alert(
+              `Bienvenue ${json.data.username}, vous avez été inscrit.`
+            );
           }
         } else {
           setErrorTextValue("Server error, should not happen");
@@ -71,10 +91,15 @@ export default function App() {
     }
     setMenuState(0);
     setToken(null);
+    setLoggingState(true);
+    setErrorTextValue("");
+    setConnectedUsername("");
   }
 
   return (
-    <View style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <StatusBar translucent={false} backgroundColor="rgb(105, 105, 105)" />
+
       {!token ? (
         // If no token (user non connected)
         <LoginForm
@@ -97,23 +122,20 @@ export default function App() {
           {menuState === 0 ? (
             <MenuSelection onMenuChoose={setMenuState} />
           ) : menuState === 1 ? (
-            <ListNewGames />
+            <ListNewGames onDisconnect={disconnect} />
           ) : menuState === 2 ? (
-            <ListMyGames />
+            <ListMyGames onDisconnect={disconnect} />
           ) : (
-            <CreateNewGame />
+            <CreateNewGame onDisconnect={disconnect} />
           )}
         </View>
       )}
-      <StatusBar />
-    </View>
+    </SafeAreaView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    height: "100%",
-    width: "100%",
   },
 });
