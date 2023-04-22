@@ -6,31 +6,70 @@ import {
   Text,
   Modal,
   Pressable,
+  Platform,
 } from "react-native";
 import { fetchData } from "../utils/fetchData";
 import SizedButton from "./SizedButton";
-import EntreeForm from "./EntreeForm";
+import BarScrollInt from "./BarScrollInt";
+import Slider from '@react-native-community/slider';
+import DateTimePicker from '@react-native-community/datetimepicker';
 
 export default function CreateNewGame() {
-    const dateAct = new Date();
-    const [nbJoueur, setNbJoueur] = useState("5");
-    const [dureeJour, setDureeJour] = useState("14");
-    const [dureeNuit, setDureeNuit] = useState("10");
-    const [dateDebJour, setDateDebJour] = useState(dateAct.getDay().toString() + 1);
-    const [dateDebMois, setDateMois] = useState(dateAct.getMonth().toString());
-    const [dateDebAnnee, setDateDebAnnee] = useState(dateAct.getFullYear().toString());
-    const [HeureDeb, setHeureDeb] = useState("8");
-    const [MinDeb, setMinDeb] = useState("0");
-    const [probaPouv, setProbaPouv] = useState("0");
-    const [probaLoup, setProbaLoup] = useState("0.3");
-    const [modalVisible, setModalVisible] = useState(false);
-    const [textError, setTextError] = useState("");
+  const [date, setDate] = useState(new Date());
+  const [mode, setMode] = useState('date');
+  const [show, setShow] = useState(false);
+  const [horraire, setHorraire] = useState("heure:mins");
+  const [text, setText] = useState("JJ/MM/AAAA");
+
+  const [dureeJour, setDureeJour] = useState(new Date());
+  const [dureeNuit, setDureeNuit] = useState(new Date());
+  const [showDureeJour, setShowDureeJour] = useState(false);
+  const [showDureeNuit, setShowDureeNuit] = useState(false);
+  const [TextDureeJour, setTextDureeJour] = useState("Heures:mins");
+  const [TextDureeNuit, setTextDureeNuit] = useState("Heures:mins");
+
+  const [nbJoueur, setNbJoueur] = useState("5");
+  const [probaPouv, setProbaPouv] = useState("0");
+  const [probaLoup, setProbaLoup] = useState("0.3");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [textError, setTextError] = useState("");
+
+  const showMode = (currentMode) => {
+    setShow(true);
+    setMode(currentMode);
+  }
+
+  const onChange = (event, selectedDate) => {
+    const currentDate = selectedDate || date;
+    setShow(Platform.OS == "ios");
+    setDate(currentDate);
+    let fDate = currentDate.getDate() + '/' + (currentDate.getMonth() + 1) + '/' + currentDate.getFullYear();
+    let fTime = currentDate.getHours() + 'h' + currentDate.getMinutes()+'mins';
+    setText(fDate);
+    setHorraire(fTime);
+    console.log(fDate + '(' + fTime + ')');
+  }
+
+  const onChangeDureeJour = (event, selectedDate) => {
+    console.log("dureeJour");
+    setShowDureeJour(Platform.OS == "ios");
+    setDureeJour(selectedDate);
+    let fTime = selectedDate.getHours() + 'h' + selectedDate.getMinutes() + 'mins';
+    setTextDureeJour(fTime);
+    console.log(fTime);
+  }
+
+  const onChangeDurerNuit = (event, selectedDate) => {
+    console.log("dureeNuit");
+    setShowDureeNuit(Platform.OS == "ios");
+    setDureeNuit(selectedDate);
+    let fTime = selectedDate.getHours() + 'h' + selectedDate.getMinutes()+'mins';
+    setTextDureeNuit(fTime);
+    console.log(fTime);
+  }
 
   function verificationDonnee() {
-    console.log(parseInt(nbJoueur));
     if (
-      parseInt(nbJoueur) <= 4 ||
-      parseInt(nbJoueur) > 20 ||
       nbJoueur.replace(",", ".").indexOf(".") !== -1
     ) {
       setTextError(
@@ -39,63 +78,21 @@ export default function CreateNewGame() {
       setModalVisible(true);
       return false;
     }
-    if (dureeJour.replace(",", ".").indexOf(".") !== -1) {
-      setTextError("La durée du jour ne doît pas être nulle et dépasser 23h");
-      setModalVisible(true);
-      return false;
-    }
-    if (dureeNuit.replace(",", ".").indexOf(".") !== -1) {
-      setTextError(
-        "La durée de la nuit ne doît pas être nulle et dépasser 23h"
-      );
+    const dateAct = new Date();
+    if (
+      date.getFullYear < dateAct.getFullYear ||
+      (date.getFullYear === dateAct.getFullYear && date.getMonth() < dateAct.getMonth()) ||
+      (date.getFullYear === dateAct.getFullYear && date.getMonth() === dateAct.getMonth() && date.getDay() < dateAct.getDay())
+    ) {
+      setTextError("La date rentrée est incorect, on ne peut pas commencer une partie à une date déjà passée!!");
       setModalVisible(true);
       return false;
     }
     if (
-      parseInt(dateDebAnnee) < 2023 ||
-      dateDebAnnee.replace(",", ".").indexOf(".") !== -1
+      date.getHours() < dateAct.getHours() ||
+      (date.getHours() === dateAct.getHours() && date.getMinutes() < dateAct.getMinutes())
     ) {
-      setTextError("L'année de début rentrée est incorect");
-      setModalVisible(true);
-      return false;
-    }
-    if (
-      parseInt(dateDebMois) <= 1 ||
-      parseInt(nbJoueur) > 12 ||
-      dateDebMois.replace(",", ".").indexOf(".") !== -1
-    ) {
-      setTextError(
-        "Le mois de début rentrée doît être un entier compris entre 1 et 12"
-      );
-      setModalVisible(true);
-      return false;
-    }
-    if (
-      parseInt(dateDebJour) <= 0 ||
-      parseInt(dateDebJour) > 25 ||
-      dateDebJour.replace(",", ".").indexOf(".") !== -1
-    ) {
-      setTextError(
-        "Le jour de début rentrée doît être un entier compris entre 1 et 31"
-      );
-      setModalVisible(true);
-      return false;
-    }
-    if (
-      parseInt(HeureDeb) < 0 ||
-      parseInt(HeureDeb) > 24 ||
-      HeureDeb.replace(",", ".").indexOf(".") !== -1
-    ) {
-      setTextError("L'heure de début doît être un entier entre 0 et 23");
-      setModalVisible(true);
-      return false;
-    }
-    if (
-      parseInt(MinDeb) < 0 ||
-      parseInt(MinDeb) > 59 ||
-      MinDeb.replace(",", ".").indexOf(".") !== -1
-    ) {
-      setTextError("Les minutes de début doît être un entier entre 0 et 59");
+      setTextError("La date rentrée est incorect, on ne peut pas commencer une partie à une date déjà passée!!");
       setModalVisible(true);
       return false;
     }
@@ -118,16 +115,12 @@ export default function CreateNewGame() {
 
   function creationPartie() {
     console.log("creation partie");
-    if (verificationDonnee()) {
+    //if (verificationDonnee()) {
       const data = {
         nbJoueur: parseInt(nbJoueur),
-        dureeJour: parseInt(dureeJour),
-        dureeNuit: parseInt(dureeNuit),
-        dateDebJour: parseInt(dateDebJour),
-        dateDebMois: parseInt(dateDebMois),
-        dateDebAnnee: parseInt(dateDebAnnee),
-        MinDeb: parseInt(MinDeb),
-        HeureDeb: parseInt(HeureDeb),
+        dureeJour: dureeJour.getHours() * 3600 + dureeJour.getMinutes() * 60,
+        dureeNuit: dureeNuit.getHours() * 3600 + dureeNuit.getMinutes() * 60,
+        dateDeb: date,
         probaPouv: parseFloat(probaPouv),
         probaLoup: parseFloat(probaLoup),
       };
@@ -135,16 +128,7 @@ export default function CreateNewGame() {
       fetchData("partie", "POST", data)
         .then((json) => console.log(json))
         .catch((error) => console.log(error));
-
-      // fetch(`${BACKEND}/partie`, {
-      //     method: "POST",
-      //     headers: {"content-type": "application/x-www-form-urlencoded; charset=UTF-8"},
-      //     body: "data=" + JSON.stringify(data)
-      // })
-      // .then(res=> res.json())
-      // .then(json => console.log(json))
-      // .catch(error=>console.log(error));
-    }
+    //}
   }
 
   return (
@@ -170,82 +154,93 @@ export default function CreateNewGame() {
             </View>
           </View>
         </Modal>
-        <EntreeForm
-          Label={"Nombre de joueurs: "}
-          KeyBoardType={"numeric"}
-          onChange={setNbJoueur}
-          style={styles.input}
-          dataName={""}
+        <BarScrollInt
+        onPress={setNbJoueur}
+        title={"Nombre de joueurs"}
         />
-        <EntreeForm
-          Label={"Durée du jour: "}
-          KeyBoardType={"numeric"}
-          onChange={setDureeJour}
-          style={styles.input}
-          dataName={""}
-        />
-        <EntreeForm
-          Label={"Durée de la nuit: "}
-          KeyBoardType={"numeric"}
-          onChange={setDureeNuit}
-          style={styles.input}
-          dataName={""}
-        />
-        <View style={{ flex: 1, flexDirection: "row" }}>
-          <Text>Date de début: </Text>
-          <EntreeForm
-            Label={""}
-            KeyBoardType={"numeric"}
-            onChange={setDateDebJour}
-            style={styles.input}
-            dataName={"JJ"}
-          />
-          <Text> / </Text>
-          <EntreeForm
-            Label={""}
-            KeyBoardType={"numeric"}
-            onChange={setDateMois}
-            style={styles.input}
-            dataName={"MM"}
-          />
-          <Text> / </Text>
-          <EntreeForm
-            Label={""}
-            KeyBoardType={"numeric"}
-            onChange={setDateDebAnnee}
-            style={styles.input}
-            dataName={"AAAA"}
-          />
-          <Text> : </Text>
-          <EntreeForm
-            Label={""}
-            KeyBoardType={"numeric"}
-            onChange={setHeureDeb}
-            style={styles.input}
-            dataName={"Heures"}
-          />
-          <Text> : </Text>
-          <EntreeForm
-            Label={""}
-            KeyBoardType={"numeric"}
-            onChange={setMinDeb}
-            style={styles.input}
-            dataName={"Mins"}
-          />
+        <View style = {{flex: 1, alignItems: 'center'}}>
+          <Text style = {styles.textGros}>Le jour durera:</Text>
+          <View style = {{flex: 1, alignItems: 'center', flexDirection: 'row', justifyContent:'center'}}>
+            <Pressable onPress = {() => setShowDureeJour(true)}>
+              <Text style = {styles.selecDate}>{TextDureeJour}</Text>
+            </Pressable>
+          </View>
         </View>
-        <EntreeForm
-          Label={"Probabilité d'apparition des pouvoirs: "}
-          KeyBoardType={"numeric"}
-          onChange={setProbaPouv}
-          style={styles.input}
-        />
-        <EntreeForm
-          Label={"Probabilité d'apparition des loups: "}
-          KeyBoardType={"numeric"}
-          onChange={setProbaLoup}
-          style={styles.input}
-        />
-        <View style={{ flex: 1, flexDirection: "row" }}>
+        {showDureeJour && (
+              <DateTimePicker
+              testID="dateTimePicker"
+              value={dureeJour}
+              mode={"time"}
+              is24Hour={true}
+              display='default'
+              onChange={onChangeDureeJour}
+              />)}
+
+        <View style = {{flex: 1, alignItems: 'center'}}>
+          <Text style = {styles.textGros}>La nuit durera:</Text>
+          <View style = {{flex: 1, alignItems: 'center', flexDirection: 'row', justifyContent:'center'}}>
+            <Pressable onPress = {() => setShowDureeNuit(true)}>
+              <Text style = {styles.selecDate}>{TextDureeNuit}</Text>
+            </Pressable>
+          </View>
+        </View>
+        {showDureeNuit && (
+              <DateTimePicker
+              testID="dateTimePicker"
+              value={dureeNuit}
+              mode={"time"}
+              is24Hour={true}
+              display='default'
+              onChange={onChangeDurerNuit}
+              />)}
+        <View style = {{flex: 1, alignItems: 'center'}}>
+          <Text style = {styles.textGros}>Le début de la partie sera le:</Text>
+          <View style = {{flex: 1, alignItems: 'center', flexDirection: 'row', justifyContent:'center'}}>
+            <Pressable onPress = {() => showMode('date')}>
+              <Text style = {styles.selecDate}>{text}</Text>
+            </Pressable>
+            <Text style = {styles.textGros}> à : </Text>
+            <Pressable onPress = {() => showMode('time')}>
+              <Text style = {styles.selecDate}>{horraire}</Text>
+            </Pressable>
+          </View>
+        </View>
+        {show && (
+              <DateTimePicker
+              testID="dateTimePicker"
+              value={date}
+              mode={mode}
+              is24Hour={true}
+              display='default'
+              onChange={onChange}
+              />)}
+        
+        <View style = {{flex:1, alignItems: 'center'}}>
+          <Text style = {styles.textGros}>Proba d'apparition des loups: {probaLoup}</Text>
+          <Slider
+            style={{width: "100%", height: 10}}
+            minimumValue={0}
+            maximumValue={1}
+            minimumTrackTintColor="rgb(255,0,0)"
+            maximumTrackTintColor="rgb(0,0,255)"
+            value = {parseFloat(probaLoup)}
+            onValueChange = {(value) => setProbaLoup(value.toString())}
+            />
+        </View>
+
+        <View style = {{flex:1, alignItems: 'center'}}>
+          <Text style = {styles.textGros}>Proba d'apparition des pouvoirs: {probaPouv}</Text>
+          <Slider
+            style={{width: "100%", height: 10}}
+            minimumValue={0}
+            maximumValue={1}
+            minimumTrackTintColor="rgb(255,0,0)"
+            maximumTrackTintColor="rgb(0,0,255)"
+            value = {parseFloat(probaPouv)}
+            onValueChange = {(value) => setProbaPouv(value.toString())}
+            />
+        </View>
+        <View style={{ flex: 1, flexDirection: "row", justifyContent: 'center' }}>
           <SizedButton
             buttonLabel={"Créer la partie"}
             onPress={() => creationPartie()}
@@ -260,6 +255,11 @@ export default function CreateNewGame() {
 }
 
 const styles = StyleSheet.create({
+  selecDate:{
+    borderWidth: 1,
+    textAlign: 'center',
+    padding: 5,
+  },
   centeredView: {
     flex: 1,
     justifyContent: "center",
@@ -321,6 +321,7 @@ const styles = StyleSheet.create({
     display: "flex",
     flexDirection: "column",
     height: "100%",
+    justifyContent: 'center'
   },
   header: {
     width: "100%",
@@ -333,6 +334,10 @@ const styles = StyleSheet.create({
   },
   welcomeText: {
     color: "white",
+  },
+  textGros: {
+    fontSize: 17,
+    fontWeight: "bold"
   },
   disconnectButtonLabel: {
     color: "white",

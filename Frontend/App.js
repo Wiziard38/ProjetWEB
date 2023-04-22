@@ -92,6 +92,7 @@ export default function App() {
             <ListMyGames />
           ) : (
             <CreateNewGame />
+            
           )}
         </View>
       )}

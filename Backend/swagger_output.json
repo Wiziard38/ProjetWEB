@@ -32,8 +32,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "201": {
+            "description": "Created"
           },
           "401": {
             "description": "Unauthorized"
@@ -62,8 +62,8 @@
           }
         ],
         "responses": {
-          "200": {
-            "description": "OK"
+          "201": {
+            "description": "Created"
           },
           "401": {
             "description": "Unauthorized"
@@ -76,12 +76,40 @@
         "description": "",
         "parameters": [
           {
+            "name": "x-access-token",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "type": "string"
+          },
+          {
             "name": "body",
             "in": "body",
             "schema": {
               "type": "object",
               "properties": {
-                "data": {
+                "token": {
+                  "example": "any"
+                },
+                "nbJoueur": {
+                  "example": "any"
+                },
+                "dureeJour": {
+                  "example": "any"
+                },
+                "dureeNuit": {
+                  "example": "any"
+                },
+                "date": {
+                  "example": "any"
+                },
+                "probaPouv": {
+                  "example": "any"
+                },
+                "probaLoup": {
                   "example": "any"
                 }
               }
@@ -91,15 +119,38 @@
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           }
         }
       },
       "get": {
         "description": "",
-        "parameters": [],
+        "parameters": [
+          {
+            "name": "x-access-token",
+            "in": "header",
+            "type": "string"
+          },
+          {
+            "name": "token",
+            "in": "query",
+            "type": "string"
+          }
+        ],
         "responses": {
           "200": {
             "description": "OK"
+          },
+          "401": {
+            "description": "Unauthorized"
+          },
+          "403": {
+            "description": "Forbidden"
           },
           "500": {
             "description": "Internal Server Error"
