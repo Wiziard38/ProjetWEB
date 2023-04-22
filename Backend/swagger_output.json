@@ -109,21 +109,6 @@
             "schema": {
               "type": "object",
               "properties": {
-                "dateDebAnnee": {
-                  "example": "any"
-                },
-                "dateDebMois": {
-                  "example": "any"
-                },
-                "dateDebJour": {
-                  "example": "any"
-                },
-                "HeureDeb": {
-                  "example": "any"
-                },
-                "MinDeb": {
-                  "example": "any"
-                },
                 "nbJoueur": {
                   "example": "any"
                 },
@@ -131,6 +116,9 @@
                   "example": "any"
                 },
                 "dureeNuit": {
+                  "example": "any"
+                },
+                "dateDeb": {
                   "example": "any"
                 },
                 "probaPouv": {
@@ -146,9 +134,6 @@
         "responses": {
           "200": {
             "description": "OK"
-          },
-          "500": {
-            "description": "Internal Server Error"
           }
         }
       },

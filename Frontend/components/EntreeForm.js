@@ -1,5 +1,5 @@
 import React from "react";
-import { View, Text, TextInput } from "react-native";
+import { View, Text, TextInput, StyleSheet } from "react-native";
 import PropTypes from "prop-types";
 
 export default function EntreeForm({
@@ -10,7 +10,7 @@ export default function EntreeForm({
   dataName,
 }) {
   return (
-    <View style={{ flex: 1, flexDirection: "row" }}>
+    <View style={{ flex: 1, flexDirection: "row", alignItems: 'center' }}>
       <Text>{label}</Text>
       <TextInput
         keyboardType={keyboardType}

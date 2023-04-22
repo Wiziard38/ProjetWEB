@@ -9,33 +9,17 @@ const { Op } = require("sequelize");
 
 module.exports = {
   async createGame(req, res) {
-    console.log("createGame");
-    try {
-      const data = req.body;
-      const date = new Date(
-        Date.UTC(
-          data.dateDebAnnee,
-          data.dateDebMois - 1,
-          data.dateDebJour,
-          data.HeureDeb,
-          data.MinDeb,
-          0,
-          0
-        )
-      );
-      await gamesModel.create({
-        nbJoueur: data.nbJoueur,
-        dureeJour: data.dureeJour,
-        dureeNuit: data.dureeNuit,
-        dateDeb: date,
-        probaPouv: data.probaPouv,
-        probaLoup: data.probaLoup,
-      });
-      res.json({ status: true });
-    } catch (error) {
-      console.error(error);
-      res.status(500).json({ error: "Internal server error" });
-    }
+    const data = req.body;
+    console.log(data);
+    await gamesModel.create({
+      nbJoueur: data.nbJoueur,
+      dureeJour: data.dureeJour,
+      dureeNuit: data.dureeNuit,
+      dateDeb: data.dateDeb,
+      probaPouv: data.probaPouv,
+      probaLoup: data.probaLoup,
+    });
+    res.json({ status: true });
   },
 
   async listMyGames(req, res) {
