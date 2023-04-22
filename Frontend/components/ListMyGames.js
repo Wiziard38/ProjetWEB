@@ -1,6 +1,6 @@
 import { useState, useEffect, React } from "react";
 import { StyleSheet, View } from "react-native";
-import ListParties from "./ListParties";
+import ListGames from "./ListGames";
 import { fetchData } from "../utils/fetchData";
 import PropTypes from "prop-types";
 
@@ -13,7 +13,7 @@ export default function ListMyGames({ onDisconnect }) {
 
   useEffect(() => {
     // TODO, uniquement parties auxquelles joueur X participe
-    fetchData("partie", "GET")
+    fetchData("game", "GET")
       .then((data) => {
         if (data.token === false) {
           onDisconnect();
@@ -26,10 +26,11 @@ export default function ListMyGames({ onDisconnect }) {
   }, []);
 
   function joinMyGame() {
+    console.log("joinMyGame")
     // TODO
 
     console.log(selectedId);
-    // fetch(`${BACKEND}/partie/${selectedId}`, {
+    // fetch(`${BACKEND}/game/${selectedId}`, {
     //   method: "POST",
     //   headers: {
     //     "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
@@ -42,7 +43,7 @@ export default function ListMyGames({ onDisconnect }) {
 
   return (
     <View style={styles.container}>
-      <ListParties
+      <ListGames
         descriptiveLabel={"Liste des parties auxquelles vous participez déjà : (TODO)"}
         parties={parties}
         selectedId={selectedId}

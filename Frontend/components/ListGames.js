@@ -11,7 +11,7 @@ import SizedText from "./SizedText";
 import SizedButton from "./SizedButton";
 import PropTypes from "prop-types";
 
-export default function ListParties({
+export default function ListGames({
   descriptiveLabel,
   parties,
   onPress,
@@ -27,12 +27,12 @@ export default function ListParties({
     height - statusBarHeight - headerHeight - 2 * containerVerticalMargins;
 
   function selectItem(item) {
-    setSelectedId(item.id);
+    setSelectedId(item.idGame);
   }
 
   function renderItem({ item }) {
-    const backgroundColor = item.id === selectedId ? "#668687" : "#747474";
-    const color = item.id === selectedId ? "white" : "black";
+    const backgroundColor = item.idGame === selectedId ? "#668687" : "#747474";
+    const color = item.idGame === selectedId ? "white" : "black";
 
     return (
       <TouchableOpacity
@@ -40,12 +40,12 @@ export default function ListParties({
         style={[styles.item, { backgroundColor }]}
       >
         <SizedText
-          label={`Partie n˚ ${item.id}`}
+          label={`Partie n˚ ${item.idGame}`}
           size={"large"}
           textStyle={{ color }}
         />
 
-        {item.id === selectedId && (
+        {item.idGame === selectedId && (
           <View style={styles.itemDetails}>
             <SizedText
               label={`Nombre de joueurs : ${item.nbJoueur}`}
@@ -110,7 +110,7 @@ export default function ListParties({
       <FlatList
         data={parties}
         renderItem={renderItem}
-        keyExtractor={(item) => item.id}
+        keyExtractor={(item) => item.idGame}
         extraData={selectedId}
         style={styles.itemList}
         ListEmptyComponent={noGames}
@@ -162,7 +162,7 @@ const styles = StyleSheet.create({
   },
 });
 
-ListParties.propTypes = {
+ListGames.propTypes = {
   descriptiveLabel: PropTypes.string.isRequired,
   parties: PropTypes.array.isRequired,
   onPress: PropTypes.func.isRequired,

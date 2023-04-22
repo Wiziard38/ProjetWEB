@@ -110,7 +110,7 @@ export default function CreateNewGame({ onDisconnect }) {
   }
 
   function creationPartie() {
-    console.log("creation partie");
+    console.log("creationPartie");
     if (verificationDonnee()) {
       const data = {
         nbJoueur: parseInt(nbJoueur),
@@ -125,7 +125,7 @@ export default function CreateNewGame({ onDisconnect }) {
         probaLoup: parseFloat(probaLoup),
       };
 
-      fetchData("partie", "POST", data)
+      fetchData("game", "POST", data)
         .then((json) => {
           if (json.token === false) {
             onDisconnect();
@@ -135,15 +135,6 @@ export default function CreateNewGame({ onDisconnect }) {
           }
         })
         .catch((error) => console.log(error));
-
-      // fetch(`${BACKEND}/partie`, {
-      //     method: "POST",
-      //     headers: {"content-type": "application/x-www-form-urlencoded; charset=UTF-8"},
-      //     body: "data=" + JSON.stringify(data)
-      // })
-      // .then(res=> res.json())
-      // .then(json => console.log(json))
-      // .catch(error=>console.log(error));
     }
   }
 

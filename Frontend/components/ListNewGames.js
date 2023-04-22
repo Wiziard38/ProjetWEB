@@ -1,6 +1,6 @@
 import { useState, useEffect, React } from "react";
 import { StyleSheet, View } from "react-native";
-import ListParties from "./ListParties";
+import ListGames from "./ListGames";
 import { fetchData } from "../utils/fetchData";
 import PropTypes from "prop-types";
 
@@ -9,7 +9,7 @@ export default function ListNewGames({ onDisconnect }) {
   const [selectedId, setSelectedId] = useState(null);
 
   useEffect(() => {
-    fetchData("partie", "GET")
+    fetchData("game/newgame", "GET")
       .then((data) => {
         if (data.token === false) {
           onDisconnect();
@@ -22,23 +22,15 @@ export default function ListNewGames({ onDisconnect }) {
   }, []);
 
   function joinNewGame() {
-    // TODO
-
-    console.log(selectedId);
-    // fetch(`${BACKEND}/partie/${selectedId}`, {
-    //   method: "POST",
-    //   headers: {
-    //     "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-    //   },
-    // })
-    //   .then((res) => res.json())
-    //   .then((json) => setParties(json))
-    //   .catch((error) => console.log(error));
+    console.log("joinNewGame");
+    fetchData(`game/newgame/${selectedId}`, "POST")
+      //.then((json) => setParties(json))
+      .catch((error) => console.log(error));
   }
 
   return (
     <View style={styles.container}>
-      <ListParties
+      <ListGames
         descriptiveLabel={"Liste des parties que vous pouvez rejoindre :"}
         parties={parties}
         selectedId={selectedId}
