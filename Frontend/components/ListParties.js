@@ -6,7 +6,6 @@ import {
   FlatList,
   TouchableOpacity,
   Dimensions,
-  useWindowDimensions,
 } from "react-native";
 import SizedText from "./SizedText";
 import SizedButton from "./SizedButton";
@@ -24,7 +23,6 @@ export default function ListParties({
   const statusBarHeight = StatusBar.currentHeight ?? 0;
   const headerHeight = 50;
   const containerVerticalMargins = 15;
-  const textHeight = 48;
   const flatListHeight =
     height - statusBarHeight - headerHeight - 2 * containerVerticalMargins;
 
@@ -132,9 +130,6 @@ const styles = StyleSheet.create({
   },
   itemList: {
     marginTop: 10,
-  },
-  title: {
-    fontWeight: "bold",
   },
   item: {
     paddingVertical: 10,

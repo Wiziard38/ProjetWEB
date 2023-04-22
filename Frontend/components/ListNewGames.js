@@ -1,7 +1,6 @@
 import { useState, useEffect, React } from "react";
 import { StyleSheet, View } from "react-native";
 import ListParties from "./ListParties";
-import SizedText from "./SizedText";
 import { fetchData } from "../utils/fetchData";
 import PropTypes from "prop-types";
 
