@@ -43,18 +43,22 @@ function initNamespace(gameID) {
   
       //During the day everyone can send and receive message
       if(state === State.DAY) {
-  
+        if(team !== Team.DEATH) {
+          namespace.emit(mes);
+        }
       } else if(state === State.NIGHT) {
         const role = GameManager.socketToRoles(socket.id);
         const team = GameManager.socketToTeam(socket.id);
   
-        if(role === Roles.ELECTED) {
-          // Check if the death is during a spiritism session
-        } else if(role === Roles.SPIRITISM) {
+        if(role === Roles.SPIRITISM || role === Roles.ELECTED) {
           // Check if the human can talk to deads
-
+          namespace.to(Roles.ELECTED).to(Roles.SPIRITISM).emit(mes);
+          
         } else if(team === Team.WEREWOLF) {
           namespace.to(Team.WEREWOLF).to(Roles.INSOMNIA).emit(mes);
+        } else {
+          // Truc illégal !
+          socket.emit("");
         }
   
       }
@@ -72,21 +76,22 @@ function initNamespace(gameID) {
   
     socket.on('contamination', (username) => {
       // When the player contaminate someone 
-      if(GameManager.socketToRoles(socket.id) === Roles.CONTAMINATION) {
-        
+      if(GameManager.validRole(socket.id, Roles.CONTAMINATION)) {
+        //Vérifier si le pouvoir a été utilisé deux fois ?
       }
     })
   
     socket.on('spiritism', (username) => {
       // Check if the player have spiritism's role
-      if(GameManager.socketToRoles(socket.id) === Roles.SPIRITISM) {
+      if(GameManager.validRole(socket.id, Roles.SPIRITISM)) {
         
         // Vérifier si le username est bien mort
+        // Faire 
       }
     })
   
     socket.on('psychic', (name) => {
-      if(GameManager.socketToRoles(socket.id) === Roles.PSYCHIC) {
+      if(GameManager.validRole(socket.id, Roles.PSYCHIC)) {
         
       }
     })
