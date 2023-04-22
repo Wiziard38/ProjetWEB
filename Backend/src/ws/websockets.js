@@ -61,6 +61,7 @@ io.on('connection', function (socket) {
 
   socket.on('eazy', function (msg) {
     console.log(msg);
+    console.log(socket.id);
   });
 
   socket.on('msg_village', function (msg) {
