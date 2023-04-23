@@ -88,8 +88,8 @@ export default function App() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar translucent={false} backgroundColor="rgb(105, 105, 105)" />
+    <SafeAreaView style={[styles.container, { backgroundColor: "white" }]}>
+      <StatusBar translucent={false} backgroundColor="white" />
 
       {!token ? (
         // If no token (user non connected)
@@ -102,7 +102,7 @@ export default function App() {
         />
       ) : (
         // If token (user connected)
-        <View style={styles.container}>
+        <View style={[styles.container, { backgroundColor: "white" }]}>
           <ConnectedHeader
             username={connectedUsername}
             onDisconnect={disconnect}
@@ -117,7 +117,10 @@ export default function App() {
           ) : menuState === 2 ? (
             <ListMyGames onDisconnect={disconnect} />
           ) : (
-            <CreateNewGame setMenuState={setMenuState} onDisconnect={disconnect} />
+            <CreateNewGame
+              setMenuState={setMenuState}
+              onDisconnect={disconnect}
+            />
           )}
         </View>
       )}
