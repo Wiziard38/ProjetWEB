@@ -1,15 +1,16 @@
 import { React, useState, useEffect } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Platform, Pressable } from "react-native";
 import SizedText from "../SizedText";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import PropTypes from "prop-types";
 
 export default function TimeChoose({ mode, dureePeriode, setDureePeriode }) {
   const [TextDureePeriode, setTextDureePeriode] = useState("heures:minutes");
+  const isAndroid = Platform.OS === "android";
+  const [androidShow, setAndroidShow] = useState(false);
 
   useEffect(() => {
     let textTime;
-    console.log(dureePeriode)
     if (mode === "time") {
       textTime =
         dureePeriode.getHours() + "h" + dureePeriode.getMinutes() + "min";
@@ -25,24 +26,33 @@ export default function TimeChoose({ mode, dureePeriode, setDureePeriode }) {
     setTextDureePeriode(textTime);
   }, [dureePeriode]);
 
+  function onPress() {
+    setAndroidShow(true);
+  }
+
   return (
     <View style={styles.container}>
-      <SizedText
-        label={TextDureePeriode}
-        size={"normal"}
-        textStyle={styles.dateContainer}
-      />
+      <Pressable onPress={onPress}>
+        <SizedText
+          label={TextDureePeriode}
+          size={"normal"}
+          textStyle={styles.dateContainer}
+        />
+      </Pressable>
 
       <View style={styles.invisiblePick}>
-        <DateTimePicker
-          value={dureePeriode}
-          mode={mode}
-          is24Hour={true}
-          display="default"
-          onChange={(_, selectedDate) => {
-            setDureePeriode(selectedDate);
-          }}
-        />
+        {(!isAndroid || androidShow) && (
+          <DateTimePicker
+            value={dureePeriode}
+            mode={mode}
+            is24Hour={true}
+            display="default"
+            onChange={(_, selectedDate) => {
+              setDureePeriode(selectedDate);
+              setAndroidShow(false);
+            }}
+          />
+        )}
       </View>
     </View>
   );

@@ -5,7 +5,9 @@ import SizedText from "../SizedText";
 import PropTypes from "prop-types";
 
 export default function ProbaIntSlider({ proba, setProba, labelProba }) {
+
   const numFactor = 10000;
+
   return (
     <View style={{ flex: 1, alignItems: "center" }}>
       <SizedText
@@ -31,7 +33,7 @@ export default function ProbaIntSlider({ proba, setProba, labelProba }) {
           clearTimeout(this.sliderTimeoutId);
           this.sliderTimeoutId = setTimeout(() => {
             setProba((value / numFactor).toString());
-          }, 1);
+          }, 5);
         }}
       />
     </View>

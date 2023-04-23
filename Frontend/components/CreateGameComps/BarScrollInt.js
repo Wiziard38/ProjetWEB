@@ -116,7 +116,7 @@ export default function BarScrollInt({ onPress, title }) {
 const styles = StyleSheet.create({
   titleStyle: {
     fontSize: 20,
-    fontFamily: "Arial",
+    // fontFamily: "Arial",
     color: "black",
     fontWeight: "bold",
   },
@@ -140,13 +140,13 @@ const styles = StyleSheet.create({
     color: "white",
     padding: 5,
     fontSize: 30,
-    fontFamily: "Arial",
+    // fontFamily: "Arial",
   },
   textStyleCenter: {
     color: "white",
     padding: 5,
     fontSize: 30,
-    fontFamily: "Arial",
+    // fontFamily: "Arial",
     borderRadius: 25,
     backgroundColor: "grey",
   },

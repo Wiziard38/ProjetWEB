@@ -28,19 +28,19 @@ export default function CreateNewGame({ onDisconnect }) {
   const [timeDebut, setTimeDebut] = useState(new Date());
 
   useEffect(() => {
-    setDureeJour(prevDate => {
+    setDureeJour((prevDate) => {
       const newDate = new Date(prevDate);
       newDate.setHours(1);
       newDate.setMinutes(0);
       return newDate;
     });
-    setDureeNuit(prevDate => {
+    setDureeNuit((prevDate) => {
       const newDate = new Date(prevDate);
       newDate.setHours(1);
       newDate.setMinutes(0);
       return newDate;
     });
-    setTimeDebut(prevDate => {
+    setTimeDebut((prevDate) => {
       const newDate = new Date(prevDate);
       newDate.setHours(9);
       newDate.setMinutes(0);
@@ -298,7 +298,7 @@ export default function CreateNewGame({ onDisconnect }) {
           {/* <Pressable onPress={() => showMode("date")}>
             <Text style={styles.selecDate}>{text}</Text>
           </Pressable> */}
-          <Text style={styles.beginText}>à :</Text>
+          <Text style={styles.beginText}>à</Text>
           <TimeChoose
             mode={"time"}
             dureePeriode={timeDebut}
@@ -362,14 +362,15 @@ const styles = StyleSheet.create({
   },
   itemText: {
     fontWeight: "bold",
-    marginBottom: 2,
+    marginBottom: 4,
   },
   itemStyleBegin: {
     flex: 1,
-    flexDirection: "row",
-    marginTop: 7,
-    alignItems: "center",
-    paddingBottom: 25,
+    justifyContent: 'flex-start',
+    alignItems: 'center',
+    flexDirection: 'row',
+    marginTop: 3,
+    marginBottom: 20,
   },
   beginText: {
     fontWeight: "bold",
