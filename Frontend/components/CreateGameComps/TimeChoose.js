@@ -4,35 +4,39 @@ import SizedText from "../SizedText";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import PropTypes from "prop-types";
 
-export default function TimeChoose({ titleLabel, dureePeriode, setDureePeriode }) {
+export default function TimeChoose({ mode, dureePeriode, setDureePeriode }) {
   const [TextDureePeriode, setTextDureePeriode] = useState("heures:minutes");
 
   useEffect(() => {
-    const fTime = dureePeriode.getHours() + "h" + dureePeriode.getMinutes() + "min";
-    setTextDureePeriode(fTime);
+    let textTime;
+    console.log(dureePeriode)
+    if (mode === "time") {
+      textTime =
+        dureePeriode.getHours() + "h" + dureePeriode.getMinutes() + "min";
+    } else {
+      textTime =
+        dureePeriode.getDate() +
+        "/" +
+        (dureePeriode.getMonth() + 1) +
+        "/" +
+        dureePeriode.getFullYear();
+    }
+
+    setTextDureePeriode(textTime);
   }, [dureePeriode]);
 
   return (
     <View style={styles.container}>
-      <SizedText
-        label={titleLabel}
-        size="large"
-        textStyle={{ fontWeight: "bold" }}
-      />
-
       <SizedText
         label={TextDureePeriode}
         size={"normal"}
         textStyle={styles.dateContainer}
       />
 
-      <View
-        style={{ opacity: 0, position: "absolute", bottom: 15, right: "40%" }}
-      >
+      <View style={styles.invisiblePick}>
         <DateTimePicker
-          testID="dateTimePicker"
           value={dureePeriode}
-          mode={"time"}
+          mode={mode}
           is24Hour={true}
           display="default"
           onChange={(_, selectedDate) => {
@@ -46,10 +50,15 @@ export default function TimeChoose({ titleLabel, dureePeriode, setDureePeriode }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    flexDirection: "column",
-    alignItems: "center",
-    justifyContent: "center",
+    // flex: 1,
+    // flexDirection: "column",
+    // alignItems: "left",
+  },
+  invisiblePick: {
+    opacity: 0.1,
+    position: "absolute",
+    right: 0,
+    top: 0,
   },
   dateContainer: {
     borderWidth: 1,
@@ -57,12 +66,11 @@ const styles = StyleSheet.create({
     backgroundColor: "#62bada3a",
     textAlign: "center",
     padding: 5,
-    margin: 5,
   },
 });
 
 TimeChoose.propTypes = {
-  titleLabel: PropTypes.string.isRequired,
-  dureeJour: PropTypes.object.isRequired,
-  setDureeJour: PropTypes.func.isRequired,
+  mode: PropTypes.string.isRequired,
+  dureePeriode: PropTypes.object.isRequired,
+  setDureePeriode: PropTypes.func.isRequired,
 };

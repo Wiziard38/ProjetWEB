@@ -1,4 +1,4 @@
-import { useState, React } from "react";
+import { useState, React, useEffect } from "react";
 import PropTypes from "prop-types";
 import {
   StyleSheet,
@@ -10,10 +10,11 @@ import {
 } from "react-native";
 import { fetchData } from "../utils/fetchData";
 import SizedButton from "./SizedButton";
-import BarScrollInt from "./CreateGameComp/BarScrollInt";
+import SizedText from "./SizedText";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import ProbaIntSlider from "./CreateGameComp/ProbaIntSlider";
-import TimeChoose from "./CreateGameComp/TimeChoose";
+import ProbaIntSlider from "./CreateGameComps/ProbaIntSlider";
+import BarScrollInt from "./CreateGameComps/BarScrollInt";
+import TimeChoose from "./CreateGameComps/TimeChoose";
 
 export default function CreateNewGame({ onDisconnect }) {
   const [date, setDate] = useState(new Date());
@@ -22,8 +23,31 @@ export default function CreateNewGame({ onDisconnect }) {
   const [horraire, setHorraire] = useState("heure:mins");
   const [text, setText] = useState("JJ/MM/AAAA");
 
-  const [dureeJour, setDureeJour] = useState(new Date(1000));
-  const [dureeNuit, setDureeNuit] = useState(new Date(1000));
+  const [dureeJour, setDureeJour] = useState(new Date());
+  const [dureeNuit, setDureeNuit] = useState(new Date());
+  const [timeDebut, setTimeDebut] = useState(new Date());
+
+  useEffect(() => {
+    setDureeJour(prevDate => {
+      const newDate = new Date(prevDate);
+      newDate.setHours(1);
+      newDate.setMinutes(0);
+      return newDate;
+    });
+    setDureeNuit(prevDate => {
+      const newDate = new Date(prevDate);
+      newDate.setHours(1);
+      newDate.setMinutes(0);
+      return newDate;
+    });
+    setTimeDebut(prevDate => {
+      const newDate = new Date(prevDate);
+      newDate.setHours(9);
+      newDate.setMinutes(0);
+      return newDate;
+    });
+  }, []);
+
   const [showDureeJour, setShowDureeJour] = useState(false);
   const [showDureeNuit, setShowDureeNuit] = useState(false);
   const [TextDureeJour, setTextDureeJour] = useState("Heures:mins");
@@ -136,7 +160,7 @@ export default function CreateNewGame({ onDisconnect }) {
       nbJoueur: parseInt(nbJoueur),
       dureeJour: dureeJour.getHours() * 3600 + dureeJour.getMinutes() * 60,
       dureeNuit: dureeNuit.getHours() * 3600 + dureeNuit.getMinutes() * 60,
-      dateDeb: date,
+      dateDeb: timeDebut,
       probaPouv: parseFloat(probaPouv),
       probaLoup: parseFloat(probaLoup),
     };
@@ -155,38 +179,44 @@ export default function CreateNewGame({ onDisconnect }) {
   }
 
   return (
-    <View>
-      <View style={styles.container}>
-        <Modal
-          animationType="slide"
-          transparent={true}
-          visible={modalVisible}
-          onRequestClose={() => {
-            setModalVisible(!modalVisible);
-          }}
-        >
-          <View style={styles.centeredView}>
-            <View style={styles.modalView}>
-              <Text style={styles.modalText}>{textError}</Text>
-              <Pressable
-                style={[styles.button, styles.buttonClose]}
-                onPress={() => setModalVisible(!modalVisible)}
-              >
-                <Text style={styles.textStyle}>Fermer</Text>
-              </Pressable>
-            </View>
+    <View style={styles.container}>
+      <Modal
+        animationType="slide"
+        transparent={true}
+        visible={modalVisible}
+        onRequestClose={() => {
+          setModalVisible(!modalVisible);
+        }}
+      >
+        <View style={styles.centeredView}>
+          <View style={styles.modalView}>
+            <Text style={styles.modalText}>{textError}</Text>
+            <Pressable
+              style={[styles.button, styles.buttonClose]}
+              onPress={() => setModalVisible(!modalVisible)}
+            >
+              <Text style={styles.textStyle}>Fermer</Text>
+            </Pressable>
           </View>
-        </Modal>
+        </View>
+      </Modal>
 
-        <BarScrollInt onPress={setNbJoueur} title={"Nombre de joueurs"} />
+      <BarScrollInt onPress={setNbJoueur} title={"Nombre de joueurs"} />
 
+      <View style={styles.itemStyle}>
+        <SizedText
+          label={"Durée d'un jour :"}
+          size="large"
+          textStyle={styles.itemText}
+        />
         <TimeChoose
-          titleLabel={"Durée d'un jour :"}
+          mode={"time"}
           dureePeriode={dureeJour}
           setDureePeriode={setDureeJour}
         />
+      </View>
 
-        {/* 
+      {/* 
         <View style={{ flex: 1, alignItems: "center" }}>
           <Text style={styles.textGros}>Le jour durera:</Text>
           <View
@@ -213,7 +243,20 @@ export default function CreateNewGame({ onDisconnect }) {
           />
         )} */}
 
-        <View style={{ flex: 1, alignItems: "center" }}>
+      <View style={styles.itemStyle}>
+        <SizedText
+          label={"Durée d'une nuit :"}
+          size="large"
+          textStyle={styles.itemText}
+        />
+        <TimeChoose
+          mode={"time"}
+          dureePeriode={dureeNuit}
+          setDureePeriode={setDureeNuit}
+        />
+      </View>
+
+      {/* <View style={{ flex: 1, alignItems: "center" }}>
           <Text style={styles.textGros}>La nuit durera:</Text>
           <View
             style={{
@@ -237,66 +280,101 @@ export default function CreateNewGame({ onDisconnect }) {
             display="default"
             onChange={onChangeDurerNuit}
           />
-        )}
-        <View style={{ flex: 1, alignItems: "center" }}>
-          <Text style={styles.textGros}>Le début de la partie sera le:</Text>
-          <View
-            style={{
-              flex: 1,
-              alignItems: "center",
-              flexDirection: "row",
-              justifyContent: "center",
-            }}
-          >
-            <Pressable onPress={() => showMode("date")}>
-              <Text style={styles.selecDate}>{text}</Text>
-            </Pressable>
-            <Text style={styles.textGros}> à : </Text>
-            <Pressable onPress={() => showMode("time")}>
-              <Text style={styles.selecDate}>{horraire}</Text>
-            </Pressable>
-          </View>
-        </View>
-        {show && (
-          <DateTimePicker
-            testID="dateTimePicker"
-            value={date}
-            mode={mode}
-            is24Hour={true}
-            display="default"
-            onChange={onChange}
-          />
-        )}
+        )} */}
 
-        <ProbaIntSlider
-          labelProba={"Probabilité d'apparition d'un loup"}
-          proba={probaLoup}
-          setProba={setProbaLoup}
+      <View style={styles.itemStyle}>
+        <SizedText
+          label={"La partie commencera le :"}
+          size="large"
+          textStyle={{ fontWeight: "bold" }}
         />
-
-        <ProbaIntSlider
-          labelProba={"Probabilité d'obtention d'un pouvoir"}
-          proba={probaPouv}
-          setProba={setProbaPouv}
-        />
-
-        <View
-          style={{ flex: 1, flexDirection: "row", justifyContent: "center" }}
-        >
-          <SizedButton
-            buttonLabel={"Créer la partie"}
-            onPress={() => creationPartie()}
-            size={"small"}
-            buttonLabelStyle={styles.selectionButton}
-            buttonStyle={styles.selectionButtonLabel}
+        <View style={styles.itemStyleBegin}>
+          <TimeChoose
+            mode={"date"}
+            dureePeriode={timeDebut}
+            setDureePeriode={setTimeDebut}
           />
+
+          {/* <Pressable onPress={() => showMode("date")}>
+            <Text style={styles.selecDate}>{text}</Text>
+          </Pressable> */}
+          <Text style={styles.beginText}>à :</Text>
+          <TimeChoose
+            mode={"time"}
+            dureePeriode={timeDebut}
+            setDureePeriode={setTimeDebut}
+          />
+          {/* <Pressable onPress={() => showMode("time")}>
+            <Text style={styles.selecDate}>{horraire}</Text>
+          </Pressable> */}
         </View>
+      </View>
+      {/* {show && (
+        <DateTimePicker
+          testID="dateTimePicker"
+          value={date}
+          mode={mode}
+          is24Hour={true}
+          display="default"
+          onChange={onChange}
+        />
+      )} */}
+
+      <ProbaIntSlider
+        labelProba={"Probabilité d'apparition d'un loup"}
+        proba={probaLoup}
+        setProba={setProbaLoup}
+      />
+
+      <ProbaIntSlider
+        labelProba={"Probabilité d'obtention d'un pouvoir"}
+        proba={probaPouv}
+        setProba={setProbaPouv}
+      />
+
+      <View style={{ flex: 1, justifyContent: "center", alignSelf: "center" }}>
+        <SizedButton
+          buttonLabel={"Créer la partie"}
+          onPress={() => creationPartie()}
+          size={"small"}
+          buttonLabelStyle={styles.selectionButton}
+          buttonStyle={styles.selectionButtonLabel}
+        />
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    flexDirection: "column",
+    // justifyContent: "space-between",
+    height: "100%",
+    marginHorizontal: 15,
+    marginVertical: 7,
+  },
+  itemStyle: {
+    flex: 1,
+    flexDirection: "column",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  itemText: {
+    fontWeight: "bold",
+    marginBottom: 2,
+  },
+  itemStyleBegin: {
+    flex: 1,
+    flexDirection: "row",
+    marginTop: 7,
+    alignItems: "center",
+    paddingBottom: 25,
+  },
+  beginText: {
+    fontWeight: "bold",
+    marginHorizontal: 10,
+  },
   selecDate: {
     borderWidth: 1,
     textAlign: "center",
@@ -358,13 +436,6 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     height: 40,
     width: 50,
-  },
-  container: {
-    display: "flex",
-    flexDirection: "column",
-    height: "100%",
-    marginHorizontal: 15,
-    justifyContent: "center",
   },
   header: {
     width: "100%",
