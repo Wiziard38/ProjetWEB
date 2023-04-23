@@ -117,7 +117,7 @@ export default function App() {
           ) : menuState === 2 ? (
             <ListMyGames onDisconnect={disconnect} />
           ) : (
-            <CreateNewGame onDisconnect={disconnect} />
+            <CreateNewGame setMenuState={setMenuState} onDisconnect={disconnect} />
           )}
         </View>
       )}

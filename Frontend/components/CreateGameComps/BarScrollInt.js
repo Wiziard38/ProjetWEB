@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { View, Dimensions, Pressable, StyleSheet, Image } from "react-native";
 import SizedText from "../SizedText";
 import PropTypes from "prop-types";
@@ -7,12 +7,11 @@ import flecheDroite from "../../static/images/fleche-droite.png";
 
 const windowWidth = Dimensions.get("window").width;
 
-export default function BarScrollInt({ onPress, title }) {
-  const [valeur, setValeur] = useState(5);
+export default function BarScrollInt({ nbJoueur, setNbJoueur, title }) {
   const minValue = 5;
 
-  const Item = ({ offset, valeur }) => {
-    const newValue = valeur + offset;
+  const Item = ({ offset }) => {
+    const newValue = nbJoueur + offset;
     const itemWidth = windowWidth * 0.1;
 
     return (
@@ -24,8 +23,7 @@ export default function BarScrollInt({ onPress, title }) {
         ]}
         onPress={() => {
           if (newValue >= minValue) {
-            setValeur(newValue);
-            onPress(newValue.toString());
+            setNbJoueur(newValue);
           }
         }}
       >
@@ -41,16 +39,19 @@ export default function BarScrollInt({ onPress, title }) {
     );
   };
 
-  const Arrow = ({ offset, valeur, left }) => {
+  Item.propTypes = {
+    offset: PropTypes.number.isRequired,
+  };
+  
+  const Arrow = ({ offset, left }) => {
     const imageSource = left ? flecheGauche : flecheDroite;
-    const newValue = valeur + offset;
+    const newValue = nbJoueur + offset;
 
     return (
       <Pressable
         onPress={() => {
           if (newValue >= minValue) {
-            setValeur(newValue);
-            onPress(newValue.toString());
+            setNbJoueur(newValue);
           }
         }}
       >
@@ -59,24 +60,29 @@ export default function BarScrollInt({ onPress, title }) {
     );
   };
 
+  Arrow.propTypes = {
+    offset: PropTypes.number.isRequired,
+    left: PropTypes.bool.isRequired,
+  };
+
   return (
     <View style={{ flex: 1, alignItems: "center" }}>
       <SizedText label={title} size={"large"} textStyle={styles.titleStyle} />
 
       <View style={styles.sliderStyle}>
-        <Arrow offset={-1} valeur={valeur} left={true} />
+        <Arrow offset={-1} left={true} />
 
         <View style={styles.header}>
-          <Item offset={-3} valeur={valeur} />
-          <Item offset={-2} valeur={valeur} />
-          <Item offset={-1} valeur={valeur} />
-          <Item offset={0} valeur={valeur} />
-          <Item offset={+1} valeur={valeur} />
-          <Item offset={+2} valeur={valeur} />
-          <Item offset={+3} valeur={valeur} />
+          <Item offset={-3} />
+          <Item offset={-2} />
+          <Item offset={-1} />
+          <Item offset={0} />
+          <Item offset={+1} />
+          <Item offset={+2} />
+          <Item offset={+3} />
         </View>
 
-        <Arrow offset={+1} valeur={valeur} left={false} />
+        <Arrow offset={+1} left={false} />
       </View>
     </View>
   );
@@ -114,6 +120,7 @@ const styles = StyleSheet.create({
 });
 
 BarScrollInt.propTypes = {
-  onPress: PropTypes.func.isRequired,
+  nbJoueur: PropTypes.number.isRequired,
+  setNbJoueur: PropTypes.func.isRequired,
   title: PropTypes.string.isRequired,
 };
