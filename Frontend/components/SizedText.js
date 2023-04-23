@@ -18,6 +18,8 @@ export default function SizedText({ label, size, textStyle }) {
     textSize = width / 20;
   } else if (size === "xlarge") {
     textSize = width / 16;
+  } else if (size === "xxlarge") {
+    textSize = width / 14;
   }
 
   return (
@@ -29,7 +31,13 @@ export default function SizedText({ label, size, textStyle }) {
 
 SizedText.propTypes = {
   label: PropTypes.string.isRequired,
-  size: PropTypes.oneOf(["mini", "small", "normal", "large", "xlarge"])
-    .isRequired,
-  textStyle: PropTypes.object,
+  size: PropTypes.oneOf([
+    "mini",
+    "small",
+    "normal",
+    "large",
+    "xlarge",
+    "xxlarge",
+  ]).isRequired,
+  textStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
 };

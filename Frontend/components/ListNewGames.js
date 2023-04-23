@@ -10,12 +10,12 @@ export default function ListNewGames({ onDisconnect }) {
 
   useEffect(() => {
     fetchData("game/newgame", "GET")
-      .then((data) => {
-        if (data.token === false) {
+      .then((json) => {
+        if (json.token === false) {
           onDisconnect();
           window.alert("You are not authentified, please reconnect");
         } else {
-          setParties(data);
+          setParties(json);
         }
       })
       .catch((error) => console.log(error));

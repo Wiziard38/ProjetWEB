@@ -9,6 +9,7 @@ import CreateNewGame from "./components/CreateNewGame";
 import ListNewGames from "./components/ListNewGames";
 import ListMyGames from "./components/ListMyGames";
 import { fetchData } from "./utils/fetchData";
+
 const config = require("./config.js");
 const { BACKEND } = config;
 
@@ -116,7 +117,7 @@ export default function App() {
           ) : menuState === 2 ? (
             <ListMyGames onDisconnect={disconnect} />
           ) : (
-            <CreateNewGame onDisconnect={disconnect} />
+            <CreateNewGame setMenuState={setMenuState} onDisconnect={disconnect} />
           )}
         </View>
       )}

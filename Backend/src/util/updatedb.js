@@ -43,7 +43,5 @@ const usersgamesModel = require("../models/usersgames");
     probaLoup: 0,
   });
 
-  await gamesModel.sync({ force: true });
-
   // Ajouter ici le code permettant d'initialiser par défaut la base de donnée
 })();
