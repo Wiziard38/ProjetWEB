@@ -2,8 +2,8 @@ import React from "react";
 import { View, Dimensions, Pressable, StyleSheet, Image } from "react-native";
 import SizedText from "../SizedText";
 import PropTypes from "prop-types";
-import flecheGauche from "../../static/images/fleche-gauche.png";
-import flecheDroite from "../../static/images/fleche-droite.png";
+import flecheDroite from "../../assets/images/fleche-droite.png";
+import flecheGauche from "../../assets/images/fleche-gauche.png";
 
 const windowWidth = Dimensions.get("window").width;
 
