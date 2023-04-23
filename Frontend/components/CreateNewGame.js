@@ -17,12 +17,6 @@ import BarScrollInt from "./CreateGameComps/BarScrollInt";
 import TimeChoose from "./CreateGameComps/TimeChoose";
 
 export default function CreateNewGame({ onDisconnect }) {
-  const [date, setDate] = useState(new Date());
-  const [mode, setMode] = useState("date");
-  const [show, setShow] = useState(false);
-  const [horraire, setHorraire] = useState("heure:mins");
-  const [text, setText] = useState("JJ/MM/AAAA");
-
   const [dureeJour, setDureeJour] = useState(new Date());
   const [dureeNuit, setDureeNuit] = useState(new Date());
   const [timeDebut, setTimeDebut] = useState(new Date());
@@ -30,28 +24,24 @@ export default function CreateNewGame({ onDisconnect }) {
   useEffect(() => {
     setDureeJour((prevDate) => {
       const newDate = new Date(prevDate);
-      newDate.setHours(1);
+      newDate.setHours(14);
       newDate.setMinutes(0);
       return newDate;
     });
     setDureeNuit((prevDate) => {
       const newDate = new Date(prevDate);
-      newDate.setHours(1);
+      newDate.setHours(10);
       newDate.setMinutes(0);
       return newDate;
     });
     setTimeDebut((prevDate) => {
       const newDate = new Date(prevDate);
-      newDate.setHours(9);
+      newDate.setHours(8);
       newDate.setMinutes(0);
+      newDate.setDate(prevDate.getDate() + 1);
       return newDate;
     });
   }, []);
-
-  const [showDureeJour, setShowDureeJour] = useState(false);
-  const [showDureeNuit, setShowDureeNuit] = useState(false);
-  const [TextDureeJour, setTextDureeJour] = useState("Heures:mins");
-  const [TextDureeNuit, setTextDureeNuit] = useState("Heures:mins");
 
   const [nbJoueur, setNbJoueur] = useState("5");
   const [probaPouv, setProbaPouv] = useState("0");
@@ -59,47 +49,6 @@ export default function CreateNewGame({ onDisconnect }) {
   const [modalVisible, setModalVisible] = useState(false);
   const [textError, setTextError] = useState("");
 
-  const showMode = (currentMode) => {
-    setShow(true);
-    setMode(currentMode);
-  };
-
-  const onChange = (event, selectedDate) => {
-    const currentDate = selectedDate || date;
-    setShow(Platform.OS === "ios");
-    setDate(currentDate);
-    const fDate =
-      currentDate.getDate() +
-      "/" +
-      (currentDate.getMonth() + 1) +
-      "/" +
-      currentDate.getFullYear();
-    const fTime =
-      currentDate.getHours() + "h" + currentDate.getMinutes() + "mins";
-    setText(fDate);
-    setHorraire(fTime);
-    console.log(fDate + "(" + fTime + ")");
-  };
-
-  const onChangeDureeJour = (event, selectedDate) => {
-    console.log("dureeJour");
-    setShowDureeJour(Platform.OS === "ios");
-    setDureeJour(selectedDate);
-    const fTime =
-      selectedDate.getHours() + "h" + selectedDate.getMinutes() + "mins";
-    setTextDureeJour(fTime);
-    console.log(fTime);
-  };
-
-  const onChangeDurerNuit = (event, selectedDate) => {
-    console.log("dureeNuit");
-    setShowDureeNuit(Platform.OS === "ios");
-    setDureeNuit(selectedDate);
-    const fTime =
-      selectedDate.getHours() + "h" + selectedDate.getMinutes() + "mins";
-    setTextDureeNuit(fTime);
-    console.log(fTime);
-  };
 
   function verificationDonnee() {
     // eslint-disable-line no-unused-vars
@@ -211,37 +160,11 @@ export default function CreateNewGame({ onDisconnect }) {
         />
         <TimeChoose
           mode={"time"}
+          minDate={false}
           dureePeriode={dureeJour}
           setDureePeriode={setDureeJour}
         />
       </View>
-
-      {/* 
-        <View style={{ flex: 1, alignItems: "center" }}>
-          <Text style={styles.textGros}>Le jour durera:</Text>
-          <View
-            style={{
-              flex: 1,
-              alignItems: "center",
-              flexDirection: "row",
-              justifyContent: "center",
-            }}
-          >
-            <Pressable onPress={() => setShowDureeJour(true)}>
-              <Text style={styles.selecDate}>{TextDureeJour}</Text>
-            </Pressable>
-          </View>
-        </View>
-        {showDureeJour && (
-          <DateTimePicker
-            testID="dateTimePicker"
-            value={dureeJour}
-            mode={"time"}
-            is24Hour={true}
-            display="default"
-            onChange={onChangeDureeJour}
-          />
-        )} */}
 
       <View style={styles.itemStyle}>
         <SizedText
@@ -251,36 +174,11 @@ export default function CreateNewGame({ onDisconnect }) {
         />
         <TimeChoose
           mode={"time"}
+          minDate={false}
           dureePeriode={dureeNuit}
           setDureePeriode={setDureeNuit}
         />
       </View>
-
-      {/* <View style={{ flex: 1, alignItems: "center" }}>
-          <Text style={styles.textGros}>La nuit durera:</Text>
-          <View
-            style={{
-              flex: 1,
-              alignItems: "center",
-              flexDirection: "row",
-              justifyContent: "center",
-            }}
-          >
-            <Pressable onPress={() => setShowDureeNuit(true)}>
-              <Text style={styles.selecDate}>{TextDureeNuit}</Text>
-            </Pressable>
-          </View>
-        </View>
-        {showDureeNuit && (
-          <DateTimePicker
-            testID="dateTimePicker"
-            value={dureeNuit}
-            mode={"time"}
-            is24Hour={true}
-            display="default"
-            onChange={onChangeDurerNuit}
-          />
-        )} */}
 
       <View style={styles.itemStyle}>
         <SizedText
@@ -291,34 +189,20 @@ export default function CreateNewGame({ onDisconnect }) {
         <View style={styles.itemStyleBegin}>
           <TimeChoose
             mode={"date"}
+            minDate={true}
             dureePeriode={timeDebut}
             setDureePeriode={setTimeDebut}
           />
 
-          {/* <Pressable onPress={() => showMode("date")}>
-            <Text style={styles.selecDate}>{text}</Text>
-          </Pressable> */}
           <Text style={styles.beginText}>à</Text>
           <TimeChoose
             mode={"time"}
+            minDate={true}
             dureePeriode={timeDebut}
             setDureePeriode={setTimeDebut}
           />
-          {/* <Pressable onPress={() => showMode("time")}>
-            <Text style={styles.selecDate}>{horraire}</Text>
-          </Pressable> */}
         </View>
       </View>
-      {/* {show && (
-        <DateTimePicker
-          testID="dateTimePicker"
-          value={date}
-          mode={mode}
-          is24Hour={true}
-          display="default"
-          onChange={onChange}
-        />
-      )} */}
 
       <ProbaIntSlider
         labelProba={"Probabilité d'apparition d'un loup"}
@@ -336,7 +220,7 @@ export default function CreateNewGame({ onDisconnect }) {
         <SizedButton
           buttonLabel={"Créer la partie"}
           onPress={() => creationPartie()}
-          size={"small"}
+          size={"normal"}
           buttonLabelStyle={styles.selectionButton}
           buttonStyle={styles.selectionButtonLabel}
         />
@@ -349,7 +233,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "column",
-    // justifyContent: "space-between",
     height: "100%",
     marginHorizontal: 15,
     marginVertical: 7,
@@ -366,9 +249,9 @@ const styles = StyleSheet.create({
   },
   itemStyleBegin: {
     flex: 1,
-    justifyContent: 'flex-start',
-    alignItems: 'center',
-    flexDirection: 'row',
+    justifyContent: "flex-start",
+    alignItems: "center",
+    flexDirection: "row",
     marginTop: 3,
     marginBottom: 20,
   },

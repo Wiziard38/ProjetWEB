@@ -1,113 +1,82 @@
 import React, { useState } from "react";
-import {
-  View,
-  Text,
-  Dimensions,
-  Pressable,
-  StyleSheet,
-  Image,
-} from "react-native";
+import { View, Dimensions, Pressable, StyleSheet, Image } from "react-native";
+import SizedText from "../SizedText";
 import PropTypes from "prop-types";
+import flecheGauche from "../../static/images/fleche-gauche.png";
+import flecheDroite from "../../static/images/fleche-droite.png";
 
-const width = parseInt(Dimensions.get("window").width);
+const windowWidth = Dimensions.get("window").width;
 
 export default function BarScrollInt({ onPress, title }) {
   const [valeur, setValeur] = useState(5);
+  const minValue = 5;
+
+  const Item = ({ offset, valeur }) => {
+    const newValue = valeur + offset;
+    const itemWidth = windowWidth * 0.1;
+
+    return (
+      <Pressable
+        style={[
+          { width: itemWidth },
+          styles.itemStyle,
+          offset === 0 && { backgroundColor: "grey", borderRadius: 10 },
+        ]}
+        onPress={() => {
+          if (newValue >= minValue) {
+            setValeur(newValue);
+            onPress(newValue.toString());
+          }
+        }}
+      >
+        <SizedText
+          label={newValue.toString()}
+          size={offset === 0 ? "xlarge" : "large"}
+          textStyle={[
+            styles.numberStyle,
+            newValue < minValue && { opacity: 0.5 },
+          ]}
+        />
+      </Pressable>
+    );
+  };
+
+  const Arrow = ({ offset, valeur, left }) => {
+    const imageSource = left ? flecheGauche : flecheDroite;
+    const newValue = valeur + offset;
+
+    return (
+      <Pressable
+        onPress={() => {
+          if (newValue >= minValue) {
+            setValeur(newValue);
+            onPress(newValue.toString());
+          }
+        }}
+      >
+        <Image source={imageSource} resizeMethod="scale" resizeMode="center" />
+      </Pressable>
+    );
+  };
 
   return (
     <View style={{ flex: 1, alignItems: "center" }}>
-      <Text style={styles.titleStyle}>{title}</Text>
-      <View style={styles.view}>
-        <Pressable
-          onPress={() => {
-            setValeur(valeur - 1);
-            onPress((valeur - 1).toString());
-            console.log(width);
-          }}
-        >
-          <Image
-            source={require("../../static/images/fleche-gauche.png")}
-            resizeMethod="scale"
-            resizeMode="center"
-          />
-        </Pressable>
+      <SizedText label={title} size={"large"} textStyle={styles.titleStyle} />
+
+      <View style={styles.sliderStyle}>
+        <Arrow offset={-1} valeur={valeur} left={true} />
+
         <View style={styles.header}>
-          <Pressable
-            style={styles.items}
-            onPress={() => {
-              setValeur(valeur - 3);
-              onPress((valeur - 3).toString());
-            }}
-          >
-            <Text style={styles.textStyle}>{valeur - 3}</Text>
-          </Pressable>
-          <Pressable
-            style={styles.items}
-            onPress={() => {
-              setValeur(valeur - 2);
-              onPress((valeur - 2).toString());
-            }}
-          >
-            <Text style={styles.textStyle}>{valeur - 2}</Text>
-          </Pressable>
-          <Pressable
-            style={styles.items}
-            onPress={() => {
-              setValeur(valeur - 1);
-              onPress((valeur - 1).toString());
-            }}
-          >
-            <Text style={styles.textStyle}>{valeur - 1}</Text>
-          </Pressable>
-          <Pressable
-            style={styles.items}
-            onPress={() => {
-              setValeur(valeur);
-              onPress(valeur.toString());
-            }}
-          >
-            <Text style={styles.textStyleCenter}>{valeur}</Text>
-          </Pressable>
-          <Pressable
-            style={styles.items}
-            onPress={() => {
-              setValeur(valeur + 1);
-              onPress((valeur + 1).toString());
-            }}
-          >
-            <Text style={styles.textStyle}>{valeur + 1}</Text>
-          </Pressable>
-          <Pressable
-            style={styles.items}
-            onPress={() => {
-              setValeur(valeur + 2);
-              onPress((valeur + 2).toString());
-            }}
-          >
-            <Text style={styles.textStyle}>{valeur + 2}</Text>
-          </Pressable>
-          <Pressable
-            style={styles.items}
-            onPress={() => {
-              setValeur(valeur + 3);
-              onPress((valeur + 3).toString());
-            }}
-          >
-            <Text style={styles.textStyle}>{valeur + 3}</Text>
-          </Pressable>
+          <Item offset={-3} valeur={valeur} />
+          <Item offset={-2} valeur={valeur} />
+          <Item offset={-1} valeur={valeur} />
+          <Item offset={0} valeur={valeur} />
+          <Item offset={+1} valeur={valeur} />
+          <Item offset={+2} valeur={valeur} />
+          <Item offset={+3} valeur={valeur} />
         </View>
-        <Pressable
-          onPress={() => {
-            setValeur(valeur + 1);
-            onPress((valeur + 4).toString());
-          }}
-        >
-          <Image
-            source={require("../../static/images/fleche-droite.png")}
-            resizeMethod="scale"
-            resizeMode="center"
-          />
-        </Pressable>
+
+        <Arrow offset={+1} valeur={valeur} left={false} />
       </View>
     </View>
   );
@@ -115,13 +84,11 @@ export default function BarScrollInt({ onPress, title }) {
 
 const styles = StyleSheet.create({
   titleStyle: {
-    fontSize: 20,
-    // fontFamily: "Arial",
     color: "black",
     fontWeight: "bold",
   },
-  view: {
-    flex: 0.5,
+  sliderStyle: {
+    flex: 0.6,
     flexDirection: "row",
     justifyContent: "center",
     alignItems: "center",
@@ -129,26 +96,20 @@ const styles = StyleSheet.create({
     borderRadius: 25,
     margin: 2,
   },
-  items: {},
+  itemStyle: {
+    height: "100%",
+    justifyContent: "center",
+    alignItems: "center",
+  },
   header: {
     flex: 1,
     flexDirection: "row",
     justifyContent: "center",
     maxWidth: "100%",
   },
-  textStyle: {
+  numberStyle: {
     color: "white",
     padding: 5,
-    fontSize: 30,
-    // fontFamily: "Arial",
-  },
-  textStyleCenter: {
-    color: "white",
-    padding: 5,
-    fontSize: 30,
-    // fontFamily: "Arial",
-    borderRadius: 25,
-    backgroundColor: "grey",
   },
 });
 

@@ -26,7 +26,7 @@ export default function SizedButton({
 SizedButton.propTypes = {
   buttonLabel: PropTypes.string.isRequired,
   onPress: PropTypes.func.isRequired,
-  size: PropTypes.oneOf(["mini", "small", "normal", "large", "xlarge"])
+  size: PropTypes.oneOf(["mini", "small", "normal", "large", "xlarge", "xxlarge"])
     .isRequired,
   buttonStyle: PropTypes.object,
   buttonLabelStyle: PropTypes.object,

@@ -4,16 +4,16 @@ import SizedText from "../SizedText";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import PropTypes from "prop-types";
 
-export default function TimeChoose({ mode, dureePeriode, setDureePeriode }) {
+export default function TimeChoose({ mode, minDate, dureePeriode, setDureePeriode }) {
   const [TextDureePeriode, setTextDureePeriode] = useState("heures:minutes");
-  const isAndroid = Platform.OS === "android";
   const [androidShow, setAndroidShow] = useState(false);
+  const isAndroid = Platform.OS === "android";
 
   useEffect(() => {
     let textTime;
     if (mode === "time") {
       textTime =
-        dureePeriode.getHours() + "h" + dureePeriode.getMinutes() + "min";
+        dureePeriode.getHours() + "h" + dureePeriode.getMinutes().toString().padStart(2, '0') + "min";
     } else {
       textTime =
         dureePeriode.getDate() +
@@ -30,6 +30,9 @@ export default function TimeChoose({ mode, dureePeriode, setDureePeriode }) {
     setAndroidShow(true);
   }
 
+  const minimumDate = new Date();
+  minimumDate.setHours(minimumDate.getHours() + 1)
+
   return (
     <View style={styles.container}>
       <Pressable onPress={onPress}>
@@ -45,6 +48,7 @@ export default function TimeChoose({ mode, dureePeriode, setDureePeriode }) {
           <DateTimePicker
             value={dureePeriode}
             mode={mode}
+            minimumDate={(minDate) ? minimumDate : null}
             is24Hour={true}
             display="default"
             onChange={(_, selectedDate) => {
@@ -65,7 +69,7 @@ const styles = StyleSheet.create({
     // alignItems: "left",
   },
   invisiblePick: {
-    opacity: 0.1,
+    opacity: 0,
     position: "absolute",
     right: 0,
     top: 0,
@@ -81,6 +85,7 @@ const styles = StyleSheet.create({
 
 TimeChoose.propTypes = {
   mode: PropTypes.string.isRequired,
+  minDate: PropTypes.bool.isRequired,
   dureePeriode: PropTypes.object.isRequired,
   setDureePeriode: PropTypes.func.isRequired,
 };
