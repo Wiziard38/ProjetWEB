@@ -11,7 +11,7 @@ const usersgamesModel = require("../models/usersgames");
 
   console.log("Base de données créée.");
   await usersModel.sync({ force: true });
-  await gamesModel.sync({force: true});
+  await gamesModel.sync({ force: true });
   await usersgamesModel.sync({ force: true });
   // Initialise la base avec quelques données
   await usersModel.create({
@@ -43,7 +43,5 @@ const usersgamesModel = require("../models/usersgames");
     probaLoup: 0,
   });
 
-
   // Ajouter ici le code permettant d'initialiser par défaut la base de donnée
-  
 })();
