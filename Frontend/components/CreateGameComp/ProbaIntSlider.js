@@ -2,6 +2,7 @@ import React from "react";
 import { View } from "react-native";
 import Slider from "@react-native-community/slider";
 import SizedText from "../SizedText";
+import PropTypes from "prop-types";
 
 export default function ProbaIntSlider({ proba, setProba, labelProba }) {
   const numFactor = 10000;
@@ -36,3 +37,9 @@ export default function ProbaIntSlider({ proba, setProba, labelProba }) {
     </View>
   );
 }
+
+ProbaIntSlider.propTypes = {
+  proba: PropTypes.string.isRequired,
+  setProba: PropTypes.func.isRequired,
+  labelProba: PropTypes.string.isRequired,
+};

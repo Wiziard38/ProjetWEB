@@ -8,6 +8,7 @@ import {
   Image,
 } from "react-native";
 import PropTypes from "prop-types";
+
 const width = parseInt(Dimensions.get("window").width);
 
 export default function BarScrollInt({ onPress, title }) {
@@ -115,7 +116,7 @@ export default function BarScrollInt({ onPress, title }) {
 const styles = StyleSheet.create({
   titleStyle: {
     fontSize: 20,
-    fontFamily: "Roboto",
+    fontFamily: "Arial",
     color: "black",
     fontWeight: "bold",
   },
@@ -139,13 +140,13 @@ const styles = StyleSheet.create({
     color: "white",
     padding: 5,
     fontSize: 30,
-    fontFamily: "Roboto",
+    fontFamily: "Arial",
   },
   textStyleCenter: {
     color: "white",
     padding: 5,
     fontSize: 30,
-    fontFamily: "Roboto",
+    fontFamily: "Arial",
     borderRadius: 25,
     backgroundColor: "grey",
   },

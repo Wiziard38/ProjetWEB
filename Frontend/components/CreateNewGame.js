@@ -13,6 +13,7 @@ import SizedButton from "./SizedButton";
 import BarScrollInt from "./CreateGameComp/BarScrollInt";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import ProbaIntSlider from "./CreateGameComp/ProbaIntSlider";
+import TimeChoose from "./CreateGameComp/TimeChoose";
 
 export default function CreateNewGame({ onDisconnect }) {
   const [date, setDate] = useState(new Date());
@@ -21,8 +22,8 @@ export default function CreateNewGame({ onDisconnect }) {
   const [horraire, setHorraire] = useState("heure:mins");
   const [text, setText] = useState("JJ/MM/AAAA");
 
-  const [dureeJour, setDureeJour] = useState(new Date());
-  const [dureeNuit, setDureeNuit] = useState(new Date());
+  const [dureeJour, setDureeJour] = useState(new Date(1000));
+  const [dureeNuit, setDureeNuit] = useState(new Date(1000));
   const [showDureeJour, setShowDureeJour] = useState(false);
   const [showDureeNuit, setShowDureeNuit] = useState(false);
   const [TextDureeJour, setTextDureeJour] = useState("Heures:mins");
@@ -179,6 +180,13 @@ export default function CreateNewGame({ onDisconnect }) {
 
         <BarScrollInt onPress={setNbJoueur} title={"Nombre de joueurs"} />
 
+        <TimeChoose
+          titleLabel={"Durée d'un jour :"}
+          dureePeriode={dureeJour}
+          setDureePeriode={setDureeJour}
+        />
+
+        {/* 
         <View style={{ flex: 1, alignItems: "center" }}>
           <Text style={styles.textGros}>Le jour durera:</Text>
           <View
@@ -203,7 +211,7 @@ export default function CreateNewGame({ onDisconnect }) {
             display="default"
             onChange={onChangeDureeJour}
           />
-        )}
+        )} */}
 
         <View style={{ flex: 1, alignItems: "center" }}>
           <Text style={styles.textGros}>La nuit durera:</Text>
