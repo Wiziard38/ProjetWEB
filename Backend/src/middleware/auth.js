@@ -11,7 +11,7 @@ async function verifyToken(req, res, next) {
       .json({ status: false, token: false, message: "You don't have a token!" });
   }
   try {
-    const _ = jws.verify(token, "HS256", process.env.JWS_SECRET);
+    jws.verify(token, "HS256", process.env.JWS_SECRET);
     const username = jws.decode(token).payload;
     const user = await usersModel.findOne({ where: { username } });
 

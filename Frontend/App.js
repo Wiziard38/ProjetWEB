@@ -2,12 +2,17 @@ import { StatusBar } from "expo-status-bar";
 import { useState, React, useEffect } from "react";
 import { StyleSheet, View, SafeAreaView } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import LoginForm from "./components/LoginForm";
-import MenuSelection from "./components/MenuSelection";
-import ConnectedHeader from "./components/ConnectedHeader";
-import CreateNewGame from "./components/CreateNewGame";
-import ListNewGames from "./components/ListNewGames";
-import ListMyGames from "./components/ListMyGames";
+import {
+  LoginForm,
+  MenuSelection,
+  ConnectedHeader,
+  CreateNewGame,
+  ListNewGames,
+  ListMyGames,
+  DisplayMessage,
+  Game,
+} from "./components";
+
 import { fetchData } from "./utils/fetchData";
 
 const config = require("./config.js");
@@ -19,10 +24,12 @@ export default function App() {
   const [menuState, setMenuState] = useState(0);
   const [errorTextValue, setErrorTextValue] = useState("");
   const [connectedUsername, setConnectedUsername] = useState("");
+  const [modalVisible, setModalVisible] = useState(false);
+  const [joinedGame, setJoinedGame] = useState(null);
 
   useEffect(() => {
     // Si le token existe deja a la connexion
-    console.log("Trying to retrieve token");
+    console.log("Trying to retrieve token...");
     AsyncStorage.getItem("token").then((retrievedToken) => {
       if (retrievedToken != null) {
         fetchData("whoami", "GET")
@@ -30,6 +37,9 @@ export default function App() {
             if (json.username != null) {
               setConnectedUsername(json.username);
               setToken(retrievedToken);
+              console.log("Retrieved !");
+            } else {
+              console.log("No token found.");
             }
           })
           .catch((error) => console.log(error));
@@ -52,15 +62,15 @@ export default function App() {
         if (!json.status) {
           setErrorTextValue(json.message);
         } else if (json.data.token) {
-          setErrorTextValue("");
           setConnectedUsername(json.data.username);
           setToken(json.data.token);
           AsyncStorage.setItem("token", json.data.token)
             .then(() => console.log("Token stored successfully"))
             .catch((error) => console.log(error));
           if (!loggingState) {
-            window.alert(
-              `Bienvenue ${json.data.username}, vous avez été inscrit.`
+            setModalVisible(true);
+            setErrorTextValue(
+              `Bienvenue ${json.data.username}, vous avez été inscrit avec succès.`
             );
           }
         } else {
@@ -91,6 +101,12 @@ export default function App() {
     <SafeAreaView style={[styles.container, { backgroundColor: "white" }]}>
       <StatusBar translucent={false} backgroundColor="white" />
 
+      <DisplayMessage
+        visible={modalVisible}
+        textMessage={errorTextValue}
+        onPress={() => setModalVisible(false)}
+      />
+
       {!token ? (
         // If no token (user non connected)
         <LoginForm
@@ -113,14 +129,23 @@ export default function App() {
           {menuState === 0 ? (
             <MenuSelection onMenuChoose={setMenuState} />
           ) : menuState === 1 ? (
-            <ListNewGames onDisconnect={disconnect} />
+            <ListNewGames
+              setMenuState={setMenuState}
+              onDisconnect={disconnect}
+            />
           ) : menuState === 2 ? (
-            <ListMyGames onDisconnect={disconnect} />
-          ) : (
+            <ListMyGames
+              setMenuState={setMenuState}
+              onDisconnect={disconnect}
+              setJoinedGame={setJoinedGame}
+            />
+          ) : menuState === 3 ? (
             <CreateNewGame
               setMenuState={setMenuState}
               onDisconnect={disconnect}
             />
+          ) : (
+            <Game gameId={joinedGame} />
           )}
         </View>
       )}

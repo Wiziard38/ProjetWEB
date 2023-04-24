@@ -1,12 +1,11 @@
 import { useState, React, useEffect } from "react";
 import PropTypes from "prop-types";
-import { StyleSheet, View, Text, Modal, Pressable } from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 import { fetchData } from "../utils/fetchData";
 import SizedButton from "./SizedButton";
 import SizedText from "./SizedText";
-import ProbaIntSlider from "./CreateGameComps/ProbaIntSlider";
-import BarScrollInt from "./CreateGameComps/BarScrollInt";
-import TimeChoose from "./CreateGameComps/TimeChoose";
+import DisplayMessage from "./DisplayMessage";
+import { BarScrollInt, TimeChoose, ProbaIntSlider } from "./CreateGameComps";
 
 export default function CreateNewGame({ setMenuState, onDisconnect }) {
   const [dureeJour, setDureeJour] = useState(new Date());
@@ -39,7 +38,6 @@ export default function CreateNewGame({ setMenuState, onDisconnect }) {
   }, []);
 
   const [modalVisible, setModalVisible] = useState(false);
-  const [returnMenu, setReturnMenu] = useState(false);
   const [textError, setTextError] = useState("");
 
   function creationPartie() {
@@ -59,10 +57,8 @@ export default function CreateNewGame({ setMenuState, onDisconnect }) {
           onDisconnect();
           window.alert("You are not authentified, please reconnect");
         } else {
-          console.log(json);
           setModalVisible(true);
           setTextError("La partie a été créée avec succès !");
-          setReturnMenu(true);
         }
       })
       .catch((error) => {
@@ -74,31 +70,14 @@ export default function CreateNewGame({ setMenuState, onDisconnect }) {
 
   return (
     <View style={styles.container}>
-      <Modal
-        animationType="slide"
-        transparent={true}
+      <DisplayMessage
         visible={modalVisible}
-        onRequestClose={() => {
+        textMessage={textError}
+        onPress={() => {
           setModalVisible(!modalVisible);
+          setMenuState(0);
         }}
-      >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>{textError}</Text>
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => {
-                setModalVisible(!modalVisible);
-                if (returnMenu) {
-                  setMenuState(0);
-                }
-              }}
-            >
-              <Text style={styles.textStyle}>Fermer</Text>
-            </Pressable>
-          </View>
-        </View>
-      </Modal>
+      />
 
       <BarScrollInt
         nbJoueur={nbJoueur}
