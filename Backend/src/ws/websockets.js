@@ -47,34 +47,18 @@ const io = SocketIO(server, {
 // What happen on connection
 io.on('connection', function (socket) {
 
-  console.log('A user connected');
+  console.log('A user connected to the wrong socket !');
   // Create a new player and add it to our register
   //const p = new Player(socket.id, socket.id)
   //GameManager.addPlayer(12, p);
 
-
+  socket.disconnect();
   socket.on('disconnect', function () {
     console.log('A user disconnected');
     // Remove the player
     //GameManager.removePlayer(12, p);
   });
 
-  socket.on('eazy', function (msg) {
-    console.log(msg);
-    console.log(socket.id);
-  });
-
-  socket.on('msg_village', function (msg) {
-
-  });
-
-  socket.on('msg_lg', function (msg) {
-
-  });
-
-  socket.on('msg_death', function (msg) {
-
-  });
 });
 
 module.exports = io;

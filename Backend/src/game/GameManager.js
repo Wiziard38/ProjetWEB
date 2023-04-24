@@ -60,8 +60,16 @@ const GameManager = {
      * @param {*} gameID 
      * @returns 
      */
+    u: new Map(),
     validUser: async function (token, gameID) {
-        return true;
+        //TODO DELETE_ALL_TEST_MSG
+        j = this.u.get('a');
+        if(j === undefined) {
+            this.u.set('a', 0);
+        } else {
+            this.u.set('a', j + 1)
+        }
+        return this.u.get('a') + 1;
     },
 
     /**
@@ -71,7 +79,24 @@ const GameManager = {
      * @returns 
      */
     getUserTeam: async function(userName, gameID) {
-        return true;
+        //TODO DELETE_ALL_TEST_MSG
+        if(userName == 1) {
+            return Team.WEREWOLF;
+        } else if(userName == 2) {
+            return Team.HUMAN;
+        } else if(userName == 3) {
+            return Team.HUMAN;
+        } else if(userName == 4) {
+            return Team.HUMAN;
+        } else if(userName == 5) {
+            return Team.DEATH;
+        } else {
+            if(userName == 6 || userName == 9) {
+                return Team.WEREWOLF
+            } else {
+                return Team.HUMAN
+            }
+        }
     },
 
     /**
@@ -81,7 +106,20 @@ const GameManager = {
      * @returns 
      */
     getUserRole: async function(userName, gameID) {
-        return true;
+        //TODO DELETE_ALL_TEST_MSG
+        if(userName == 1) {
+            return Roles.CONTAMINATION;
+        } else if(userName == 2) {
+            return Roles.INSOMNIA;
+        } else if(userName == 3) {
+            return Roles.PSYCHIC;
+        } else if(userName == 4) {
+            return Roles.SPIRITISM;
+        } else if(userName == 5) {
+            return Roles.ELECTED;
+        } else {
+            return Roles.NONE;
+        }
     },
 
     /**
@@ -109,7 +147,7 @@ const GameManager = {
      * @returns 
      */
     getGameData: async function(gameID, userName) {
-        return "Blo blo bli"
+        return 0
     },
 
     /**
@@ -118,18 +156,20 @@ const GameManager = {
      * @param {*} socketID 
      */
     setPlayerRoom: function(gameID, socketID) {
-        const socket = io.sockets.sockets.get('YnwlYH-gCKT2K9jEAAAu');
-
+        const socket = io.of('/' + gameID).sockets.get(socketID);
         const role = this.socketToRoles.get(socketID);
         const team = this.socketToTeam.get(socketID);
-        
-        //Add the player to it's team/role room
-        if(role === Roles.NONE) {
-            // Player with no role
-            socket.join(team);
+        if(socket) {
+            //Add the player to it's team/role room
+            if(role === Roles.NONE) {
+                // Player with no role
+                socket.join(team);
+            } else {
+                // Player with a role
+                socket.join(role);
+            }
         } else {
-            // Player with a role
-            socket.join(role);
+            console.log("[Erreur] Impossible de trouver la socket (setPlayerRoom)")
         }
     },
 
@@ -152,17 +192,20 @@ const GameManager = {
      */
     startGame: function (gameID) {
         // const game = this.dir.get(gameID);
-        console.log("La partie commence : " + gameID)
+        // console.log("La partie commence : " + gameID)
         io.of('/' + gameID).emit('begin', 'La partie commence');
         // Game loop
         this.states.set(gameID, State.BEGIN)
+        console.log("Début")
+        this.changementJour(gameID);
         const gameUpdate = setInterval(() => {
-            this.changementJour(gameID);
+            console.log("Début début")
+            this.changementNuit(gameID);
 
             setTimeout(() => {
-                this.changementNuit(gameID);
-            }, 1000 /* durée d'un jour */);
-        }, 5000 /* durée jour + nuit */)
+                this.changementJour(gameID);
+            }, 15000 /* durée d'une nuit */);
+        }, 30000 /* durée jour + nuit */)
 
         this.gameLoopID.set(gameID, gameUpdate);
     },
@@ -175,7 +218,7 @@ const GameManager = {
         this.states.set(gameID, State.DAY)
         // Signale qui indique le changement de jour à nuit
         io.of('/' + gameID).emit('jour', 'changement nuit -> jour');
-        console.log("Changement vers le jour : " + gameID)
+        // console.log("Changement vers le jour : " + gameID)
     },
 
     /**
@@ -184,8 +227,8 @@ const GameManager = {
      */
     changementNuit: function (gameID) {
         this.states.set(gameID, State.NIGHT)
-        io.of('/' + gameID).emit('nuit', 'on va faire dodo');
-        console.log("Changement vers la nuit : " + gameID)
+        io.of('/' + gameID).emit('nuit', 'jour -> nuit');
+        // console.log("Changement vers la nuit : " + gameID)
 
     },
 
