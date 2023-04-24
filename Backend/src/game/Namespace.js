@@ -6,10 +6,11 @@ const State = require('./State.js')
 function initNamespace(gameID) {
   const GameManager = require('./GameManager.js')
   const namespace = io.of('/' + gameID);
-  namespace.use(async (socket, next) => {
-    const token = socket.handshake.auth.token;
 
-    const userName = GameManager.validUser(token, gameID)
+  // Middleware use for each new connection to the namespace
+  namespace.use(async (socket, next) => {
+    const token = socket.handshake.auth.token
+    const userName = await GameManager.validUser(token, gameID)
     // Check if the user is member of the game. If not, close the socket.
     if (userName === null) {
       socket.disconnect();
@@ -24,41 +25,50 @@ function initNamespace(gameID) {
     GameManager.addTeamDirectory(socket.id, team);
 
     //Send all the game data for the player
-    socket.emit("game_data", await GameManager.getGameData(gameID, userName));
+    const gameData = await GameManager.getGameData(gameID, userName);
+    socket.emit("game_data", gameData);
+    //TODO DELETE_ALL_TEST_MSG
+    socket.emit("info_TEST", userName, role, team)
     next();
   })
   
+  // Function call on connection
   namespace.on('connection', (socket) => {
-    console.log('utilisateur se connecte dans ' + gameID);
+    GameManager.setPlayerRoom(gameID, socket.id);
+
+    console.log('utilisateur se connecte dans ' + gameID + " avec la socket : " + socket.id);
     socket.on('disconnect', () => {
       // When the user disconnect
+      socket.disconnect();
+      console.log("user disconnected");
     })
-  
+    socket.on("TEST", (mes) => {
+      console.log(mes);
+    })
     socket.on('message', (mes) => {
       //Fonction utiliser quand l'utilisateur envoie un message dans le chat
       //Il faut vérifier si l'utilisateur à bien le droit de faire cette opération
       //Ajouter le message à la discution si c'est pertinant
       //Il est probable qu'on ait besoin de rajouter d'autres paramètre (en plus de socket)
       const state = GameManager.states.get(gameID)
-  
+      const role = GameManager.socketToRoles.get(socket.id);
+      const team = GameManager.socketToTeam.get(socket.id);
       //During the day everyone can send and receive message
       if(state === State.DAY) {
         if(team !== Team.DEATH) {
-          namespace.emit(mes);
+          namespace.emit("receive_msg", mes);
         }
       } else if(state === State.NIGHT) {
-        const role = GameManager.socketToRoles(socket.id);
-        const team = GameManager.socketToTeam(socket.id);
-  
+        
         if(role === Roles.SPIRITISM || role === Roles.ELECTED) {
           // Check if the human can talk to deads
-          namespace.to(Roles.ELECTED).to(Roles.SPIRITISM).emit(mes);
+          namespace.to(Roles.ELECTED).to(Roles.SPIRITISM).emit("receive_msg", mes);
           
         } else if(team === Team.WEREWOLF) {
-          namespace.to(Team.WEREWOLF).to(Roles.INSOMNIA).emit(mes);
+          namespace.to(Team.WEREWOLF).to(Roles.INSOMNIA).to(Roles.CONTAMINATION).emit("receive_msg", mes);
         } else {
           // Truc illégal !
-          socket.emit("");
+          socket.emit("receive_msg", "[Server] You cannot send message !");
         }
   
       }
@@ -70,8 +80,6 @@ function initNamespace(gameID) {
   
     socket.on('proposal', (username) => {
       // When the player send proposal
-      console.log('test');
-      console.log(socket.id);
     })
   
     socket.on('contamination', (username) => {
