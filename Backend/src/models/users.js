@@ -5,8 +5,12 @@ const bcrypt = require('bcrypt');
 const users = db.define(
   "users",
   {
-    username: {
+    idUser: {
       primaryKey: true,
+      type: Sequelize.INTEGER,
+      autoIncrement: true,
+    },
+    username: {
       type: Sequelize.STRING(32),
       allowNull: false,
       validate: {
