@@ -15,6 +15,7 @@ export default function ListNewGames({ onDisconnect }) {
           onDisconnect();
           window.alert("You are not authentified, please reconnect");
         } else {
+          console.log(json)
           setParties(json);
         }
       })
