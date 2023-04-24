@@ -43,5 +43,25 @@ const usersgamesModel = require("../models/usersgames");
     probaLoup: 0,
   });
 
+  await gamesModel.create({
+    nbJoueur: 8,
+    dureeJour: 1,
+    dureeNuit: 1,
+    dateDeb: "2023-01-17T04:33:13.000Z",
+    probaPouv: 0.5,
+    probaLoup: 0.5,
+  });
+
+  await usersgamesModel.create({
+    gameIdGame: 1,
+    userIdUser: 3
+  });
+
+  await usersgamesModel.create({
+    gameIdGame: 2,
+    userIdUser: 3
+  });
+
+
   // Ajouter ici le code permettant d'initialiser par défaut la base de donnée
 })();
