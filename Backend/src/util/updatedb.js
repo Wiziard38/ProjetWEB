@@ -1,5 +1,6 @@
 const usersModel = require("../models/users.js");
 const gamesModel = require("../models/games");
+const usersgamesModel = require("../models/usersgames");
 
 // Ajouter ici les nouveaux require des nouveaux modèles
 
@@ -10,6 +11,8 @@ const gamesModel = require("../models/games");
 
   console.log("Base de données créée.");
   await usersModel.sync({ force: true });
+  await gamesModel.sync({ force: true });
+  await usersgamesModel.sync({ force: true });
   // Initialise la base avec quelques données
   await usersModel.create({
     username: "luca",
@@ -33,15 +36,32 @@ const gamesModel = require("../models/games");
 
   await gamesModel.create({
     nbJoueur: 7,
-    dureeJour: 1,
-    dureeNuit: 1,
+    dureeJour: 1*3600,
+    dureeNuit: 1*3600,
     dateDeb: "2023-01-17T04:33:12.000Z",
     probaPouv: 0,
     probaLoup: 0,
   });
 
-  await gamesModel.sync({force: true});
+  await gamesModel.create({
+    nbJoueur: 8,
+    dureeJour: 2*3600,
+    dureeNuit: 3*3600 + 1*60,
+    dateDeb: "2023-01-17T04:33:13.000Z",
+    probaPouv: 0.5,
+    probaLoup: 0.5,
+  });
+
+  await usersgamesModel.create({
+    gameIdGame: 1,
+    userIdUser: 3
+  });
+
+  await usersgamesModel.create({
+    gameIdGame: 2,
+    userIdUser: 3
+  });
+
 
   // Ajouter ici le code permettant d'initialiser par défaut la base de donnée
-  
 })();

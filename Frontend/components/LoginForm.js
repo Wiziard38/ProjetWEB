@@ -1,12 +1,5 @@
 import { useState, useEffect, React } from "react";
-import {
-  StyleSheet,
-  TextInput,
-  View,
-  ImageBackground,
-  Dimensions, // eslint-disable-line no-unused-vars
-} from "react-native";
-import { manipulateAsync } from "expo-image-manipulator"; // eslint-disable-line no-unused-vars
+import { StyleSheet, TextInput, View } from "react-native";
 import SizedText from "./SizedText";
 import SizedButton from "./SizedButton.js";
 import PropTypes from "prop-types";
@@ -14,32 +7,11 @@ import PropTypes from "prop-types";
 export default function LoginForm(props) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [imageUri, setImageUri] = useState(null); // eslint-disable-line no-unused-vars
-
-  // Resize background image using manipulateAsync
-  useEffect(() => {
-    // const resizeImage = async () => {
-    //   try {
-    //     const imageSize = Dimensions.get("window").width / 4;
-    //     const result = await manipulateAsync(
-    //       require("../assets/werewolf.png"), // Input image URI
-    //       [{ resize: { width: imageSize, height: imageSize } }], // Array of transformation options
-    //       { format: "jpeg", compress: 0.8 } // Output options
-    //     );
-    //     setImageUri(result.uri); // Set the resized image URI to state
-    //   } catch (error) {
-    //     console.error("Failed to resize image:", error);
-    //   }
-    // };
-
-    // Call resizeImage when the component mounts
-    // resizeImage();
-  }, []); // Empty dependency array to run the effect only once
 
   const [descriptionText, setDescriptionText] = useState("Je me connecte");
   const [switchText, setSwitchText] = useState("Je m'inscrit");
   const [submitText, setSubmitText] = useState("Se connecter");
-  // Change login mode
+
   useEffect(() => {
     if (props.loggingState) {
       setDescriptionText("Je me connecte");
@@ -56,78 +28,67 @@ export default function LoginForm(props) {
 
   return (
     <View style={styles.container}>
-      {/* Background image */}
-      <ImageBackground
-        source={imageUri}
-        style={styles.backgroundImage}
-        imageStyle={styles.backgroundImageStyle}
-      >
-        {/* Login Form */}
-        <View style={styles.formContainer}>
-          <View style={styles.formBackground}>
-            <SizedText
-              label={descriptionText}
-              size="xlarge"
-              textStyle={styles.loginTitle}
-            />
+      {/* Login Form */}
+      <View style={styles.formContainer}>
+        <View style={styles.formBackground}>
+          <SizedText
+            label={descriptionText}
+            size="xlarge"
+            textStyle={styles.loginTitle}
+          />
 
-            <SizedText
-              label={props.errorTextValue}
-              size="small"
-              textStyle={styles.errorMessage}
-            />
+          <SizedText
+            label={props.errorTextValue}
+            size="small"
+            textStyle={styles.errorMessage}
+          />
 
-            <TextInput
-              nativeID="usernameInput"
-              style={styles.input}
-              onChangeText={setUsername}
-              value={username}
-              placeholder="Username"
-            />
+          <TextInput
+            nativeID="usernameInput"
+            style={styles.input}
+            onChangeText={setUsername}
+            value={username}
+            placeholder="Username"
+          />
 
-            <TextInput
-              nativeID="passwordInput"
-              style={styles.input}
-              secureTextEntry={true}
-              onChangeText={setPassword}
-              value={password}
-              placeholder="Password"
-            />
+          <TextInput
+            nativeID="passwordInput"
+            style={styles.input}
+            secureTextEntry={true}
+            onChangeText={setPassword}
+            value={password}
+            placeholder="Password"
+          />
 
-            <SizedButton
-              buttonLabel={submitText}
-              size={"normal"}
-              buttonStyle={styles.submitButton}
-              buttonLabelStyle={styles.submitButtonLabel}
-              onPress={() => {
-                if (username === "") {
-                  props.setErrorTextValue(
-                    "Le champ username ne peut être vide"
-                  );
-                } else if (password === "") {
-                  props.setErrorTextValue(
-                    "Le champ password ne peut être vide"
-                  );
-                } else if (username.length > 32) {
-                  props.setErrorTextValue("L'username est trop long !");
-                } else if (password.length > 60) {
-                  props.setErrorTextValue("Le password est trop long !");
-                } else {
-                  props.onConnect(username, password); // TODO ne pas envoyer le mdp en clair ?
-                }
-              }}
-            />
+          <SizedButton
+            buttonLabel={submitText}
+            size={"normal"}
+            buttonStyle={styles.submitButton}
+            buttonLabelStyle={styles.submitButtonLabel}
+            onPress={() => {
+              if (username === "") {
+                props.setErrorTextValue("Le champ username ne peut être vide");
+              } else if (password === "") {
+                props.setErrorTextValue("Le champ password ne peut être vide");
+              } else if (username.length > 32) {
+                props.setErrorTextValue("L'username est trop long !");
+              } else if (password.length > 60) {
+                props.setErrorTextValue("Le password est trop long !");
+              } else {
+                props.onConnect(username, password); // TODO ne pas envoyer le mdp en clair ?
+              }
+            }}
+          />
 
-            <SizedButton
-              buttonLabel={switchText}
-              size={"mini"}
-              buttonStyle={styles.switchButton}
-              buttonLabelStyle={styles.switchButtonLabel}
-              onPress={() => props.setLoggingState(!props.loggingState)}
-            />
-          </View>
+          <SizedButton
+            buttonLabel={switchText}
+            size={"mini"}
+            buttonStyle={styles.switchButton}
+            buttonLabelStyle={styles.switchButtonLabel}
+            onPress={() => props.setLoggingState(!props.loggingState)}
+          />
         </View>
-      </ImageBackground>
+      </View>
     </View>
   );
 }
@@ -163,12 +124,6 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.8,
     shadowRadius: 10,
     elevation: 10,
-  },
-  backgroundImage: {
-    flex: 1, // Set flex to 1 to cover the entire container
-  },
-  backgroundImageStyle: {
-    resizeMode: "repeat", // Set resizeMode to repeat
   },
   loginTitle: {
     textAlign: "center",

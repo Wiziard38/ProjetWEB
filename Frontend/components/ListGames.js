@@ -30,6 +30,31 @@ export default function ListGames({
     setSelectedId(item.idGame);
   }
 
+  function toTime(nbSeconds) {
+    const time =
+      (Math.floor(nbSeconds / 3600)).toString() +
+      "h" +
+      ((nbSeconds / 60) % 60).toString().padStart(2, "0") +
+      "min";
+    return time;
+  }
+
+  function toDate(date) {
+    const newDate = new Date(date);
+    const time =
+      newDate.getDate() +
+      "/" +
+      (newDate.getMonth() + 1) +
+      "/" +
+      newDate.getFullYear() +
+      " à " +
+      newDate.getHours() +
+      "h" +
+      newDate.getMinutes().toString().padStart(2, "0") +
+      "min";
+    return time;
+  }
+
   function renderItem({ item }) {
     const backgroundColor = item.idGame === selectedId ? "#668687" : "#747474";
     const color = item.idGame === selectedId ? "white" : "black";
@@ -53,17 +78,17 @@ export default function ListGames({
               textStyle={styles.itemDetailText}
             />
             <SizedText
-              label={`Duree du jour : ${item.dureeJour}`}
+              label={`Duree du jour : ${toTime(item.dureeJour)}`}
               size={"small"}
               textStyle={styles.itemDetailText}
             />
             <SizedText
-              label={`Nombre de la nuit : ${item.dureeNuit}`}
+              label={`Duree de la nuit : ${toTime(item.dureeNuit)}`}
               size={"small"}
               textStyle={styles.itemDetailText}
             />
             <SizedText
-              label={`Date de debut : ${item.dateDeb}`}
+              label={`Date de debut : ${toDate(item.dateDeb)}`}
               size={"small"}
               textStyle={styles.itemDetailText}
             />

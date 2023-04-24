@@ -40,6 +40,8 @@ function initNamespace(gameID) {
       //Ajouter le message à la discution si c'est pertinant
       //Il est probable qu'on ait besoin de rajouter d'autres paramètre (en plus de socket)
       const state = GameManager.states.get(gameID)
+      const team = GameManager.socketToTeam(socket.id);
+      const role = GameManager.socketToRoles(socket.id);
   
       //During the day everyone can send and receive message
       if(state === State.DAY) {
@@ -47,15 +49,13 @@ function initNamespace(gameID) {
           namespace.emit(mes);
         }
       } else if(state === State.NIGHT) {
-        const role = GameManager.socketToRoles(socket.id);
-        const team = GameManager.socketToTeam(socket.id);
   
         if(role === Roles.SPIRITISM || role === Roles.ELECTED) {
           // Check if the human can talk to deads
           namespace.to(Roles.ELECTED).to(Roles.SPIRITISM).emit(mes);
           
         } else if(team === Team.WEREWOLF) {
-          namespace.to(Team.WEREWOLF).to(Roles.INSOMNIA).emit(mes);
+          namespace.to(Team.WEREWOLF).to(Roles.INSOMNIA).to(Roles.CONTAMINATION).emit(mes);
         } else {
           // Truc illégal !
           socket.emit("");

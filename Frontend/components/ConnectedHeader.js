@@ -16,7 +16,7 @@ export default function ConnectedHeader({
         {/* User Name */}
         <Image
           style={[styles.headerIcon, { marginRight: 10 }]}
-          source={require("../assets/user-icon.png")}
+          source={require("../assets/images/user-icon.png")}
           resizeMethod="scale"
           resizeMode="contain"
         />
@@ -44,7 +44,7 @@ export default function ConnectedHeader({
         <Pressable onPress={onDisconnect}>
           <Image
             style={[styles.headerIcon, { marginLeft: 10 }]}
-            source={require("../assets/logout-icon.png")}
+            source={require("../assets/images/logout-icon.png")}
             resizeMethod="scale"
             resizeMode="contain"
           />

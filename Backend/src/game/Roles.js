@@ -3,6 +3,7 @@ const Roles = {
     SPIRITISM: 'spiritism',
     INSOMNIA: 'insomnia',
     PSYCHIC: 'psychic',
+    ELECTED: 'elected',
     NONE: 'none'
 }
 
