@@ -31,11 +31,18 @@ module.exports = {
           .json({ status: true, data: { token, username: user.username } });
       } else {
         // Password is incorrect
-        res.status(401).json({ status: false, message: "Invalid password" }); // TODO change for security
+        res
+          .status(401)
+          .json({
+            status: false,
+            message: "Username ou mot de passe incorrect",
+          }); // TODO change for security
       }
     } else {
       // User not found
-      res.status(401).json({ status: false, message: "Invalid username" });
+      res
+        .status(401)
+        .json({ status: false, message: "Username ou mot de passe incorrect" });
     }
   },
 
@@ -88,7 +95,7 @@ module.exports = {
 
   async whoami(req, res) {
     const user = req.user;
-    console.log(user)
+    console.log(user);
 
     if (user != null) {
       res.status(201).json({ status: true, username: user.username });
