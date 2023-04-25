@@ -11,6 +11,7 @@ function initNamespace(gameID) {
   namespace.use(async (socket, next) => {
     const token = socket.handshake.auth.token
     const userName = await GameManager.validUser(token, gameID)
+    console.log(token);
     // Check if the user is member of the game. If not, close the socket.
     if (userName === null) {
       socket.disconnect();

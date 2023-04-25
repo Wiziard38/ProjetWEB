@@ -7,7 +7,7 @@ module.exports = {
   async createGame(req, res) {
     try {
       const data = req.body;
-      console.log(data);
+      //console.log(data);
       const partieCree = await gamesModel.create({
         nbJoueur: data.nbJoueur,
         dureeJour: data.dureeJour,

@@ -12,7 +12,7 @@ const server = require('./httpserver.js')
 // Initialize websockets
 const io = require('./ws/websockets.js')
 const GameManager = require('./game/GameManager.js')
-// GameManager.createGame('0');
+GameManager.createGame('0');
 // Instantiate an Express Application
 // Open Server on selected Port
 //const server = http.createServer(app);

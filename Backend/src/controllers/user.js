@@ -88,7 +88,7 @@ module.exports = {
 
   async whoami(req, res) {
     const user = req.user;
-    console.log(user)
+    //console.log(user)
 
     if (user != null) {
       res.status(201).json({ status: true, username: user.username });
