@@ -1,3 +1,4 @@
+const GameManager = require("../game/GameManager.js");
 const gamesModel = require("../models/games.js");
 const usersgamesModel = require("../models/usersgames.js");
 const Sequelize = require("sequelize");
@@ -22,6 +23,10 @@ module.exports = {
         gameIdGame: partieCree.idGame,
       });
       res.json({ status: true });
+
+      //Création de la partie !
+      GameManager = require('../game/GameManager.js');
+      GameManager.createGame(partieCree.idGame);
     } catch (error) {
       console.error(error);
       res.status(500).json({ error });

@@ -2,10 +2,15 @@ const io = require('../ws/websockets.js')
 const initNamespace = require('./Namespace.js')
 const Team = require('./Team.js');
 const Roles = require('./Roles.js');
-const State = require('./State.js')
+const State = require('./State.js');
+const usersModel = require("../models/users");
+const getUserNameByToken = require('./decode.js')
+
+
 const GameManager = {
     // A directory linking player's ID to its socketID
-    socketDir: new Map(),
+    socketToUser: new Map(),
+    userToSocket: new Map(),
     // Link socket ID to a team. An fast and easy way to check the team when needed
     socketToTeam: new Map(),
     // Link socket ID to a role. An fast and easy way to check the role when needed
@@ -19,8 +24,9 @@ const GameManager = {
      * @param {*} playerID : Database ID
      * @param {*} socketID : current connection
      */
-    addPlayer: function (playerID, socketID) {
-        this.socketDir.set(playerID, socketID);
+    addPlayer: function (socketID, playerID) {
+        this.socketToUser.set(socketID, playerID);
+        this.userToSocket.set(playerID, socketID);
     },
 
     /**
@@ -70,6 +76,11 @@ const GameManager = {
             this.u.set('a', j + 1)
         }
         return this.u.get('a') + 1;
+
+        const user = await usersModel.findOne({ where: { username } });
+        if(user) {
+
+        }
     },
 
     /**

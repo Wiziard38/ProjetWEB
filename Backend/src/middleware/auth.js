@@ -1,5 +1,6 @@
 const usersModel = require("../models/users");
-const jws = require("jws");
+const gamesModel = require("../models/games.js");
+const getUserNameByToken = require('./decode.js')
 
 async function verifyToken(req, res, next) {
   const token =
@@ -11,8 +12,7 @@ async function verifyToken(req, res, next) {
       .json({ status: false, token: false, message: "You don't have a token!" });
   }
   try {
-    jws.verify(token, "HS256", process.env.JWS_SECRET);
-    const username = jws.decode(token).payload;
+    const username = getUserNameByToken(token);
     const user = await usersModel.findOne({ where: { username } });
 
     req.user = user.dataValues;
@@ -24,5 +24,7 @@ async function verifyToken(req, res, next) {
   // console.log("token ok");
   return next();
 }
+
+
 
 module.exports = verifyToken;
