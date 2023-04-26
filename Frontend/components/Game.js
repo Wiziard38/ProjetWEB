@@ -11,14 +11,15 @@ export default function CreateNewGame({ gameId, token }) {
   const [team, setTeam] = useState(null);
   const [testName, setTestName] = useState(null);
   const [message, setMessage] = useState("");
-
   const socket = useRef(SocketIOClient('http://localhost:3000/0', {
     auth: {
       token: token
     }
   }));
+  console.log(socket)
 
   useEffect( () => {
+    console.log("TEST")
     if(socket.current) {
       socket.current.on('connect', () => {
         console.log('Connected to server');null

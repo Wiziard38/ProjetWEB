@@ -1,11 +1,12 @@
 const io = require('../ws/websockets.js')
-const Team = require('./Team.js')
-const Room = require('./Room.js')
-const GameState = require('./GameState.js')
+const Game = require('./Game.js')
+const Player = require('./Player.js')
 
-function initNamespace(gameID) {
+function initNamespace(game) {
+  const gameID = game.getID();
   const GameManager = require('./GameManager.js')
   const namespace = io.of('/' + gameID);
+  GameManager.addGame(gameID, game);
 
   // Middleware use for each new connection to the namespace
   namespace.use(async (socket, next) => {
@@ -18,26 +19,27 @@ function initNamespace(gameID) {
     }
     // Give the user game_data when loading
     
-    const role = await GameManager.getUserRole(userName, gameID);
-    const team = await GameManager.getUserTeam(userName, gameID);
+    const power = await GameManager.getUserRole(userName, gameID);
+    const state = await GameManager.getUserTeam(userName, gameID);
     
-    
-    GameManager.addRoleDirectory(socket.id, role);
-    GameManager.addTeamDirectory(socket.id, team);
+    // Créer des objets
+    const player = new Player(socket.id, userName, game, state, power);
+    // Add the player to the game, it let us find the user with its socket.
+    game.addPlayer(player, socket.id);
 
     //Send all the game data for the player
-    const gameData = await GameManager.getGameData(gameID, userName);
+    const gameData = await game.getGameData(socket.id);
     socket.emit("game_data", gameData);
     //TODO DELETE_ALL_TEST_MSG
-    socket.emit("info_TEST", userName, role, team)
+    socket.emit("info_TEST", userName, power.toString(), state.toString())
     next();
   })
   
   // Function call on connection
   namespace.on('connection', (socket) => {
-    GameManager.setPlayerRoom(gameID, socket.id);
-
-    console.log('utilisateur se connecte dans ' + gameID + " avec la socket : " + socket.id);
+    // game.setPlayerRoom( socket.id);
+    game.setPlayerRoom(socket.id);
+    //console.log('utilisateur se connecte dans ' + gameID + " avec la socket : " + socket.id);
     socket.on('disconnect', () => {
       // When the user disconnect
       socket.disconnect();
@@ -51,47 +53,35 @@ function initNamespace(gameID) {
       //Il faut vérifier si l'utilisateur à bien le droit de faire cette opération
       //Ajouter le message à la discution si c'est pertinant
       //Il est probable qu'on ait besoin de rajouter d'autres paramètre (en plus de socket)
-      const state = GameManager.states.get(gameID)
-      const role = GameManager.socketToRoom.get(socket.id);
-      const team = GameManager.socketToTeam.get(socket.id);
+      // const state = GameManager.states.get(gameID)
+      // const role = GameManager.socketToRoom.get(socket.id);
+      // const team = GameManager.socketToTeam.get(socket.id);
       //During the day everyone can send and receive message
-      if(state === GameState.DAY) {
-        if(team !== Team.DEATH) {
-          namespace.emit("receive_msg", mes);
-        }
-      } else if(state === GameState.NIGHT) {
-        
-        if(role === Room.SPIRITISM || role === Room.ELECTED) {
-          // Check if the human can talk to deads
-          namespace.to(Room.ELECTED).to(Room.SPIRITISM).emit("receive_msg", mes);
-          
-        } else if(team === Team.WEREWOLF) {
-          namespace.to(Team.WEREWOLF).to(Room.INSOMNIA).to(Room.CONTAMINATION).emit("receive_msg", mes);
-        } else {
-          // Truc illégal !
-          socket.emit("receive_msg", "[Server] You cannot send message !");
-        }
-  
-      }
+      /** @type {Player} */
+      // io.of(game.getNamespace()).emit("receive_msg", mes);
+
+      const player = game.getPlayerBySocket(socket.id);
+      player.sendMessage(mes);
+
     })
     
     socket.on('vote', async (username) => {
       // When the player send a vote
-      const state = GameManager.states.get(gameID)
-      const team = GameManager.socketToTeam.get(socket.id);
-      const fromUsername = GameManager.socketDir.get(socket.id);
+      // const state = GameManager.states.get(gameID)
+      // const team = GameManager.socketToTeam.get(socket.id);
+      // const fromUsername = GameManager.socketDir.get(socket.id);
 
-      // Savoir si c'est une nouvelle proposition ?
-      if(state == GameState.DAY) {
-        //  Verifier que le joueur ne vote qu'une seul fois
-        namespace.emit("vote", fromUsername, username);
-      }
-      else if(state == GameState.NIGHT) {
-        if(team == Team.WEREWOLF) {
-          // Vérifier que le joueur vote pour un humain
-          namespace.to(Team.WEREWOLF).to(Room.CONTAMINATION).emit("vote", fromUsername, username);
-        }
-      }
+      // // Savoir si c'est une nouvelle proposition ?
+      // if(state == GameState.DAY) {
+      //   //  Verifier que le joueur ne vote qu'une seul fois
+      //   namespace.emit("vote", fromUsername, username);
+      // }
+      // else if(state == GameState.NIGHT) {
+      //   if(team == Team.WEREWOLF) {
+      //     // Vérifier que le joueur vote pour un humain
+      //     namespace.to(Team.WEREWOLF).to(Room.CONTAMINATION).emit("vote", fromUsername, username);
+      //   }
+      // }
     })
   
     // socket.on('proposal', (username) => {
@@ -117,43 +107,43 @@ function initNamespace(gameID) {
   
     socket.on('contamination', (username) => {
       // When the player contaminate someone 
-      if(GameManager.validRole(socket.id, Room.CONTAMINATION)) {
-        //Vérifier si le pouvoir a été utilisé deux fois ?
-        // Placer le joueur cible dans la team des loups garou
-        // S'il est connecter, changer
-        userSocketID = GameManager.userToSocket.get(username);
-        if(userSocketID) {
-          // Changement de team ici
-          GameManager.addTeamDirectory(userSocketID, Team.WEREWOLF);
-          const userSocket = io.of('/' + gameID).sockets.get(userSocketID);
-          userSocket.join(Team.WEREWOLF);
-          //Notifie le joueur de la contamination
-          userSocket.emit("contamination");
-          //Rejoint les loups
-          // Mettre de la couleur ?
-        }
-        namespace.to(Team.WEREWOLF).to(Room.CONTAMINATION).emit("message", username + " is now a werewolf"); 
+      // if(GameManager.validRole(socket.id, Room.CONTAMINATION)) {
+      //   //Vérifier si le pouvoir a été utilisé deux fois ?
+      //   // Placer le joueur cible dans la team des loups garou
+      //   // S'il est connecter, changer
+      //   userSocketID = GameManager.userToSocket.get(username);
+      //   if(userSocketID) {
+      //     // Changement de team ici
+      //     GameManager.addTeamDirectory(userSocketID, Team.WEREWOLF);
+      //     const userSocket = io.of('/' + gameID).sockets.get(userSocketID);
+      //     userSocket.join(Team.WEREWOLF);
+      //     //Notifie le joueur de la contamination
+      //     userSocket.emit("contamination", "bidule");
+      //     //Rejoint les loups
+      //     // Mettre de la couleur ?
+      //   }
+      //   namespace.to(Team.WEREWOLF).to(Room.CONTAMINATION).emit("message", username + " is now a werewolf"); 
 
-      }
+      // }
     })
   
     socket.on('spiritism', (username) => {
       // Check if the player have spiritism's role
-      if(GameManager.validRole(socket.id, Room.SPIRITISM)) {
+      // if(GameManager.validRole(socket.id, Room.SPIRITISM)) {
         
-        // Vérifier si le username est bien mort
+      //   // Vérifier si le username est bien mort
         
         
 
-      }
+      // }
     })
   
     socket.on('psychic', (username) => {
-      if(GameManager.validRole(socket.id, Room.PSYCHIC)) {
-        // get the player role
-        const playerRole = "";
-        socket.emit("message", "Le role de " + username + " est " + playerRole)
-      }
+      // if(GameManager.validRole(socket.id, Room.PSYCHIC)) {
+      //   // get the player role
+      //   const playerRole = "";
+      //   socket.emit("message", "Le role de " + username + " est " + playerRole)
+      // }
     })
   })
 

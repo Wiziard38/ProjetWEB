@@ -1,6 +1,6 @@
-const GameManager = require("../GameManager");
-const GameState = require("../GameState.js");
-const io = require('../ws/websockets.js');
+const io = require('../../ws/websockets');
+const States = require("../States");
+const Powers = require('../Powers');
 const Alive = require("./Alive");
 
 class Human extends Alive {
@@ -9,3 +9,5 @@ class Human extends Alive {
         super.sendMessage(msg, game);
     }
 }
+
+module.exports = Human;
