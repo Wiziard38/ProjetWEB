@@ -5,7 +5,7 @@ import { fetchData } from "../utils/fetchData";
 import SizedButton from "./SizedButton";
 import SizedText from "./SizedText";
 import DisplayMessage from "./DisplayMessage";
-import { BarScrollInt, TimeChoose, ProbaIntSlider } from "./CreateGameComps";
+import { BarScrollInt, TimeChoose, ProbaIntSlider } from "./CreateGameComponents";
 
 export default function CreateNewGame({ setMenuState, onDisconnect }) {
   const [dureeJour, setDureeJour] = useState(new Date());

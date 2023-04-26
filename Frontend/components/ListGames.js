@@ -10,6 +10,7 @@ import {
 import SizedText from "./SizedText";
 import SizedButton from "./SizedButton";
 import PropTypes from "prop-types";
+import { dateToText, timeToText, secondsToText } from "../utils/dateFunctions";
 
 export default function ListGames({
   descriptiveLabel,
@@ -28,31 +29,6 @@ export default function ListGames({
 
   function selectItem(item) {
     setSelectedId(item.idGame);
-  }
-
-  function toTime(nbSeconds) {
-    const time =
-      (Math.floor(nbSeconds / 3600)).toString() +
-      "h" +
-      ((nbSeconds / 60) % 60).toString().padStart(2, "0") +
-      "min";
-    return time;
-  }
-
-  function toDate(date) {
-    const newDate = new Date(date);
-    const time =
-      newDate.getDate() +
-      "/" +
-      (newDate.getMonth() + 1) +
-      "/" +
-      newDate.getFullYear() +
-      " à " +
-      newDate.getHours() +
-      "h" +
-      newDate.getMinutes().toString().padStart(2, "0") +
-      "min";
-    return time;
   }
 
   function renderItem({ item }) {
@@ -78,17 +54,17 @@ export default function ListGames({
               textStyle={styles.itemDetailText}
             />
             <SizedText
-              label={`Duree du jour : ${toTime(item.dureeJour)}`}
+              label={`Duree du jour : ${secondsToText(item.dureeJour)}`}
               size={"small"}
               textStyle={styles.itemDetailText}
             />
             <SizedText
-              label={`Duree de la nuit : ${toTime(item.dureeNuit)}`}
+              label={`Duree de la nuit : ${secondsToText(item.dureeNuit)}`}
               size={"small"}
               textStyle={styles.itemDetailText}
             />
             <SizedText
-              label={`Date de debut : ${toDate(item.dateDeb)}`}
+              label={`Date de debut : ${dateToText(item.dateDeb)}`}
               size={"small"}
               textStyle={styles.itemDetailText}
             />

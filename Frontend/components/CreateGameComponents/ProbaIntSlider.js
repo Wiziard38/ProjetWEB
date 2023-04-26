@@ -6,7 +6,7 @@ import PropTypes from "prop-types";
 
 export default function ProbaIntSlider({ proba, setProba, labelProba }) {
 
-  const numFactor = 10000;
+  const numFactor = 1000;
 
   return (
     <View style={{ flex: 1, alignItems: "center" }}>

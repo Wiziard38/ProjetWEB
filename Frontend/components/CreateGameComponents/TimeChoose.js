@@ -3,8 +3,14 @@ import { StyleSheet, View, Platform, Pressable } from "react-native";
 import SizedText from "../SizedText";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import PropTypes from "prop-types";
+import { dateToText, timeToText } from "../../utils/dateFunctions";
 
-export default function TimeChoose({ mode, minDate, dureePeriode, setDureePeriode }) {
+export default function TimeChoose({
+  mode,
+  minDate,
+  dureePeriode,
+  setDureePeriode,
+}) {
   const [TextDureePeriode, setTextDureePeriode] = useState("heures:minutes");
   const [androidShow, setAndroidShow] = useState(false);
   const isAndroid = Platform.OS === "android";
@@ -12,15 +18,9 @@ export default function TimeChoose({ mode, minDate, dureePeriode, setDureePeriod
   useEffect(() => {
     let textTime;
     if (mode === "time") {
-      textTime =
-        dureePeriode.getHours() + "h" + dureePeriode.getMinutes().toString().padStart(2, '0') + "min";
+      textTime = timeToText(dureePeriode);
     } else {
-      textTime =
-        dureePeriode.getDate() +
-        "/" +
-        (dureePeriode.getMonth() + 1) +
-        "/" +
-        dureePeriode.getFullYear();
+      textTime = dateToText(dureePeriode);
     }
 
     setTextDureePeriode(textTime);
@@ -31,7 +31,7 @@ export default function TimeChoose({ mode, minDate, dureePeriode, setDureePeriod
   }
 
   const minimumDate = new Date();
-  minimumDate.setHours(minimumDate.getHours() + 1)
+  minimumDate.setHours(minimumDate.getHours() + 1);
 
   return (
     <View style={styles.container}>
@@ -48,7 +48,7 @@ export default function TimeChoose({ mode, minDate, dureePeriode, setDureePeriod
           <DateTimePicker
             value={dureePeriode}
             mode={mode}
-            minimumDate={(minDate) ? minimumDate : null}
+            minimumDate={minDate ? minimumDate : null}
             is24Hour={true}
             display="default"
             onChange={(_, selectedDate) => {
