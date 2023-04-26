@@ -2,7 +2,6 @@ const io = require('../ws/websockets.js')
 const initNamespace = require('./Namespace.js')
 const Team = require('./Team.js');
 const Room = require('./Room.js');
-const State = require('./GameState.js');
 const usersModel = require("../models/users");
 const getUserNameByToken = require('../middleware/decode.js');
 const GameState = require('./GameState.js');
@@ -32,6 +31,10 @@ const GameManager = {
 
     isNight: function(gameID) {
         return this.states.get(gameID) === GameState.NIGHT;
+    },
+
+    isDay: function(gameID) {
+        return this.states.get(gameID) === GameState.DAY;
     },
     /**
      * Remove a player from directories
@@ -210,7 +213,7 @@ const GameManager = {
         // console.log("La partie commence : " + gameID)
         io.of('/' + gameID).emit('begin', 'La partie commence');
         // Game loop
-        this.states.set(gameID, State.BEGIN)
+        this.states.set(gameID, GameState.BEGIN)
         console.log("Début")
         this.changementJour(gameID);
         const gameUpdate = setInterval(() => {
@@ -230,7 +233,7 @@ const GameManager = {
      * @param {*} gameID 
      */
     changementJour: function (gameID) {
-        this.states.set(gameID, State.DAY)
+        this.states.set(gameID, GameState.DAY)
         // Signale qui indique le changement de jour à nuit
         io.of('/' + gameID).emit('jour', 'changement nuit -> jour');
         // console.log("Changement vers le jour : " + gameID)
@@ -241,7 +244,7 @@ const GameManager = {
      * @param {*} gameID 
      */
     changementNuit: function (gameID) {
-        this.states.set(gameID, State.NIGHT)
+        this.states.set(gameID, GameState.NIGHT)
         io.of('/' + gameID).emit('nuit', 'jour -> nuit');
         // console.log("Changement vers la nuit : " + gameID)
 
