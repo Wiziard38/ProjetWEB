@@ -43,15 +43,15 @@ export default function LoginForm(props) {
 
   return (
     <ImageBackground
-      source={require("../assets/images/werewolf.png")}
+      source={require("../assets/images/login_bg.png")}
       style={styles.imageBackground}
     >
       <View style={styles.container}>
-        <View styles={styles.switchButtonContainer}>
+        <View style={styles.switchButtonContainer}>
           <SizedButton
             buttonLabel={switchText}
             size={"large"}
-            buttonStyle={styles.switchButton}
+            buttonStyle={{}}
             buttonLabelStyle={styles.switchButtonLabel}
             onPress={() => props.setLoggingState(!props.loggingState)}
           />
@@ -103,7 +103,7 @@ const styles = StyleSheet.create({
     width: "100%",
     height: "100%",
     padding: 10,
-    backgroundColor: "#343d4cce",
+    backgroundColor: "#313e55a6",
   },
   imageBackground: {
     flex: 1,
@@ -154,12 +154,10 @@ const styles = StyleSheet.create({
   },
   // Button for changing mode (log in / sign in)
   switchButtonContainer: {
-    flex: 1,
-  },
-  switchButton: {
     position: "absolute",
-    top: 15,
-    right: 15,
+    top: 25,
+    right: 25,
+    zIndex: 9,
   },
   switchButtonLabel: {
     color: "white",
