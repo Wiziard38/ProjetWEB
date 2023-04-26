@@ -1,25 +1,19 @@
 import { useState, React, useEffect } from "react";
 import PropTypes from "prop-types";
-import {
-  StyleSheet,
-  View,
-  Text,
-  Modal,
-  Pressable,
-  Platform,
-} from "react-native";
+import { StyleSheet, View, Text } from "react-native";
 import { fetchData } from "../utils/fetchData";
 import SizedButton from "./SizedButton";
 import SizedText from "./SizedText";
-import DateTimePicker from "@react-native-community/datetimepicker";
-import ProbaIntSlider from "./CreateGameComps/ProbaIntSlider";
-import BarScrollInt from "./CreateGameComps/BarScrollInt";
-import TimeChoose from "./CreateGameComps/TimeChoose";
+import DisplayMessage from "./DisplayMessage";
+import { BarScrollInt, TimeChoose, ProbaIntSlider } from "./CreateGameComps";
 
-export default function CreateNewGame({ onDisconnect }) {
+export default function CreateNewGame({ setMenuState, onDisconnect }) {
   const [dureeJour, setDureeJour] = useState(new Date());
   const [dureeNuit, setDureeNuit] = useState(new Date());
-  const [timeDebut, setTimeDebut] = useState(new Date());
+  const [dateDeb, setDateDeb] = useState(new Date());
+  const [nbJoueur, setNbJoueur] = useState(5);
+  const [probaPouv, setProbaPouv] = useState(0);
+  const [probaLoup, setProbaLoup] = useState(0.3);
 
   useEffect(() => {
     setDureeJour((prevDate) => {
@@ -34,7 +28,7 @@ export default function CreateNewGame({ onDisconnect }) {
       newDate.setMinutes(0);
       return newDate;
     });
-    setTimeDebut((prevDate) => {
+    setDateDeb((prevDate) => {
       const newDate = new Date(prevDate);
       newDate.setHours(8);
       newDate.setMinutes(0);
@@ -43,75 +37,18 @@ export default function CreateNewGame({ onDisconnect }) {
     });
   }, []);
 
-  const [nbJoueur, setNbJoueur] = useState("5");
-  const [probaPouv, setProbaPouv] = useState("0");
-  const [probaLoup, setProbaLoup] = useState("0.3");
   const [modalVisible, setModalVisible] = useState(false);
   const [textError, setTextError] = useState("");
 
-
-  function verificationDonnee() {
-    // eslint-disable-line no-unused-vars
-    if (nbJoueur.replace(",", ".").indexOf(".") !== -1) {
-      setTextError(
-        "Le nombre de joueur doit être un entier compris entre 1 et 25"
-      );
-      setModalVisible(true);
-      return false;
-    }
-    const dateAct = new Date();
-    if (
-      date.getFullYear < dateAct.getFullYear ||
-      (date.getFullYear === dateAct.getFullYear &&
-        date.getMonth() < dateAct.getMonth()) ||
-      (date.getFullYear === dateAct.getFullYear &&
-        date.getMonth() === dateAct.getMonth() &&
-        date.getDay() < dateAct.getDay())
-    ) {
-      setTextError(
-        "La date rentrée est incorect, on ne peut pas commencer une partie à une date déjà passée!!"
-      );
-      setModalVisible(true);
-      return false;
-    }
-    if (
-      date.getHours() < dateAct.getHours() ||
-      (date.getHours() === dateAct.getHours() &&
-        date.getMinutes() < dateAct.getMinutes())
-    ) {
-      setTextError(
-        "La date rentrée est incorect, on ne peut pas commencer une partie à une date déjà passée!!"
-      );
-      setModalVisible(true);
-      return false;
-    }
-    if (parseFloat(probaLoup) < 0 || parseFloat(probaLoup) > 1) {
-      setTextError(
-        "La proba d'apparition des loups garoux doît être un nombre flottant compris entre 0 et 1"
-      );
-      setModalVisible(true);
-      return false;
-    }
-    if (parseFloat(probaPouv) < 0 || parseFloat(probaPouv) > 1) {
-      setTextError(
-        "La proba d'apparition des pouvoir doît être un nombre flottant compris entre 0 et 1"
-      );
-      setModalVisible(true);
-      return false;
-    }
-    return true;
-  }
-
   function creationPartie() {
     console.log("creation partie");
-    // if (verificationDonnee()) {
     const data = {
-      nbJoueur: parseInt(nbJoueur),
+      nbJoueur,
       dureeJour: dureeJour.getHours() * 3600 + dureeJour.getMinutes() * 60,
       dureeNuit: dureeNuit.getHours() * 3600 + dureeNuit.getMinutes() * 60,
-      dateDeb: timeDebut,
-      probaPouv: parseFloat(probaPouv),
-      probaLoup: parseFloat(probaLoup),
+      dateDeb,
+      probaPouv,
+      probaLoup,
     };
 
     fetchData("game", "POST", data)
@@ -120,37 +57,33 @@ export default function CreateNewGame({ onDisconnect }) {
           onDisconnect();
           window.alert("You are not authentified, please reconnect");
         } else {
-          console.log(json);
+          setModalVisible(true);
+          setTextError("La partie a été créée avec succès !");
         }
       })
-      .catch((error) => console.log(error));
-    // }
+      .catch((error) => {
+        console.log(error);
+        setModalVisible(true);
+        setTextError(error);
+      });
   }
 
   return (
     <View style={styles.container}>
-      <Modal
-        animationType="slide"
-        transparent={true}
+      <DisplayMessage
         visible={modalVisible}
-        onRequestClose={() => {
+        textMessage={textError}
+        onPress={() => {
           setModalVisible(!modalVisible);
+          setMenuState(0);
         }}
-      >
-        <View style={styles.centeredView}>
-          <View style={styles.modalView}>
-            <Text style={styles.modalText}>{textError}</Text>
-            <Pressable
-              style={[styles.button, styles.buttonClose]}
-              onPress={() => setModalVisible(!modalVisible)}
-            >
-              <Text style={styles.textStyle}>Fermer</Text>
-            </Pressable>
-          </View>
-        </View>
-      </Modal>
+      />
 
-      <BarScrollInt onPress={setNbJoueur} title={"Nombre de joueurs"} />
+      <BarScrollInt
+        nbJoueur={nbJoueur}
+        setNbJoueur={setNbJoueur}
+        title={"Nombre de joueurs"}
+      />
 
       <View style={styles.itemStyle}>
         <SizedText
@@ -190,16 +123,16 @@ export default function CreateNewGame({ onDisconnect }) {
           <TimeChoose
             mode={"date"}
             minDate={true}
-            dureePeriode={timeDebut}
-            setDureePeriode={setTimeDebut}
+            dureePeriode={dateDeb}
+            setDureePeriode={setDateDeb}
           />
 
           <Text style={styles.beginText}>à</Text>
           <TimeChoose
             mode={"time"}
             minDate={true}
-            dureePeriode={timeDebut}
-            setDureePeriode={setTimeDebut}
+            dureePeriode={dateDeb}
+            setDureePeriode={setDateDeb}
           />
         </View>
       </View>
@@ -259,11 +192,6 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     marginHorizontal: 10,
   },
-  selecDate: {
-    borderWidth: 1,
-    textAlign: "center",
-    padding: 5,
-  },
   centeredView: {
     flex: 1,
     justifyContent: "center",
@@ -315,38 +243,9 @@ const styles = StyleSheet.create({
     width: "100%",
     color: "#000000",
   },
-  input: {
-    textAlign: "center",
-    borderWidth: 1,
-    height: 40,
-    width: 50,
-  },
-  header: {
-    width: "100%",
-    top: 0,
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    backgroundColor: "rgb(78, 78, 78)",
-    padding: 10,
-  },
-  welcomeText: {
-    color: "white",
-  },
-  textGros: {
-    fontSize: 17,
-    fontWeight: "bold",
-  },
-  disconnectButtonLabel: {
-    color: "white",
-    backgroundColor: "black",
-    borderRadius: 10,
-    padding: 5,
-    borderWidth: 1,
-    borderColor: "white",
-  },
 });
 
 CreateNewGame.propTypes = {
   onDisconnect: PropTypes.func.isRequired,
+  setMenuState: PropTypes.func.isRequired,
 };

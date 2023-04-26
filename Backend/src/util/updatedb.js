@@ -15,7 +15,7 @@ const usersgamesModel = require("../models/usersgames");
   await usersgamesModel.sync({ force: true });
   // Initialise la base avec quelques données
   await usersModel.create({
-    username: "luca",
+    username: "Luca",
     password: "nullos",
   });
 
@@ -36,8 +36,8 @@ const usersgamesModel = require("../models/usersgames");
 
   await gamesModel.create({
     nbJoueur: 7,
-    dureeJour: 1,
-    dureeNuit: 1,
+    dureeJour: 1*3600,
+    dureeNuit: 1*3600,
     dateDeb: "2023-01-17T04:33:12.000Z",
     probaPouv: 0,
     probaLoup: 0,
@@ -45,8 +45,8 @@ const usersgamesModel = require("../models/usersgames");
 
   await gamesModel.create({
     nbJoueur: 8,
-    dureeJour: 1,
-    dureeNuit: 1,
+    dureeJour: 2*3600,
+    dureeNuit: 3*3600 + 1*60,
     dateDeb: "2023-01-17T04:33:13.000Z",
     probaPouv: 0.5,
     probaLoup: 0.5,

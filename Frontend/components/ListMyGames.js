@@ -1,18 +1,16 @@
 import { useState, useEffect, React } from "react";
 import { StyleSheet, View } from "react-native";
-import ListGames from "./ListGames";
 import { fetchData } from "../utils/fetchData";
+import DisplayMessage from "./DisplayMessage";
+import ListGames from "./ListGames";
 import PropTypes from "prop-types";
 
-// const config = require("../config");
-// const { BACKEND } = config;
-
-export default function ListMyGames({ onDisconnect }) {
+export default function ListMyGames({ setMenuState, onDisconnect, setJoinedGame }) {
   const [parties, setParties] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
   useEffect(() => {
-    // TODO, uniquement parties auxquelles joueur X participe
     fetchData("game", "GET")
       .then((data) => {
         if (data.token === false) {
@@ -26,25 +24,26 @@ export default function ListMyGames({ onDisconnect }) {
   }, []);
 
   function joinMyGame() {
-    console.log("joinMyGame")
-    // TODO
-
-    console.log(selectedId);
-    // fetch(`${BACKEND}/game/${selectedId}`, {
-    //   method: "POST",
-    //   headers: {
-    //     "content-type": "application/x-www-form-urlencoded; charset=UTF-8",
-    //   },
-    // })
-    //   .then((res) => res.json())
-    //   .then((json) => setParties(json))
-    //   .catch((error) => console.log(error));
+    console.log("joinMyGame : ", selectedId);
+    setModalVisible(true);
   }
 
   return (
     <View style={styles.container}>
+      <DisplayMessage
+        visible={modalVisible}
+        textMessage={`Vous rejoignez la partie ${selectedId}. Bon jeu !`}
+        onPress={() => {
+          setModalVisible(false);
+          setMenuState(4);
+          setJoinedGame(selectedId);
+        }}
+      />
+
       <ListGames
-        descriptiveLabel={"Liste des parties auxquelles vous participez déjà : (TODO)"}
+        descriptiveLabel={
+          "Liste des parties auxquelles vous participez déjà : (TODO)"
+        }
         parties={parties}
         selectedId={selectedId}
         setSelectedId={setSelectedId}
@@ -64,4 +63,6 @@ const styles = StyleSheet.create({
 
 ListMyGames.propTypes = {
   onDisconnect: PropTypes.func.isRequired,
+  setMenuState: PropTypes.func.isRequired,
+  setJoinedGame: PropTypes.func.isRequired,
 };

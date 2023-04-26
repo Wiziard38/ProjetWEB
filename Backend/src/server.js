@@ -7,11 +7,17 @@ issu du dépôt
 // Load Enviroment Variables to process.env (if not present take variables defined in .env file)
 require('mandatoryenv').load(['PORT'])
 const { PORT } = process.env
-
+// Initialize the server
+const server = require('./httpserver.js')
+// Initialize websockets
+const io = require('./ws/websockets.js')
+const GameManager = require('./game/GameManager.js')
+GameManager.createGame('0');
 // Instantiate an Express Application
-const app = require('./app')
 // Open Server on selected Port
-app.listen(
+//const server = http.createServer(app);
+
+server.listen(
   PORT,
-  () => console.info('Server listening on port ', PORT)
+  () => console.info('Server listening   on port ', PORT)
 )

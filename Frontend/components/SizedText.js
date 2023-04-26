@@ -31,7 +31,13 @@ export default function SizedText({ label, size, textStyle }) {
 
 SizedText.propTypes = {
   label: PropTypes.string.isRequired,
-  size: PropTypes.oneOf(["mini", "small", "normal", "large", "xlarge", "xxlarge"])
-    .isRequired,
-  textStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.array])
+  size: PropTypes.oneOf([
+    "mini",
+    "small",
+    "normal",
+    "large",
+    "xlarge",
+    "xxlarge",
+  ]).isRequired,
+  textStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
 };

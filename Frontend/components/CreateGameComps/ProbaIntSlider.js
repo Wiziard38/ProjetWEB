@@ -16,7 +16,7 @@ export default function ProbaIntSlider({ proba, setProba, labelProba }) {
         textStyle={{ fontWeight: "bold", textAlign: "center" }}
       />
       <SizedText
-        label={proba}
+        label={proba.toString()}
         size="large"
         textStyle={{ fontWeight: "bold", textAlign: "center" }}
       />
@@ -28,11 +28,11 @@ export default function ProbaIntSlider({ proba, setProba, labelProba }) {
         step={1}
         minimumTrackTintColor="rgb(255,0,0)"
         maximumTrackTintColor="rgb(0,0,255)"
-        value={parseFloat(proba) * numFactor}
+        value={proba * numFactor}
         onValueChange={(value) => {
           clearTimeout(this.sliderTimeoutId);
           this.sliderTimeoutId = setTimeout(() => {
-            setProba((value / numFactor).toString());
+            setProba(value / numFactor);
           }, 5);
         }}
       />
@@ -41,7 +41,7 @@ export default function ProbaIntSlider({ proba, setProba, labelProba }) {
 }
 
 ProbaIntSlider.propTypes = {
-  proba: PropTypes.string.isRequired,
+  proba: PropTypes.number.isRequired,
   setProba: PropTypes.func.isRequired,
   labelProba: PropTypes.string.isRequired,
 };
