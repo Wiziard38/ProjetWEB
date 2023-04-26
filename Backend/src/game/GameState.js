@@ -1,7 +1,7 @@
-const State = {
+const GameState = {
     DAY: 'day',
     NIGHT: 'night',
     BEGIN: 'begin'
 }
 
-module.exports = State;
+module.exports = GameState;

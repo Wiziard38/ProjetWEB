@@ -1,4 +1,4 @@
-const Roles = {
+const Room = {
     CONTAMINATION: 'contamination',
     SPIRITISM: 'spiritism',
     INSOMNIA: 'insomnia',
@@ -7,4 +7,4 @@ const Roles = {
     NONE: 'none'
 }
 
-module.exports = Roles;
+module.exports = Room;

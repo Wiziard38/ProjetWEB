@@ -1,10 +1,11 @@
 const io = require('../ws/websockets.js')
 const initNamespace = require('./Namespace.js')
 const Team = require('./Team.js');
-const Roles = require('./Roles.js');
-const State = require('./State.js');
+const Room = require('./Room.js');
+const State = require('./GameState.js');
 const usersModel = require("../models/users");
-const getUserNameByToken = require('./decode.js')
+const getUserNameByToken = require('../middleware/decode.js');
+const GameState = require('./GameState.js');
 
 
 const GameManager = {
@@ -14,7 +15,7 @@ const GameManager = {
     // Link socket ID to a team. An fast and easy way to check the team when needed
     socketToTeam: new Map(),
     // Link socket ID to a role. An fast and easy way to check the role when needed
-    socketToRoles: new Map(),
+    socketToRoom: new Map(),
 
     gameLoopID: new Map(),
 
@@ -29,6 +30,9 @@ const GameManager = {
         this.userToSocket.set(playerID, socketID);
     },
 
+    isNight: function(gameID) {
+        return this.states.get(gameID) === GameState.NIGHT;
+    },
     /**
      * Remove a player from directories
      * @param {*} playerID 
@@ -36,7 +40,7 @@ const GameManager = {
     removePlayer: function (playerID) {
         const socketID = this.socketDir.get(playerID);
         this.socketDir.delete(playerID);
-        this.socketToRoles.delete(socketID);
+        this.socketToRoom.delete(socketID);
         this.socketToTeam.delete(socketID);
     },
 
@@ -57,7 +61,7 @@ const GameManager = {
      * @returns 
      */
     validRole: function(socketID, role) {
-        return this.socketToRoles.get(socketID) === role;
+        return this.socketToRoom.get(socketID) === role;
     },
 
     /**
@@ -119,17 +123,17 @@ const GameManager = {
     getUserRole: async function(userName, gameID) {
         //TODO DELETE_ALL_TEST_MSG
         if(userName == 1) {
-            return Roles.CONTAMINATION;
+            return Room.CONTAMINATION;
         } else if(userName == 2) {
-            return Roles.INSOMNIA;
+            return Room.INSOMNIA;
         } else if(userName == 3) {
-            return Roles.PSYCHIC;
+            return Room.PSYCHIC;
         } else if(userName == 4) {
-            return Roles.SPIRITISM;
+            return Room.SPIRITISM;
         } else if(userName == 5) {
-            return Roles.ELECTED;
+            return Room.ELECTED;
         } else {
-            return Roles.NONE;
+            return Room.NONE;
         }
     },
 
@@ -148,7 +152,7 @@ const GameManager = {
      * @param {*} role 
      */
     addRoleDirectory: function(socketID, role) {
-        this.socketToRoles.set(socketID, role)
+        this.socketToRoom.set(socketID, role)
     },
 
     /**
@@ -168,11 +172,11 @@ const GameManager = {
      */
     setPlayerRoom: function(gameID, socketID) {
         const socket = io.of('/' + gameID).sockets.get(socketID);
-        const role = this.socketToRoles.get(socketID);
+        const role = this.socketToRoom.get(socketID);
         const team = this.socketToTeam.get(socketID);
         if(socket) {
             //Add the player to it's team/role room
-            if(role === Roles.NONE) {
+            if(role === Room.NONE) {
                 // Player with no role
                 socket.join(team);
             } else {

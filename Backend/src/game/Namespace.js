@@ -1,7 +1,7 @@
 const io = require('../ws/websockets.js')
 const Team = require('./Team.js')
-const Roles = require('./Roles.js')
-const State = require('./State.js')
+const Room = require('./Room.js')
+const GameState = require('./GameState.js')
 
 function initNamespace(gameID) {
   const GameManager = require('./GameManager.js')
@@ -52,21 +52,21 @@ function initNamespace(gameID) {
       //Ajouter le message à la discution si c'est pertinant
       //Il est probable qu'on ait besoin de rajouter d'autres paramètre (en plus de socket)
       const state = GameManager.states.get(gameID)
-      const role = GameManager.socketToRoles.get(socket.id);
+      const role = GameManager.socketToRoom.get(socket.id);
       const team = GameManager.socketToTeam.get(socket.id);
       //During the day everyone can send and receive message
-      if(state === State.DAY) {
+      if(state === GameState.DAY) {
         if(team !== Team.DEATH) {
           namespace.emit("receive_msg", mes);
         }
-      } else if(state === State.NIGHT) {
+      } else if(state === GameState.NIGHT) {
         
-        if(role === Roles.SPIRITISM || role === Roles.ELECTED) {
+        if(role === Room.SPIRITISM || role === Room.ELECTED) {
           // Check if the human can talk to deads
-          namespace.to(Roles.ELECTED).to(Roles.SPIRITISM).emit("receive_msg", mes);
+          namespace.to(Room.ELECTED).to(Room.SPIRITISM).emit("receive_msg", mes);
           
         } else if(team === Team.WEREWOLF) {
-          namespace.to(Team.WEREWOLF).to(Roles.INSOMNIA).to(Roles.CONTAMINATION).emit("receive_msg", mes);
+          namespace.to(Team.WEREWOLF).to(Room.INSOMNIA).to(Room.CONTAMINATION).emit("receive_msg", mes);
         } else {
           // Truc illégal !
           socket.emit("receive_msg", "[Server] You cannot send message !");
@@ -82,14 +82,14 @@ function initNamespace(gameID) {
       const fromUsername = GameManager.socketDir.get(socket.id);
 
       // Savoir si c'est une nouvelle proposition ?
-      if(state == State.DAY) {
+      if(state == GameState.DAY) {
         //  Verifier que le joueur ne vote qu'une seul fois
         namespace.emit("vote", fromUsername, username);
       }
-      else if(state == State.NIGHT) {
+      else if(state == GameState.NIGHT) {
         if(team == Team.WEREWOLF) {
           // Vérifier que le joueur vote pour un humain
-          namespace.to(Team.WEREWOLF).to(Roles.CONTAMINATION).emit("vote", fromUsername, username);
+          namespace.to(Team.WEREWOLF).to(Room.CONTAMINATION).emit("vote", fromUsername, username);
         }
       }
     })
@@ -103,21 +103,21 @@ function initNamespace(gameID) {
     //   const team = GameManager.socketToTeam.get(socket.id);
     //   const fromUsername = GameManager.socketDir.get(socket.id);
 
-    //   if(state == State.DAY) {
+    //   if(state == GameState.DAY) {
     //     //  Verifier que le joueur ne vote qu'une seul fois
     //     namespace.emit("vote", fromUsername, username);
     //   }
-    //   else if(state == State.NIGHT) {
+    //   else if(state == GameState.NIGHT) {
     //     if(team == Team.WEREWOLF) {
     //       // Vérifier que le joueur vote pour un humain
-    //       namespace.to(Team.WEREWOLF).to(Roles.CONTAMINATION).emit("vote", fromUsername, username);
+    //       namespace.to(Team.WEREWOLF).to(Room.CONTAMINATION).emit("vote", fromUsername, username);
     //     }
     //   }
     // })
   
     socket.on('contamination', (username) => {
       // When the player contaminate someone 
-      if(GameManager.validRole(socket.id, Roles.CONTAMINATION)) {
+      if(GameManager.validRole(socket.id, Room.CONTAMINATION)) {
         //Vérifier si le pouvoir a été utilisé deux fois ?
         // Placer le joueur cible dans la team des loups garou
         // S'il est connecter, changer
@@ -132,14 +132,14 @@ function initNamespace(gameID) {
           //Rejoint les loups
           // Mettre de la couleur ?
         }
-        namespace.to(Team.WEREWOLF).to(Roles.CONTAMINATION).emit("message", username + " is now a werewolf"); 
+        namespace.to(Team.WEREWOLF).to(Room.CONTAMINATION).emit("message", username + " is now a werewolf"); 
 
       }
     })
   
     socket.on('spiritism', (username) => {
       // Check if the player have spiritism's role
-      if(GameManager.validRole(socket.id, Roles.SPIRITISM)) {
+      if(GameManager.validRole(socket.id, Room.SPIRITISM)) {
         
         // Vérifier si le username est bien mort
         
@@ -149,7 +149,7 @@ function initNamespace(gameID) {
     })
   
     socket.on('psychic', (username) => {
-      if(GameManager.validRole(socket.id, Roles.PSYCHIC)) {
+      if(GameManager.validRole(socket.id, Room.PSYCHIC)) {
         // get the player role
         const playerRole = "";
         socket.emit("message", "Le role de " + username + " est " + playerRole)
