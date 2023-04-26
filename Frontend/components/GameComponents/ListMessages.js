@@ -5,7 +5,6 @@ import PropTypes from "prop-types";
 import { messageTime } from "../../utils/dateFunctions";
 
 export default function ListMessages({ messages, flatListRef }) {
-  
   class Message extends React.PureComponent {
     render() {
       return (
@@ -36,7 +35,6 @@ export default function ListMessages({ messages, flatListRef }) {
 
   _renderItem = ({ item }) => <Message item={item} />;
 
-
   function noGames() {
     return (
       <SizedText
@@ -55,7 +53,16 @@ export default function ListMessages({ messages, flatListRef }) {
         renderItem={this._renderItem}
         contentContainerStyle={styles.messagesContainer}
         ListEmptyComponent={noGames}
-        onContentSizeChange={() => flatListRef.current.scrollToEnd()}
+        onContentSizeChange={() => {
+          if (flatListRef.current._listRef._totalCellsMeasured !== 0) {
+            flatListRef.current.scrollToEnd();
+          }
+        }}
+        onLayout={() => {
+          if (flatListRef.current._listRef._totalCellsMeasured !== 0) {
+            flatListRef.current.scrollToEnd({ animated: true, velocity: 1 });
+          }
+        }}
       />
     </>
   );

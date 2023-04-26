@@ -18,24 +18,6 @@ export default function MessagesScreen({}) {
   const [messages, setMessages] = useState([]);
   const flatListRef = useRef(null);
 
-  useEffect(() => {
-    const keyboardDidShowListener = Keyboard.addListener(
-      "keyboardDidShow",
-      () => {
-        if (flatListRef.current._listRef._totalCellsMeasured !== 0) {
-          flatListRef.current.scrollToEnd({ animated: true, duration: 100 });
-        // flatListRef.current.scrollToOffset({
-        //   offset: -flatListRef.current._listRef._scrollMetrics.dOffset,
-        // });
-        }
-      }
-    );
-
-    return () => {
-      keyboardDidShowListener.remove();
-    };
-  }, []);
-
   const handleSend = () => {
     if (message !== "") {
       setMessages([
@@ -50,13 +32,10 @@ export default function MessagesScreen({}) {
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "margin"}
-        style={styles.container}
         keyboardVerticalOffset={Platform.OS === "ios" ? 20 : 0}
+        style={styles.container}
       >
-        <ListMessages
-          messages={messages}
-          flatListRef={flatListRef}
-        />
+        <ListMessages messages={messages} flatListRef={flatListRef} />
 
         <View style={styles.footerStyle}>
           <TextInput
@@ -117,25 +96,4 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     backgroundColor: "#eee",
   },
-  // footerStyle: {
-  //   flexDirection: "row",
-  //   alignItems: "center",
-  //   marginBottom: 10,
-  //   marginHorizontal: 5,
-  //   paddingHorizontal: 10,
-  //   backgroundColor: "#fff",
-  //   borderRadius: 25,
-  //   height: 60,
-  //   flex: 1,
-  // },
-  // input: {
-  //   padding: 10,
-  //   height: 50,
-  //   fontSize: 16,
-  //   backgroundColor: "#eee",
-  //   marginLeft: 15,
-  //   marginRight: 10,
-  //   borderRadius: 25,
-  //   flex: 1,
-  // },
 });
