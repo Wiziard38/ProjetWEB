@@ -7,41 +7,6 @@ const io = SocketIO(server, {
   }
 });
 
-// const Team = {
-//   //Loup garous
-//   LG:0,
-//   // Humains
-//   H: 1,
-//   // Morts
-//   M: 2
-// }
-
-// const Role = {
-//   C: 0,
-//   I: 1,
-//   V: 2,
-//   S: 3
-// }
-
-// class Player {
-//   #playerId;
-//   #socketID;
-//   #gameID;
-//   #team;
-//   #role;
-
-//   constructor(playerId, socketId, gameID, team, role) {
-//     this.#playerId = playerId;
-//     this.#socketID = socketId;
-//     this.#gameID = gameID;
-//     this.#team = team;
-//     this.#role = role;
-//   }
-//   getId() {
-//     return this.#playerId;
-//   }
-// }
-
 
 
 // What happen on connection
