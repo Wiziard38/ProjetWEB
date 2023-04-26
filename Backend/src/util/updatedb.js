@@ -15,7 +15,7 @@ const usersgamesModel = require("../models/usersgames");
   await usersgamesModel.sync({ force: true });
   // Initialise la base avec quelques données
   await usersModel.create({
-    username: "luca",
+    username: "Luca",
     password: "nullos",
   });
 
