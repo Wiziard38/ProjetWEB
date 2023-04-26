@@ -1,5 +1,5 @@
 const db = require("./database.js");
-
+const Sequelize = require("sequelize");
 const users = require("./users.js");
 const games = require("./games.js");
 

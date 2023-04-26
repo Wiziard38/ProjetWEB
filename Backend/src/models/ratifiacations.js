@@ -1,6 +1,6 @@
 const Sequelize = require("sequelize");
 const db = require("./database.js");
-const usersGames = require("./usersGames");
+const usersGames = require("./usersgames");
 const propositionVotes = require("./propositionVotes");
 
 const ratifications = db.define("ratifications", {
