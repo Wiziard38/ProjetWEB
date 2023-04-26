@@ -1,5 +1,5 @@
 import { useState, useEffect, React } from "react";
-import { StyleSheet, TextInput, View } from "react-native";
+import { StyleSheet, TextInput, View, ImageBackground } from "react-native";
 import SizedText from "./SizedText";
 import SizedButton from "./SizedButton.js";
 import PropTypes from "prop-types";
@@ -8,88 +8,92 @@ export default function LoginForm(props) {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
-  const [descriptionText, setDescriptionText] = useState("Je me connecte");
+  const [usernamePlaceholder, setUsernamePlaceholder] = useState("Username");
+  const [passwordPlaceholder, setPasswordPlaceholder] = useState("Password");
+  const [placeholderColor, setPlaceholderColor] = useState("#d1d1d1");
+
   const [switchText, setSwitchText] = useState("Je m'inscrit");
   const [submitText, setSubmitText] = useState("Se connecter");
 
   useEffect(() => {
     if (props.loggingState) {
-      setDescriptionText("Je me connecte");
       setSubmitText("Se connecter");
       setSwitchText("Je m'inscris");
       props.setErrorTextValue("");
     } else {
-      setDescriptionText("Je créé un compte");
       setSubmitText("S'inscrire");
       setSwitchText("Je me connecte");
       props.setErrorTextValue("");
     }
   }, [props.loggingState]); // Dependency array to run the effect each time mode is changed
 
+  function submitForm() {
+    if (username === "" || password === "") {
+      setPlaceholderColor("red");
+      setUsernamePlaceholder("Username : ce champ est requis");
+      setPasswordPlaceholder("Password : ce champ est requis");
+    } else if (username.length > 32) {
+      props.setErrorTextValue("L'username est trop long !");
+    } else if (password.length > 60) {
+      props.setErrorTextValue("Le password est trop long !");
+    } else {
+      props.onConnect(username, password); // TODO ne pas envoyer le mdp en clair ?
+    }
+  }
+
   return (
-    <View style={styles.container}>
-      {/* Login Form */}
-      <View style={styles.formContainer}>
-        <View style={styles.formBackground}>
-          <SizedText
-            label={descriptionText}
-            size="xlarge"
-            textStyle={styles.loginTitle}
+    <ImageBackground
+      source={require("../assets/images/login_bg.png")}
+      style={styles.imageBackground}
+    >
+      <View style={styles.container}>
+        <View style={styles.switchButtonContainer}>
+          <SizedButton
+            buttonLabel={switchText}
+            size={"large"}
+            buttonStyle={{}}
+            buttonLabelStyle={styles.switchButtonLabel}
+            onPress={() => props.setLoggingState(!props.loggingState)}
+          />
+        </View>
+        <View style={styles.formContainer}>
+          <TextInput
+            nativeID="usernameInput"
+            style={styles.formInput}
+            onChangeText={setUsername}
+            value={username}
+            placeholder={usernamePlaceholder}
+            placeholderTextColor={placeholderColor}
+          />
+
+          <TextInput
+            nativeID="passwordInput"
+            style={styles.formInput}
+            secureTextEntry={true}
+            onChangeText={setPassword}
+            value={password}
+            placeholder={passwordPlaceholder}
+            placeholderTextColor={placeholderColor}
           />
 
           <SizedText
             label={props.errorTextValue}
             size="small"
-            textStyle={styles.errorMessage}
-          />
-
-          <TextInput
-            nativeID="usernameInput"
-            style={styles.input}
-            onChangeText={setUsername}
-            value={username}
-            placeholder="Username"
-          />
-
-          <TextInput
-            nativeID="passwordInput"
-            style={styles.input}
-            secureTextEntry={true}
-            onChangeText={setPassword}
-            value={password}
-            placeholder="Password"
-          />
-
-          <SizedButton
-            buttonLabel={submitText}
-            size={"normal"}
-            buttonStyle={styles.submitButton}
-            buttonLabelStyle={styles.submitButtonLabel}
-            onPress={() => {
-              if (username === "") {
-                props.setErrorTextValue("Le champ username ne peut être vide");
-              } else if (password === "") {
-                props.setErrorTextValue("Le champ password ne peut être vide");
-              } else if (username.length > 32) {
-                props.setErrorTextValue("L'username est trop long !");
-              } else if (password.length > 60) {
-                props.setErrorTextValue("Le password est trop long !");
-              } else {
-                props.onConnect(username, password); // TODO ne pas envoyer le mdp en clair ?
-              }
-            }}
-          />
-
-          <SizedButton
-            buttonLabel={switchText}
-            size={"mini"}
-            buttonStyle={styles.switchButton}
-            buttonLabelStyle={styles.switchButtonLabel}
-            onPress={() => props.setLoggingState(!props.loggingState)}
+            textStyle={[
+              styles.errorMessage,
+              props.errorTextValue !== "" && { paddingHorizontal: 20 },
+            ]}
           />
         </View>
       </View>
-    </View>
+      <SizedButton
+        buttonLabel={submitText}
+        size={"xlarge"}
+        buttonStyle={styles.submitButton}
+        buttonLabelStyle={styles.submitButtonLabel}
+        onPress={submitForm}
+      />
+    </ImageBackground>
   );
 }
 
@@ -98,59 +102,66 @@ const styles = StyleSheet.create({
     flex: 1,
     width: "100%",
     height: "100%",
-    position: "relative",
-  },
-  input: {
-    height: 40,
-    marginBottom: 10,
-    marginTop: 10,
     padding: 10,
-    borderWidth: 1,
+    backgroundColor: "#313e55a6",
+  },
+  imageBackground: {
+    flex: 1,
+    resizeMode: "stretch",
+    justifyContent: "center",
+  },
+  formInput: {
+    width: "90%",
+    marginVertical: 20,
+    fontSize: 17,
+    padding: 5,
+    color: "white",
+    borderBottomColor: "#c2c2c2",
+    borderBottomWidth: 2,
+    borderBottomEndRadius: 10,
+    backgroundColor: "#282f3855",
   },
   formContainer: {
     flex: 1,
+    width: "100%",
     justifyContent: "center",
     alignItems: "center",
-  },
-  formBackground: {
-    backgroundColor: "rgb(187, 190, 143)",
-    padding: 30,
-    width: "65%",
-    borderRadius: 10,
-    borderColor: "#2c2c2c",
-    borderWidth: 2,
-    shadowColor: "white",
-    shadowOffset: { width: 0, height: 3 },
-    shadowOpacity: 0.8,
-    shadowRadius: 10,
-    elevation: 10,
-  },
-  loginTitle: {
-    textAlign: "center",
-    marginBottom: 20,
+    marginBottom: 40,
   },
   errorMessage: {
+    position: "absolute",
+    alignSelf: "center",
+    top: 0,
     color: "red",
+    backgroundColor: "#282f38b8",
+    paddingVertical: 5,
+    margin: 10,
+    borderRadius: 7,
+    overflow: "hidden",
   },
   // Button for submission
   submitButton: {
-    borderRadius: 10,
-    borderWidth: 2,
-    borderColor: "red",
-    backgroundColor: "black",
-    padding: 10,
+    position: "absolute",
+    bottom: 0,
+    width: "100%",
+    backgroundColor: "rgb(143, 190, 187)",
+    padding: 20,
+    alignItems: "center",
   },
   submitButtonLabel: {
     color: "white",
+    fontWeight: "bold",
   },
   // Button for changing mode (log in / sign in)
-  switchButton: {
-    marginTop: 5,
+  switchButtonContainer: {
+    position: "absolute",
+    top: 25,
+    right: 25,
+    zIndex: 9,
   },
   switchButtonLabel: {
-    color: "#383838",
-    fontStyle: "italic",
-    textAlign: "center",
+    color: "white",
+    fontWeight: "bold",
   },
 });
 

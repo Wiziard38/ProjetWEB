@@ -21,19 +21,21 @@ const styles = StyleSheet.create({
   buttonStyle: {
     marginVertical: 25,
     marginHorizontal: 25,
+    width: "100%",
+  },
+  selectionButton: {
+    paddingHorizontal: 25,
+    width: "100%",
   },
   selectionButtonLabel: {
-    backgroundColor: "#4f7c7b",
-    borderColor: "#000000",
+    backgroundColor: "rgba(143, 190, 187, 0.597)",
+    borderColor: "rgb(40, 52, 52)",
     borderRadius: 10,
     paddingVertical: 10,
     paddingHorizontal: 20,
-    borderWidth: 4,
+    borderWidth: 2,
     textAlign: "center",
-  },
-  selectionButton: {
-    width: "100%",
-    color: "#000000",
+    color: "white"
   },
 });
 
