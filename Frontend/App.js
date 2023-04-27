@@ -74,7 +74,7 @@ export default function App() {
               setErrorTextValue(
                 `Bienvenue ${json.data.username}, vous avez été inscrit avec succès.`
               );
-            }
+            }<MenuSelection onMenuChoose={setMenuState} />
           } else {
             setErrorTextValue("Server error, should not happen");
           }
@@ -129,7 +129,7 @@ export default function App() {
             />
   
             {menuState === 0 ? (
-              <TestVote/>
+              <MenuSelection onMenuChoose={setMenuState} />
             ) : menuState === 1 ? (
               <ListNewGames
                 setMenuState={setMenuState}
@@ -146,11 +146,10 @@ export default function App() {
                 setMenuState={setMenuState}
                 onDisconnect={disconnect}
               />
-            ) : menuState === 4?(
+            ) :(
               <Game gameId={joinedGame} token={token}/>
-            ) : (
-              <MenuSelection onMenuChoose={setMenuState} />
-            )}
+            )
+            }
           </View>
         )}
       </SafeAreaView>
