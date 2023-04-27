@@ -43,11 +43,11 @@ export default function CreateNewGame({ gameId, token }) {
         console.log(msg);
       })
 
-      socket.current.on("jour", (msg) => {
+      socket.current.on("day", (msg) => {
         console.log(msg);
       })
 
-      socket.current.on("nuit", (msg) => {
+      socket.current.on("night", (msg) => {
         console.log(msg);
       })
 

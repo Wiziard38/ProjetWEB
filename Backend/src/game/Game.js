@@ -66,12 +66,12 @@ class Game {
 
     dayChange() {
         this.#gameState = GameState.DAY;
-        io.of('/' + this.#gameID).emit('day', 'nuit -> jour');
+        io.of(this.#namespace).emit('day', 'nuit -> jour');
     }
 
     nightChange() {
         this.#gameState = GameState.NIGHT;
-        io.of('/' + this.#gameID).emit('night', 'jour -> nuit');
+        io.of(this.#namespace).emit('night', 'jour -> nuit');
     }
 
 
