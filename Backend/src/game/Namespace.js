@@ -1,9 +1,11 @@
 const io = require('../ws/websockets.js')
-const Game = require('./Game.js')
-const Player = require('./Player.js')
-
-function initNamespace(game) {
-  const gameID = game.getID();
+const Team = require('./Team.js')
+const Room = require('./Room.js')
+const GameState = require('./GameState.js')
+const userModel = require("../models/users");
+const usersgames = require('../models/usersgames.js');
+const propVote = require("../models/propositionVotes")
+function initNamespace(gameID) {
   const GameManager = require('./GameManager.js')
   const namespace = io.of('/' + gameID);
   GameManager.addGame(gameID, game);
@@ -44,10 +46,24 @@ function initNamespace(game) {
       // When the user disconnect
       socket.disconnect();
       console.log("user disconnected");
-    })
+    });
+
+
+
+    socket.on("propVote", async (usernameVotant, usernameVote) => {
+      console.log("Le joueur "+ usernameVotant + " vote " + usernameVote);
+      console.log(gameID);
+      const usergameVotant = await userModel.findOne({where: {username: usernameVotant}, include: {model:usersgames, where: {gameIdGame: gameID}}});
+      console.log(usergameVotant)
+      await propVote.create({usernameVote: usernameVote, usergameId: usergameVotant.idUsergame})
+      console.log("ok");
+    });
+
+
+
     socket.on("TEST", (mes) => {
       console.log(mes);
-    })
+    });
     socket.on('message', (mes) => {
       //Fonction utiliser quand l'utilisateur envoie un message dans le chat
       //Il faut vérifier si l'utilisateur à bien le droit de faire cette opération
@@ -107,22 +123,22 @@ function initNamespace(game) {
   
     socket.on('contamination', (username) => {
       // When the player contaminate someone 
-      // if(GameManager.validRole(socket.id, Room.CONTAMINATION)) {
-      //   //Vérifier si le pouvoir a été utilisé deux fois ?
-      //   // Placer le joueur cible dans la team des loups garou
-      //   // S'il est connecter, changer
-      //   userSocketID = GameManager.userToSocket.get(username);
-      //   if(userSocketID) {
-      //     // Changement de team ici
-      //     GameManager.addTeamDirectory(userSocketID, Team.WEREWOLF);
-      //     const userSocket = io.of('/' + gameID).sockets.get(userSocketID);
-      //     userSocket.join(Team.WEREWOLF);
-      //     //Notifie le joueur de la contamination
-      //     userSocket.emit("contamination", "bidule");
-      //     //Rejoint les loups
-      //     // Mettre de la couleur ?
-      //   }
-      //   namespace.to(Team.WEREWOLF).to(Room.CONTAMINATION).emit("message", username + " is now a werewolf"); 
+      if(GameManager.validRole(socket.id, Room.CONTAMINATION)) {
+        //Vérifier si le  a été utilisé deux fois ?
+        // Placer le joueur cible dans la team des loups garou
+        // S'il est connecter, changer
+        userSocketID = GameManager.userToSocket.get(username);
+        if(userSocketID) {
+          // Changement de team ici
+          GameManager.addTeamDirectory(userSocketID, Team.WEREWOLF);
+          const userSocket = io.of('/' + gameID).sockets.get(userSocketID);
+          userSocket.join(Team.WEREWOLF);
+          //Notifie le joueur de la contamination
+          userSocket.emit("contamination");
+          //Rejoint les loups
+          // Mettre de la couleur ?
+        }
+        namespace.to(Team.WEREWOLF).to(Room.CONTAMINATION).emit("message", username + " is now a werewolf"); 
 
       // }
     })

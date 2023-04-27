@@ -1,7 +1,13 @@
 const usersModel = require("../models/users.js");
 const gamesModel = require("../models/games");
 const usersgamesModel = require("../models/usersgames");
-
+const discussions = require("../models/discussions");
+const etats = require("../models/etats");
+const messages = require("../models/messages");
+const morts = require("../models/morts");
+const propVote = require("../models/propositionVotes");
+const ratifications = require("../models/ratifiacations");
+const vivants = require("../models/vivants");
 // Ajouter ici les nouveaux require des nouveaux modèles
 
 // eslint-disable-next-line no-unexpected-multiline
@@ -13,6 +19,13 @@ const usersgamesModel = require("../models/usersgames");
   await usersModel.sync({ force: true });
   await gamesModel.sync({ force: true });
   await usersgamesModel.sync({ force: true });
+  await discussions.sync({ force: true });
+  await etats.sync({ force: true });
+  await messages.sync({ force: true });
+  await morts.sync({ force: true });
+  await propVote.sync({ force: true });
+  await ratifications.sync({ force: true });
+  await vivants.sync({ force: true });
   // Initialise la base avec quelques données
   await usersModel.create({
     username: "Luca",
@@ -58,8 +71,8 @@ const usersgamesModel = require("../models/usersgames");
   });
 
   await usersgamesModel.create({
-    gameIdGame: 2,
-    userIdUser: 3
+    gameIdGame: 1,
+    userIdUser: 2
   });
 
 
