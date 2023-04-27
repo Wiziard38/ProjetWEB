@@ -1,17 +1,17 @@
 import React from "react";
-import {
-  View,
-  StyleSheet,
-  Image,
-  Pressable,
-} from "react-native";
+import { View, StyleSheet, Image, Pressable } from "react-native";
+import PropTypes from "prop-types";
 import SizedButton from "../SizedButton";
 
-export default function MessagesScreen({ setMenuShow }) {
+export default function GameMenuDepth1({ setMenuDepth, setMenuSelection }) {
+  const handlePress = (selection) => {
+    setMenuSelection(selection);
+    setMenuDepth(2);
+  };
 
   return (
     <View style={styles.container}>
-      <Pressable style={styles.closeButton} onPress={() => setMenuShow(false)}>
+      <Pressable style={styles.closeButton} onPress={() => setMenuDepth(0)}>
         <Image
           style={styles.closeImage}
           source={require("../../assets/images/close.png")}
@@ -21,21 +21,21 @@ export default function MessagesScreen({ setMenuShow }) {
       </Pressable>
       <SizedButton
         buttonLabel="Infos partie"
-        onPress={() => console.log("infos partie")}
+        onPress={() => handlePress("infos")}
         size="large"
         buttonStyle={styles.menuButton}
         buttonLabelStyle={styles.menuButtonText}
       />
       <SizedButton
         buttonLabel="Votes"
-        onPress={() => console.log("votes")}
+        onPress={() => handlePress("votes")}
         size="large"
         buttonStyle={styles.menuButton}
         buttonLabelStyle={styles.menuButtonText}
       />
       <SizedButton
         buttonLabel="Pouvoir"
-        onPress={() => console.log("pouvoir")}
+        onPress={() => handlePress("pouvoir")}
         size="large"
         buttonStyle={styles.menuButton}
         buttonLabelStyle={styles.menuButtonText}
@@ -70,5 +70,10 @@ const styles = StyleSheet.create({
   },
   closeButton: {
     padding: 5,
-  }
+  },
 });
+
+GameMenuDepth1.propTypes = {
+  setMenuDepth: PropTypes.func.isRequired,
+  setMenuSelection: PropTypes.func.isRequired,
+};
