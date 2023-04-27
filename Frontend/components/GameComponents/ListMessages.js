@@ -1,38 +1,10 @@
-import React, { useRef, useEffect } from "react";
-import { View, StyleSheet, FlatList, TouchableOpacity } from "react-native";
+import React from "react";
+import { View, StyleSheet, FlatList } from "react-native";
 import SizedText from "../SizedText";
 import PropTypes from "prop-types";
-import { messageTime } from "../../utils/dateFunctions";
+import Message from "./Message";
 
 export default function ListMessages({ messages, flatListRef }) {
-  class Message extends React.PureComponent {
-    render() {
-      return (
-        <TouchableOpacity onPress={() => null} style={styles.item}>
-          <View style={styles.messageHeader}>
-            <SizedText
-              label={this.props.item.sender}
-              size="normal"
-              textStyle={styles.senderStyle}
-            />
-            <SizedText
-              label={messageTime(this.props.item.date)}
-              size="small"
-              textStyle={styles.dateStyle}
-            />
-          </View>
-          <View style={styles.messageBody}>
-            <SizedText
-              label={this.props.item.text}
-              size="small"
-              textStyle={styles.messageTextStyle}
-            />
-          </View>
-        </TouchableOpacity>
-      );
-    }
-  }
-
   _renderItem = ({ item }) => <Message item={item} />;
 
   function noGames() {
@@ -40,13 +12,13 @@ export default function ListMessages({ messages, flatListRef }) {
       <SizedText
         label={"Soyez le premier a envoyer un message !"}
         size={"normal"}
-        textStyle={styles.item}
+        textStyle={styles.noMessage}
       />
     );
   }
 
   return (
-    <>
+    <View style={styles.listContainer}>
       <FlatList
         ref={flatListRef}
         data={messages}
@@ -64,29 +36,18 @@ export default function ListMessages({ messages, flatListRef }) {
           }
         }}
       />
-    </>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  messageHeader: {
+  listContainer: {
     flex: 1,
-    flexDirection: "row",
+    backgroundColor: "lightblue",
+    paddingRight: 20,
+    paddingTop: 10,
   },
-  senderStyle: {
-    fontWeight: "bold",
-  },
-  dateStyle: {
-    color: "gray",
-    marginLeft: 5,
-  },
-  messageBody: {
-    border: 1,
-    borderColor: "gray",
-    backgroundColor: "#ffffff",
-  },
-  messageTextStyle: {},
-  item: {
+  noMessage: {
     paddingVertical: 10,
     paddingHorizontal: 20,
     marginVertical: 6,
