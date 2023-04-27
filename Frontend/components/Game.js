@@ -9,7 +9,7 @@ import {
   KeyboardAvoidingView,
   Keyboard,
   UIManager,
-  Platform
+  Platform,
 } from "react-native";
 import SocketIOClient, { connect } from "socket.io-client";
 import MessagesScreen from "./GameComponents/MessagesScreen";
@@ -21,6 +21,7 @@ export default function CreateNewGame({ gameId, token }) {
   const [role, setRole] = useState(null);
   const [team, setTeam] = useState(null);
   const [testName, setTestName] = useState(null);
+  const [message, setMessage] = useState("");
 
   const socket = useRef(
     SocketIOClient("http://localhost:3000/0", {
@@ -29,8 +30,10 @@ export default function CreateNewGame({ gameId, token }) {
       },
     })
   );
+  console.log(socket);
 
   useEffect(() => {
+    console.log("TEST");
     if (socket.current) {
       socket.current.on("connect", () => {
         console.log("Connected to server");
@@ -113,14 +116,11 @@ export default function CreateNewGame({ gameId, token }) {
       pseudonyme: "Moi1",
       dateMessage: new Date(),
       textMessage: "tewtewtew",
-    }
-  ]
-  
-  return (
-    <MessagesScreen />
-  );
-}
+    },
+  ];
 
+  return <MessagesScreen />;
+}
 
 const styles = StyleSheet.create({
   container: {

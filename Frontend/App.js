@@ -14,6 +14,7 @@ import {
 } from "./components";
 
 import { fetchData } from "./utils/fetchData";
+import TestVote from "./components/TestVote";
 
 const config = require("./config.js");
 const { BACKEND } = config;
@@ -73,7 +74,7 @@ export default function App() {
               setErrorTextValue(
                 `Bienvenue ${json.data.username}, vous avez été inscrit avec succès.`
               );
-            }
+            }<MenuSelection onMenuChoose={setMenuState} />
           } else {
             setErrorTextValue("Server error, should not happen");
           }
@@ -145,9 +146,10 @@ export default function App() {
                 setMenuState={setMenuState}
                 onDisconnect={disconnect}
               />
-            ) : (
+            ) :(
               <Game gameId={joinedGame} token={token}/>
-            )}
+            )
+            }
           </View>
         )}
       </SafeAreaView>

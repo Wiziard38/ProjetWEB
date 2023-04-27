@@ -1,25 +1,16 @@
-const GameManager = require("../GameManager");
-const GameState = require("../GameState.js");
-const io = require('../ws/websockets.js');
+const io = require('../../ws/websockets');
+const States = require("../States");
+const Powers = require('../Powers');
 const State = require("./State");
+const Game = require('../Game');
 
 class Death extends State {
-    #elected = false;
-
-    sendMessage() {
-        const gameState = GameManager.states.get(game);
-        if(this.#elected && gameState === GameState.NIGHT) {
-            io.of('/' + game).to(Room.ELECTED).to(Room.SPIRITISM).emit("receive_msg", mes);
+    sendMessage(msg, /** @type {Game} */ game) {
+        // Moyen de trouver le joueur élu ?
+        if(game.isNight()) {
+            io.of('/' + game).to("Room.ELECTED").to(Powers.SPIRITISM.toString()).emit("receive_msg", mes);
         }
     }
-
-    toElect() {
-        // put the associated socket to the room
-        this.#elected = true;
-    }
-
-    unElect() {
-        // Remove the associate socket from the room
-        this.#elected = false;
-    }
 }
+
+module.exports = Death;

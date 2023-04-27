@@ -1,21 +1,23 @@
-const GameManager = require("../GameManager");
-const GameState = require("../GameState.js");
-const io = require('../ws/websockets.js');
+const io = require('../../ws/websockets');
+const States = require("../States");
+const Powers = require('../Powers');
 const Alive = require("./Alive");
+const Game = require("../Game");
 
 class Werewolf extends Alive {
-    sendMessage(msg, game) {
-        const gameState = GameManager.states.get(game);
-        if(gameState === GameState.DAY) {
-            io.of('/' + game).emit("receive_msg", msg);
-            return true;
-        } else if (gameState === GameState.NIGHT){
-            io.of('/' + game).to(Team.WEREWOLF).to(Room.INSOMNIA).to(Room.CONTAMINATION).emit("receive_msg", mes);
-            return true;
-        } else {
-            // État invalide ?
-            console.log("[Werewolf.js] sendMessage : Error");
-            return false;
+    sendMessage(msg, /** @type {Game}*/game) {
+        if(super.sendMessage(msg, game) === false) {
+        if (game.isNight()){
+                io.of(game.getNamespace()).to(States.WEREWOLF.toString()).to(Powers.INSOMNIA.toString()).emit("receive_msg", mes);
+                return true;
+            } else {
+                // État invalide ?
+                console.log("[Werewolf.js] sendMessage : Error");
+                return false;
+            }
+
         }
     }
 }
+
+module.exports = Werewolf;
