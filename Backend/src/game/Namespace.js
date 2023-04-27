@@ -141,7 +141,7 @@ function initNamespace(gameID) {
         namespace.to(Team.WEREWOLF).to(Room.CONTAMINATION).emit("message", username + " is now a werewolf"); 
 
       // }
-    })
+    }})
   
     socket.on('spiritism', (username) => {
       // Check if the player have spiritism's role
@@ -165,4 +165,4 @@ function initNamespace(gameID) {
 
 }
 
-module.exports = initNamespace;
+module.exports = initNamespace;<MenuSelection onMenuChoose={setMenuState} />
