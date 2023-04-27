@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import Message from "./Message";
 
 export default function ListMessages({ messages, flatListRef }) {
-  _renderItem = ({ item }) => <Message item={item} />;
+  const renderItem = ({ item }) => <Message item={item} />;
 
   function noGames() {
     return (
@@ -22,7 +22,7 @@ export default function ListMessages({ messages, flatListRef }) {
       <FlatList
         ref={flatListRef}
         data={messages}
-        renderItem={this._renderItem}
+        renderItem={renderItem}
         contentContainerStyle={styles.messagesContainer}
         ListEmptyComponent={noGames}
         onContentSizeChange={() => {

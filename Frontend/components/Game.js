@@ -1,27 +1,23 @@
 import React, { useRef, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import {
-  StyleSheet,
   View,
-  Text,
+  StyleSheet,
   Pressable,
-  TextInput,
-  KeyboardAvoidingView,
-  Keyboard,
-  UIManager,
-  Platform,
+  Image,
+  TouchableWithoutFeedback,
+  Dimensions,
 } from "react-native";
 import SocketIOClient, { connect } from "socket.io-client";
 import MessagesScreen from "./GameComponents/MessagesScreen";
-import ListMessages from "./GameComponents/ListMessages";
-import SizedText from "./SizedText";
+import MenuShow from "./GameComponents/MenuShow";
 
 export default function CreateNewGame({ gameId, token }) {
   // TODO
   const [role, setRole] = useState(null);
   const [team, setTeam] = useState(null);
   const [testName, setTestName] = useState(null);
-  const [message, setMessage] = useState("");
+  const [menuShow, setMenuShow] = useState(false);
 
   const socket = useRef(
     SocketIOClient("http://localhost:3000/0", {
@@ -81,52 +77,33 @@ export default function CreateNewGame({ gameId, token }) {
     );
   }
 
-  data = [
-    {
-      pseudonyme: "Moi",
-      dateMessage: new Date(),
-      textMessage: "tewtewtew",
-    },
-    {
-      pseudonyme: "Moi2",
-      dateMessage: new Date(),
-      textMessage: "tewtewtew",
-    },
-    {
-      pseudonyme: "Moi3",
-      dateMessage: new Date(),
-      textMessage: "tewtewtew",
-    },
-    {
-      pseudonyme: "Moi4",
-      dateMessage: new Date(),
-      textMessage: "tewtewtew",
-    },
-    {
-      pseudonyme: "Moi5",
-      dateMessage: new Date(),
-      textMessage: "tewtewtew",
-    },
-    {
-      pseudonyme: "Moi2",
-      dateMessage: new Date(),
-      textMessage: "tewtewtew",
-    },
-    {
-      pseudonyme: "Moi1",
-      dateMessage: new Date(),
-      textMessage: "tewtewtew",
-    },
-  ];
+  function onMenuShow() {
+    setMenuShow(true);
+  }
+  const [{ width, height }, setSize] = useState({ width: 0, height: 0 });
 
-  return <MessagesScreen />;
+  return (
+    <View style={styles.container}>
+      <MessagesScreen />
+      <Pressable style={[!menuShow? styles.menuButtonShown : styles.menuButtonHidden, styles.menuButton]} onPress={() => onMenuShow()}>
+        {!menuShow ? (
+          <Image
+            style={styles.menuImage}
+            source={require("../assets/images/menu.png")}
+            resizeMethod="scale"
+            resizeMode="contain"
+          />
+        ) : (
+          <MenuShow setMenuShow={setMenuShow} />
+        )}
+      </Pressable>
+    </View>
+  );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    alignItems: "center",
-    justifyContent: "center",
     backgroundColor: "lightblue",
   },
   messageContainer: {
@@ -136,6 +113,30 @@ const styles = StyleSheet.create({
   buttonLabel: {
     color: "white",
     backgroundColor: "black",
+  },
+  menuButton: {
+    position: "absolute",
+    top: 30,
+    right: 10,
+    zIndex: 100,
+  },
+  menuButtonShown: {
+    backgroundColor: "white",
+    borderColor: "black",
+    borderWidth: 1,
+    borderRadius: 40,
+    padding: 20,
+  },
+  menuButtonHidden: {
+    backgroundColor: "white",
+    padding: 20,
+    borderRadius: 10,
+    borderWidth: 1,
+    borderColor: "black",
+  },
+  menuImage: {
+    width: 40,
+    height: 40,
   },
 });
 

@@ -23,11 +23,11 @@ export default function App() {
 
     const [token, setToken] = useState(null);
     const [loggingState, setLoggingState] = useState(true);
-    const [menuState, setMenuState] = useState(0);
+    const [menuState, setMenuState] = useState(5);
     const [errorTextValue, setErrorTextValue] = useState("");
     const [connectedUsername, setConnectedUsername] = useState("");
     const [modalVisible, setModalVisible] = useState(false);
-    const [joinedGame, setJoinedGame] = useState(null);
+    const [joinedGame, setJoinedGame] = useState(1);
   
     useEffect(() => {
       // Si le token existe deja a la connexion
@@ -101,7 +101,7 @@ export default function App() {
   
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: "white" }]}>
-        <StatusBar translucent={false} backgroundColor="white" />
+        <StatusBar translucent={false} style="light" backgroundColor="black" />
   
         <DisplayMessage
           visible={modalVisible}

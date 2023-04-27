@@ -32,7 +32,7 @@ export default function MessagesScreen({}) {
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "margin"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 20 : 0}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 70 : 0}
         style={styles.container}
       >
         <ListMessages messages={messages} flatListRef={flatListRef} />
