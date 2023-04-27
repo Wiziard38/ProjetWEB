@@ -5,18 +5,36 @@ const io = require('../ws/websockets.js');
 class Game {
     #gameState;
     #loopID;
-    #gameID;
-    #beginTime = 1000;
-    #dayDuration = 15000;
-    #nightDuration = 15000;
     #namespace;
+    #gameID;
+    #nbPlayers;
+    #beginTime;
+    #dayDuration;
+    #nightDuration;
+    #probaPower;
+    #probaWerewolf
 
     #playerDir = new Map(); // Link socketID to player object
     #socketDir = new Map(); // Link username to socketID
 
-    constructor(gameID) {
-        this.#gameID = gameID;
-        this.#namespace = '/' + gameID;
+    constructor(id, nbJoueur, dureeJour, dureeNuit, dateDeb, probaPouv, probaLoup) {
+        console.log("constructor")
+        console.log("idGame: " + id);
+        console.log("nbJoueur: " + nbJoueur);
+        console.log("dureeJour: " + dureeJour);
+        console.log("dureeNuit: " + dureeNuit);
+        console.log("dateDeb: " + dateDeb);
+        console.log("probaPouv: " + probaPouv);
+        console.log("probaLoup: " + probaLoup);
+        this.#gameID = id;
+        this.#nbPlayers = nbJoueur;
+        this.#beginTime = dateDeb; // TODO: traduire en millisecondes
+        this.#dayDuration = dureeJour; // TODO: traduire en millisecondes
+        this.#nightDuration = dureeNuit; // TODO: traduire en millisecondes
+        this.#probaPower = probaPouv;
+        this.#probaWerewolf = probaLoup;
+        this.#namespace = '/' + id;
+        this.create();
     }
 
     addPlayer(player, socketID) {
@@ -37,6 +55,7 @@ class Game {
     }
 
     create() {
+        console.log("create")
         const initNamespace = require('./Namespace');
         initNamespace(this);
         setTimeout(() => {
@@ -44,7 +63,15 @@ class Game {
         }, this.#beginTime);
     }
 
+    init() {
+        console.log("init")
+        // calculs
+        // changer le champ aCommence false->true
+    }
+
     begin() {
+        console.log("begin")
+        this.init()
         this.#gameState = GameState.DAY;
         this.dayChange();
         this.#loopID = setInterval(() => {

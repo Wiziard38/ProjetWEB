@@ -5,10 +5,11 @@ const { Op } = require("sequelize");
 
 module.exports = {
   async createGame(req, res) {
+    console.log("createGame");
     try {
       const data = req.body;
       //console.log(data);
-      const partieCree = await gamesModel.create({
+      const game = await gamesModel.create({
         nbJoueur: data.nbJoueur,
         dureeJour: data.dureeJour,
         dureeNuit: data.dureeNuit,
@@ -19,14 +20,13 @@ module.exports = {
       
       await usersgamesModel.create({
         userIdUser: req.user.idUser,
-        gameIdGame: partieCree.idGame,
+        gameIdGame: game.idGame,
       });
       res.json({ status: true });
       
-      //Création de la partie !
-      // const GameManager = require("../game/GameManager.js");
-      const GameManager = require('../game/GameManager.js');
-      GameManager.createGame(partieCree.idGame);
+      // Création de la partie côté backend
+      const Game = require("../game/Game.js");
+      new Game(game.idGame, game.nbJoueur, game.dureeJour, game.dureeNuit, game.dateDeb, game.probaPouv, game.probaLoup);
     } catch (error) {
       console.error(error);
       res.status(500).json({ error });
