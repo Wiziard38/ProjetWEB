@@ -20,4 +20,4 @@ usersGames.hasMany(ratifications);
 ratifications.belongsTo(propositionVotes);
 usersGames.hasMany(ratifications);
 
-module.exports = discussions;
+module.exports = ratifications;

@@ -1,7 +1,7 @@
 const Sequelize = require("sequelize");
 const db = require("./database.js");
 const discussions = require("./discussions");
-const usersGames = require("./usersGames")
+const usersGames = require("./usersgames")
 const messages = db.define("messages", {
   idMessage: {
     primaryKey: true,

@@ -11,6 +11,10 @@ const propositionVote = db.define("propositionVote", {
   nbVotant: {
     type: Sequelize.INTEGER,
     allowNull: false,
+  },
+  usernameVote: {
+    type: Sequelize.STRING(50),
+    allowNull: false
   }
 });
 

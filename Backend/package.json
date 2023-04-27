@@ -5,7 +5,7 @@
     "main": "src/server.js",
     "scripts": {
         "setup": "npm install && npm run doc && npm run updatedb",
-        "updatedb": "node src/util/updatedb.js",
+        "updatedb": "CONFIG='local' node src/util/updatedb.js",
         "doc": "node src/util/swagger.js",
         "start": "npm run doc && npm run updatedb  && node src/server.js",
         "deploiement":"CONFIG='deploiement' node src/util/updatedb.js && node src/server.js && npm run doc ",

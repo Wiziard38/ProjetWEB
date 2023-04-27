@@ -6,6 +6,11 @@ const games = require("./games.js");
 const usersgames = db.define(
   "usersgames",
   {
+    idUsergame: {
+      primaryKey: true,
+      type: Sequelize.INTEGER,
+      autoIncrement: true,
+    },
     pouvoir: {
       type: Sequelize.DataTypes.ENUM("spiritisme", "insomnie", "voyance", "contamination"),
       allowNull: true,

@@ -14,6 +14,7 @@ import {
 } from "./components";
 
 import { fetchData } from "./utils/fetchData";
+import TestVote from "./components/TestVote";
 
 const config = require("./config.js");
 const { BACKEND } = config;
@@ -128,7 +129,7 @@ export default function App() {
             />
   
             {menuState === 0 ? (
-              <MenuSelection onMenuChoose={setMenuState} />
+              <TestVote/>
             ) : menuState === 1 ? (
               <ListNewGames
                 setMenuState={setMenuState}
@@ -145,8 +146,10 @@ export default function App() {
                 setMenuState={setMenuState}
                 onDisconnect={disconnect}
               />
-            ) : (
+            ) : menuState === 4?(
               <Game gameId={joinedGame} token={token}/>
+            ) : (
+              <MenuSelection onMenuChoose={setMenuState} />
             )}
           </View>
         )}
