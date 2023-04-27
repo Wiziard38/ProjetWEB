@@ -19,7 +19,6 @@ class Player {
         this.#state = state;
         this.#power = power;
     }
-
     sendMessage(msg) {
         // Send a message based on power, if the player have no power, send a message according to team
         // Example : Spiritism will return false on day and true on nigth
