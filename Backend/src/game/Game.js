@@ -3,110 +3,164 @@ const io = require('../ws/websockets.js');
 
 
 class Game {
-    #gameState;
-    #loopID;
-    #gameID;
-    #beginTime = 1000;
-    #dayDuration = 15000;
-    #nightDuration = 15000;
-    #namespace;
+  #gameState;
+  #loopID;
+  #gameID;
+  #beginTime = 1000;
+  #dayDuration = 15000;
+  #nightDuration = 15000;
+  #namespace;
 
-    #playerDir = new Map(); // Link socketID to player object
-    #socketDir = new Map(); // Link username to socketID
+  #playerDir = new Map(); // Link socketID to player object
+  #socketDir = new Map(); // Link username to socketID
 
-    constructor(gameID) {
-        this.#gameID = gameID;
-        this.#namespace = '/' + gameID;
+  constructor(gameID) {
+    this.#gameID = gameID;
+    this.#namespace = '/' + gameID;
+  }
+
+  /**
+   * Link the socket to the user and user to socket
+   * @param {*} player 
+   * @param {*} socketID 
+   */
+  addPlayer(player, socketID) {
+    this.#playerDir.set(socketID, player);
+    this.#socketDir.set(player.getUsername(), socketID);
+  }
+
+  userAlreadyRegistred(username) {
+    return this.#socketDir.get(username) !== undefined;
+  }
+  /**
+   * 
+   * @param {*} socketID 
+   * @returns the player object corresponding to the socket
+   */
+  getPlayerBySocket(socketID) {
+    return this.#playerDir.get(socketID);
+  }
+
+  /**
+   * @returns true if the current state is day, else false
+   */
+  isDay() {
+    return this.#gameState === GameState.DAY;
+  }
+
+  /**
+   * @returns true if the current state is night, else false
+   */
+  isNight() {
+    return this.#gameState === GameState.NIGHT;
+  }
+
+  create() {
+    const initNamespace = require('./Namespace');
+    initNamespace(this);
+    setTimeout(() => {
+      this.begin();
+    }, this.#beginTime);
+  }
+
+  /**
+   * Begin of the game, this start the game loop.
+   */
+  begin() {
+    this.gameLoop()
+    // The first loop is called after the wait time
+    this.#loopID = setInterval(() => this.gameLoop(), this.#dayDuration + this.#nightDuration);
+  }
+
+  /**
+   * Gameloop, day/night cycle
+   */
+  gameLoop() {
+    this.dayChange();
+
+    setTimeout(() => {
+      this.nightChange();
+    }, this.#dayDuration);
+  }
+
+  /**
+   * End the game and close all connections
+   */
+  finish() {
+    clearInterval(this.#loopID);
+    io.of('/' + this.#gameID).removeAllListeners();
+    // delete
+    delete io.npst[this.#gameID];
+    GameState.remove(this.#gameID);
+  }
+
+  /**
+   * Change the game to day
+   */
+  dayChange() {
+    this.#gameState = GameState.DAY;
+    io.of(this.#namespace).emit('day', 'nuit -> jour');
+  }
+
+  /**
+   * Change the game to night
+   */
+  nightChange() {
+    this.#gameState = GameState.NIGHT;
+    io.of(this.#namespace).emit('night', 'jour -> nuit');
+  }
+
+
+  /**
+   * Send to the player the current state of the game
+   * @param {*} socketID 
+   */
+  getGameData(socketID) {
+    //Send to the player game data
+  }
+
+  /**
+   * Assing the player to its room(s)
+   * @param {*} socketID 
+   */
+  setPlayerRoom(socketID) {
+    const player = this.getPlayerBySocket(socketID);
+    const power = player.getPower();
+    const state = player.getState();
+    const socket = io.of(this.#namespace).sockets.get(socketID);
+
+    if (socket) {
+      //TODO changer cela pour prendre en compte le vrai "Power"
+      if (power.toString() !== "none") {
+        socket.join(power.toString());
+      }
+      socket.join(state.toString());
+    } else {
+      console.log("[Game.js] setPlayerRoom : SocketID Invalid")
     }
+  }
 
-    addPlayer(player, socketID) {
-        this.#playerDir.set(socketID, player);
-        this.#socketDir.set(player.getUsername(), socketID);
-    }
+  /**
+   * @returns the game's namespace
+   */
+  getNamespace() {
+    return this.#namespace;
+  }
 
-    getPlayerBySocket(socketID) {
-        return this.#playerDir.get(socketID);
-    }
+  /**
+   * @param {*} socketID 
+   * @returns socket object with the socket id
+   */
+  getSocket(socketID) {
+    return io.of(this.#namespace).sockets.get(socketID);
+  }
 
-    isDay() {
-        return this.#gameState === GameState.DAY;
-    }
-
-    isNight() {
-        return this.#gameState === GameState.NIGHT;
-    }
-
-    create() {
-        const initNamespace = require('./Namespace');
-        initNamespace(this);
-        setTimeout(() => {
-            this.begin();
-        }, this.#beginTime);
-    }
-
-    begin() {
-        this.#gameState = GameState.DAY;
-        this.dayChange();
-        this.#loopID = setInterval(() => {
-            this.nightChange();
-
-            setTimeout(() => {
-                this.dayChange();
-            }, this.#nightDuration)
-        }, this.#dayDuration + this.#nightDuration);
-    }
-
-    finish() {
-        clearInterval(this.#loopID);
-        io.of('/' + this.#gameID).removeAllListeners();
-        // delete
-        delete io.npst[this.#gameID];
-        GameState.remove(this.#gameID);
-    }
-
-    dayChange() {
-        this.#gameState = GameState.DAY;
-        io.of(this.#namespace).emit('day', 'nuit -> jour');
-    }
-
-    nightChange() {
-        this.#gameState = GameState.NIGHT;
-        io.of(this.#namespace).emit('night', 'jour -> nuit');
-    }
-
-
-    getGameData(socketID) {
-        //Send to the player game data
-    }
-
-    setPlayerRoom(socketID) {
-        const player = this.getPlayerBySocket(socketID);
-        const power = player.getPower();
-        const state = player.getState();
-        const socket = io.of(this.#namespace).sockets.get(socketID);
-
-        if (socket) {
-            //TODO changer cela pour prendre en compte le vrai "Power"
-            if (power.toString() !== "none") {
-                socket.join(power.toString());
-            }
-            socket.join(state.toString());
-        } else {
-            console.log("[Game.js] setPlayerRoom : SocketID Invalid")
-        }
-    }
-
-    getNamespace() {
-        return this.#namespace;
-    }
-
-    getSocket(socketID) {
-        return io.of(this.#namespace).sockets.get(socketID);
-    }
-
-    getID() {
-        return this.#gameID;
-    }
+  /**
+   * @returns the current game's id
+   */
+  getID() {
+    return this.#gameID;
+  }
 }
 
 module.exports = Game;

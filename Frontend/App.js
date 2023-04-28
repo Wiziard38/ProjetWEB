@@ -102,12 +102,12 @@ export default function App() {
     return (
       <SafeAreaView style={[styles.container, { backgroundColor: "white" }]}>
         <StatusBar translucent={false} style="light" backgroundColor="black" />
-  
         <DisplayMessage
           visible={modalVisible}
           textMessage={errorTextValue}
           onPress={() => setModalVisible(false)}
         />
+  
   
         {!token ? (
           // If no token (user non connected)

@@ -27,6 +27,7 @@ module.exports = {
       // const GameManager = require("../game/GameManager.js");
       const GameManager = require('../game/GameManager.js');
       GameManager.createGame(partieCree.idGame);
+
     } catch (error) {
       console.error(error);
       res.status(500).json({ error });

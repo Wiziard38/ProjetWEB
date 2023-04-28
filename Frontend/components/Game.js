@@ -19,18 +19,16 @@ export default function CreateNewGame({ gameId, token }) {
   const [testName, setTestName] = useState(null);
   const [menuShow, setMenuShow] = useState(false);
 
-  const socket = useRef(
-    SocketIOClient("http://localhost:3000/0", {
-      auth: {
-        token: token,
-      },
-    })
-  );
-  console.log(socket);
+  let socket = useRef(null);
 
   useEffect(() => {
-    console.log("TEST");
-    if (socket.current) {
+    if (socket.current === null) {
+
+      socket.current = SocketIOClient("http://localhost:3000/1", {
+        auth: {
+          token: token,
+        },
+      })
       socket.current.on("connect", () => {
         console.log("Connected to server");
         null;
@@ -85,7 +83,7 @@ export default function CreateNewGame({ gameId, token }) {
   return (
     <View style={styles.container}>
       <MessagesScreen />
-      <Pressable style={[!menuShow? styles.menuButtonShown : styles.menuButtonHidden, styles.menuButton]} onPress={() => onMenuShow()}>
+      <Pressable style={[!menuShow ? styles.menuButtonShown : styles.menuButtonHidden, styles.menuButton]} onPress={() => onMenuShow()}>
         {!menuShow ? (
           <Image
             style={styles.menuImage}

@@ -20,7 +20,7 @@ const GameManager = {
     u: new Map(),
     validUser: async function (token, gameID) {
         //TODO DELETE_ALL_TEST_MSG
-        j = this.u.get('a');
+        let j = this.u.get('a');
         if(j === undefined) {
             this.u.set('a', 0);
         } else {
