@@ -1,86 +1,80 @@
 import React, { useEffect, useState } from "react";
-import { StyleSheet, View } from "react-native";
-import SizedText from "../SizedText";
+import { StyleSheet, View, Text } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import SizedText from "../SizedText";
+import SizedButton from "../SizedButton";
+import PlayerScrollList from "./PlayerScrollList";
+import DropDownPicker from "react-native-dropdown-picker";
 import { secondsToText, dateToText } from "../../utils/dateFunctions";
 
 export default function Votes() {
-  const [game, setGame] = useState(null);
-  const [role, setRole] = useState(null);
-  const [pouvoir, setPouvoir] = useState(null);
+  const [listPlayers, setListPlayers] = useState([]);
+  const [selectedPlayer, setSelectedPlayer] = useState(null);
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     AsyncStorage.getItem("idGame").then((idGame) => {
-      // TODO recup les infos de la partie de idGame {idGame}
-      setGame({
-        createdAt: "2023-04-27T08:19:34.987Z",
-        dateDeb: "2023-01-17T04:33:12.000Z",
-        dureeJour: 3600,
-        dureeNuit: 3600,
-        idGame: "XXX",
-        nbJoueur: 7,
-        probaLoup: 0,
-        probaPouv: 0,
-        updatedAt: "2023-04-27T08:19:34.987Z",
-      });
+      // TODO recup la liste des joueurs
+      const list = [
+        "mathis",
+        "lucacao",
+        "marcel",
+        "marcelle",
+        "camilleCosmique",
+        "joueur1",
+        "joueur2",
+        "joue",
+        "joueur4",
+        "joueur5",
+      ];
+      setListPlayers(list.map((player) => ({ label: player, value: player })));
     });
   }, []);
 
-  if (!game) {
-    return null; // or a loading indicator if desired
+  function createVote() {
+    if (selectedPlayer !== null) {
+      // TODO A FAIRE
+      console.log("Creer vote contre " + selectedPlayer);
+    }
   }
 
   return (
     <View style={styles.container}>
-      <View style={styles.infosGame}>
+      <View style={styles.createVote}>
         <SizedText
-          label={`Partie numéro ${game.idGame}`}
+          label={`Créer un nouveau vote`}
           size={"xlarge"}
-          textStyle={styles.gameTitle}
+          textStyle={styles.title}
         />
-        <SizedText
-          label={`Nombre de joueurs : ${game.nbJoueur}`}
-          size={"normal"}
-          textStyle={styles.gameDetail}
+
+        <DropDownPicker
+          open={open}
+          value={selectedPlayer}
+          items={listPlayers}
+          setOpen={setOpen}
+          setValue={setSelectedPlayer}
+          setItems={setListPlayers}
         />
-        <SizedText
-          label={`Duree du jour : ${secondsToText(game.dureeJour)}`}
-          size={"normal"}
-          textStyle={styles.gameDetail}
-        />
-        <SizedText
-          label={`Duree de la nuit : ${secondsToText(game.dureeNuit)}`}
-          size={"normal"}
-          textStyle={styles.gameDetail}
-        />
-        <SizedText
-          label={`Date de debut : ${dateToText(game.dateDeb)}`}
-          size={"normal"}
-          textStyle={styles.gameDetail}
-        />
-        <SizedText
-          label={`Probabilité de pouvoir : ${game.probaPouv}`}
-          size={"normal"}
-          textStyle={styles.gameDetail}
-        />
-        <SizedText
-          label={`Probabilité de loup-garou : ${game.probaLoup}`}
-          size={"normal"}
-          textStyle={styles.gameDetail}
+
+        <SizedButton
+          buttonLabel={`Vote contre ${selectedPlayer}`}
+          onPress={createVote}
+          size="large"
+          buttonStyle={[
+            styles.submitButton,
+            selectedPlayer === null && { backgroundColor: "gray" },
+          ]}
+          buttonLabelStyle={styles.submitButtonLabel}
         />
       </View>
-      <View style={styles.infosPlayer}>
+
+      <View style={styles.separator} />
+
+      <View style={styles.itemContainer}>
         <SizedText
-          label={
-            `Vous êtes : ${role}` + (role === "mort" ? " (anciennement LG)" : "")
-          } // TODO changer anciennement
-          size={"large"}
-          textStyle={styles.gameDetail}
-        />
-        <SizedText
-          label={`Vous avez le pouvoir : ${pouvoir}`}
-          size={"large"}
-          textStyle={styles.gameDetail}
+          label={`Ratifier un vote existant`}
+          size={"xlarge"}
+          textStyle={styles.title}
         />
       </View>
     </View>
@@ -88,19 +82,46 @@ export default function Votes() {
 }
 
 const styles = StyleSheet.create({
-  container: {},
-  infosGame: {
-    borderBottomWidth: 1,
-    paddingBottom: 30,
+  container: {
+    flex: 1,
+    flexDirection: "column",
+    // justifyContent: "space-around",
   },
-  infosPlayer: {
-    paddingTop: 20,
+  createVote: {
+    flex: 1,
+    width: "100%",
+    zIndex: 9999,
   },
-  gameTitle: {
+
+  itemContainer: {
+    flex: 1,
+    width: "100%",
+  },
+  separator: {
+    borderTopWidth: 1,
+  },
+  title: {
     fontWeight: "bold",
+    marginBottom: 5,
   },
   gameDetail: {
-    marginTop: 15,
+    marginBottom: 3,
     marginLeft: 20,
+  },
+  submitButton: {
+    alignSelf: "center",
+    width: "80%",
+    backgroundColor: "#8000008d",
+    borderRadius: 10,
+    borderColor: "black",
+    borderWidth: 1,
+    padding: 10,
+    marginTop: 10,
+    marginBottom: 10,
+  },
+  submitButtonLabel: {
+    fontWeight: "bold",
+    color: "white",
+    textAlign: "center",
   },
 });

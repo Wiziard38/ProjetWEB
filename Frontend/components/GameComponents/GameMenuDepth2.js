@@ -9,6 +9,7 @@ import {
 } from "react-native";
 import PropTypes from "prop-types";
 import InfosGame from "./InfosGame";
+import Votes from "./Votes";
 
 export default function GameMenuDepth2({ setMenuDepth, menuSelection }) {
   const windowWidth = Dimensions.get("window").width * 0.8;
@@ -27,11 +28,10 @@ export default function GameMenuDepth2({ setMenuDepth, menuSelection }) {
         />
       </Pressable>
       <View style={styles.container}>
-        {/* A REMPLACER ICI PAR MENUS DE INFOS, VOTES, POUVOIR... */}
         {menuSelection === "infos" ? (
           <InfosGame />
         ) : menuSelection === "votes" ? (
-          <Text> Affichier votes ici </Text>
+          <Votes />
         ) : menuSelection === "pouvoir" ? (
           <Text> Afficher actions pouvoir ici </Text>
         ) : (
