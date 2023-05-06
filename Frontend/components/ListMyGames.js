@@ -1,6 +1,7 @@
 import { useState, useEffect, React } from "react";
 import { StyleSheet, View } from "react-native";
 import { fetchData } from "../utils/fetchData";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import DisplayMessage from "./DisplayMessage";
 import ListGames from "./ListGames";
 import PropTypes from "prop-types";
@@ -36,6 +37,7 @@ export default function ListMyGames({ setMenuState, onDisconnect, setJoinedGame 
         onPress={() => {
           setModalVisible(false);
           setMenuState(4);
+          AsyncStorage.setItem("idGame", selectedId.toString());
           setJoinedGame(selectedId);
         }}
       />

@@ -1,15 +1,10 @@
 import React, { useState } from "react";
-import {
-  StyleSheet,
-  View,
-  Pressable,
-  Image,
-} from "react-native";
+import PropTypes from "prop-types";
+import { StyleSheet, View, Pressable, Image, Keyboard } from "react-native";
 import GameMenuDepth1 from "./GameMenuDepth1";
 import GameMenuDepth2 from "./GameMenuDepth2";
 
-export default function GameMenu() {
-  const [menuDepth, setMenuDepth] = useState(0);
+export default function GameMenu({ menuDepth, setMenuDepth }) {
   const [menuSelection, setMenuSelection] = useState(null);
 
   const menuButtonStyle =
@@ -23,7 +18,12 @@ export default function GameMenu() {
     <>
       <View style={[styles.menuButton, menuButtonStyle]}>
         {menuDepth === 0 ? (
-          <Pressable onPress={() => setMenuDepth(1)}>
+          <Pressable
+            onPress={() => {
+              setMenuDepth(1);
+              Keyboard.dismiss();
+            }}
+          >
             <Image
               style={styles.menuImage}
               source={require("../../assets/images/menu.png")}
@@ -77,10 +77,10 @@ const styles = StyleSheet.create({
     borderColor: "black",
   },
   menuDepth2: {
-    backgroundColor: "white",
-    padding: 20,
+    backgroundColor: "#f9b6b6ee",
+    padding: 19,
     borderRadius: 10,
-    borderWidth: 1,
+    borderWidth: 2,
     borderColor: "black",
   },
   menuImage: {
@@ -88,3 +88,8 @@ const styles = StyleSheet.create({
     height: 40,
   },
 });
+
+GameMenu.propTypes = {
+  menuDepth: PropTypes.number.isRequired,
+  setMenuDepth: PropTypes.func.isRequired,
+};

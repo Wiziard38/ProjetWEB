@@ -38,6 +38,13 @@ export default function App() {
               setConnectedUsername(json.username);
               setToken(retrievedToken);
               console.log("Retrieved !");
+
+              // Si le joueur était entrain de jouer a une partie
+              AsyncStorage.getItem("idGame").then((idGame) => {
+                console.log("Reconnecting to game " + idGame);
+                setJoinedGame(parseInt(idGame));
+                setMenuState(4);
+              });
             } else {
               console.log("No token found.");
             }
@@ -146,7 +153,7 @@ export default function App() {
               onDisconnect={disconnect}
             />
           ) : (
-            <Game gameId={joinedGame} token={token} />
+            <Game token={token} />
           )}
         </View>
       )}

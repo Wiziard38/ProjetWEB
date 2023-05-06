@@ -5,8 +5,9 @@ import SocketIOClient, { connect } from "socket.io-client";
 import MessagesScreen from "./GameComponents/MessagesScreen";
 import GameMenuDepth0 from "./GameComponents/GameMenuDepth0";
 
-export default function Game({ gameId, token }) {
+export default function Game({ token }) {
   // TODO
+  const [menuDepth, setMenuDepth] = useState(0);
   const [role, setRole] = useState(null);
   const [team, setTeam] = useState(null);
   const [testName, setTestName] = useState(null);
@@ -18,7 +19,7 @@ export default function Game({ gameId, token }) {
       },
     })
   );
-  console.log(socket);
+  // console.log(socket);
 
   useEffect(() => {
     console.log("TEST");
@@ -70,9 +71,9 @@ export default function Game({ gameId, token }) {
 
   return (
     <View style={styles.container}>
-      <MessagesScreen />
+      <MessagesScreen setMenuDepth={setMenuDepth}/>
 
-      <GameMenuDepth0 />
+      <GameMenuDepth0 menuDepth={menuDepth} setMenuDepth={setMenuDepth} />
     </View>
   );
 }
@@ -84,6 +85,5 @@ const styles = StyleSheet.create({
 });
 
 Game.propTypes = {
-  gameId: PropTypes.number.isRequired,
   token: PropTypes.string.isRequired,
 };

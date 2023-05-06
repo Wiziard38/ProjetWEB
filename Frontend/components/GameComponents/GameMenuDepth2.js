@@ -8,6 +8,7 @@ import {
   Dimensions,
 } from "react-native";
 import PropTypes from "prop-types";
+import InfosGame from "./InfosGame";
 
 export default function GameMenuDepth2({ setMenuDepth, menuSelection }) {
   const windowWidth = Dimensions.get("window").width * 0.8;
@@ -25,10 +26,10 @@ export default function GameMenuDepth2({ setMenuDepth, menuSelection }) {
           resizeMode="contain"
         />
       </Pressable>
-      <View style={styles.tempView}>
+      <View style={styles.container}>
         {/* A REMPLACER ICI PAR MENUS DE INFOS, VOTES, POUVOIR... */}
         {menuSelection === "infos" ? (
-          <Text> Lister infos partie et joueur ici </Text>
+          <InfosGame />
         ) : menuSelection === "votes" ? (
           <Text> Affichier votes ici </Text>
         ) : menuSelection === "pouvoir" ? (
@@ -46,7 +47,7 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: "flex-start",
     alignItems: "flex-start",
-    backgroundColor: "white",
+    // backgroundColor: "white",
   },
   closeImage: {
     width: 20,
@@ -55,12 +56,6 @@ const styles = StyleSheet.create({
   closeButton: {
     alignSelf: "flex-end",
     padding: 5,
-  },
-  tempView: {
-    flex: 1,
-    width: "100%",
-    height: "100%",
-    backgroundColor: "lightgreen",
   },
 });
 
