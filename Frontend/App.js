@@ -25,7 +25,6 @@ export default function App() {
   const [errorTextValue, setErrorTextValue] = useState("");
   const [connectedUsername, setConnectedUsername] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
-  const [joinedGame, setJoinedGame] = useState(null);
 
   useEffect(() => {
     // Si le token existe deja a la connexion
@@ -42,7 +41,6 @@ export default function App() {
               // Si le joueur était entrain de jouer a une partie
               AsyncStorage.getItem("idGame").then((idGame) => {
                 console.log("Reconnecting to game " + idGame);
-                setJoinedGame(parseInt(idGame));
                 setMenuState(4);
               });
             } else {
@@ -145,7 +143,6 @@ export default function App() {
             <ListMyGames
               setMenuState={setMenuState}
               onDisconnect={disconnect}
-              setJoinedGame={setJoinedGame}
             />
           ) : menuState === 3 ? (
             <CreateNewGame

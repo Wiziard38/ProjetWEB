@@ -6,7 +6,7 @@ import DisplayMessage from "./DisplayMessage";
 import ListGames from "./ListGames";
 import PropTypes from "prop-types";
 
-export default function ListMyGames({ setMenuState, onDisconnect, setJoinedGame }) {
+export default function ListMyGames({ setMenuState, onDisconnect }) {
   const [parties, setParties] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -38,7 +38,6 @@ export default function ListMyGames({ setMenuState, onDisconnect, setJoinedGame 
           setModalVisible(false);
           setMenuState(4);
           AsyncStorage.setItem("idGame", selectedId.toString());
-          setJoinedGame(selectedId);
         }}
       />
 
@@ -66,5 +65,4 @@ const styles = StyleSheet.create({
 ListMyGames.propTypes = {
   onDisconnect: PropTypes.func.isRequired,
   setMenuState: PropTypes.func.isRequired,
-  setJoinedGame: PropTypes.func.isRequired,
 };
