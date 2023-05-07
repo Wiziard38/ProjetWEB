@@ -10,6 +10,8 @@ import {
 import PropTypes from "prop-types";
 import InfosGame from "./InfosGame";
 import Votes from "./Votes";
+import Powers from "./Powers";
+import Rules from "./Rules";
 
 export default function GameMenuDepth2({ setMenuDepth, menuSelection }) {
   const windowWidth = Dimensions.get("window").width * 0.8;
@@ -32,8 +34,10 @@ export default function GameMenuDepth2({ setMenuDepth, menuSelection }) {
           <InfosGame />
         ) : menuSelection === "votes" ? (
           <Votes />
-        ) : menuSelection === "pouvoir" ? (
-          <Text> Afficher actions pouvoir ici </Text>
+        ) : menuSelection === "power" ? (
+          <Powers />
+        ) : menuSelection === "rules" ? (
+          <Rules />
         ) : (
           <></>
         )}

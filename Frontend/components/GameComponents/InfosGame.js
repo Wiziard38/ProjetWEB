@@ -69,7 +69,7 @@ export default function InfosGame() {
       <View>
         <SizedText
           label={`Infos de la partie`}
-          size={"xlarge"}
+          size={"large"}
           textStyle={styles.title}
         />
 
@@ -88,7 +88,7 @@ export default function InfosGame() {
       <View>
         <SizedText
           label={`Liste des joueurs`}
-          size={"xlarge"}
+          size={"large"}
           textStyle={styles.title}
         />
         <Text style={[styles.infosJoueurs, styles.gameDetail]}>
@@ -107,7 +107,7 @@ export default function InfosGame() {
       <View>
         <SizedText
           label={`Vos informations`}
-          size={"xlarge"}
+          size={"large"}
           textStyle={styles.title}
         />
         <SizedText
@@ -133,6 +133,11 @@ const styles = StyleSheet.create({
     flex: 1,
     flexDirection: "column",
     justifyContent: "space-between",
+    backgroundColor: "#ffffffaa",
+    padding: 10,
+    minWidth: "100%",
+    maxWidth: "100%",
+    alignSelf: "stretch",
   },
   separator: {
     borderTopWidth: 1,
