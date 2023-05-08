@@ -4,7 +4,6 @@ import {
   View,
   Pressable,
   Image,
-  Text,
   Dimensions,
 } from "react-native";
 import PropTypes from "prop-types";

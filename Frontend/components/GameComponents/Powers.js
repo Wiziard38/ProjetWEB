@@ -65,7 +65,7 @@ export default function Powers() {
 
       setListPlayers(list.map((player) => ({ label: player, value: player })));
 
-      //TODO recup si pouvoir deja utilisé
+      // TODO recup si pouvoir deja utilisé
       setPowerUsed(false);
       // Si deja used et le pouvoir est voyance, recup les infos du joeuur qui a été observé
       setVoyanceInfos({
@@ -87,8 +87,8 @@ export default function Powers() {
           );
           break;
 
-        case "Voyance":
-          //TODO recup les infos du joueur selectedPlayer
+        case "Voyance": {
+          // TODO recup les infos du joueur selectedPlayer
           const infos = { role: "loup-garou", pouvoir: "Contamination" };
           setModalText(
             baseText +
@@ -99,6 +99,7 @@ export default function Powers() {
               }.`
           );
           break;
+        }
 
         case "Spiritisme":
           setModalText(
