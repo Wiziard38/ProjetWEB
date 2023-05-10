@@ -40,8 +40,10 @@ export default function App() {
 
               // Si le joueur était entrain de jouer a une partie
               AsyncStorage.getItem("idGame").then((idGame) => {
-                console.log("Reconnecting to game " + idGame);
-                setMenuState(4);
+                if (idGame != null) {
+                  console.log("Reconnecting to game " + idGame);
+                  setMenuState(4);
+                }
               });
             } else {
               console.log("No token found.");
@@ -92,15 +94,23 @@ export default function App() {
   async function disconnect() {
     try {
       await AsyncStorage.removeItem("token");
-      console.log("Removed token from storage succesfully");
     } catch (e) {
       console.log("Could not remove token from storage");
     }
-    setMenuState(0);
+    toMenu();
     setToken(null);
     setLoggingState(true);
     setErrorTextValue("");
     setConnectedUsername("");
+  }
+
+  async function toMenu() {
+    try {
+      await AsyncStorage.removeItem("idGame");
+    } catch (e) {
+      console.log("Could not remove game from storage");
+    }
+    setMenuState(0);
   }
 
   return (
@@ -129,7 +139,7 @@ export default function App() {
             username={connectedUsername}
             onDisconnect={disconnect}
             menuState={menuState}
-            onMenu={() => setMenuState(0)}
+            onMenu={toMenu}
           />
 
           {menuState === 0 ? (

@@ -43,12 +43,16 @@ export default function ListNewGames({ setMenuState, onDisconnect }) {
       />
 
       <ListGames
-        descriptiveLabel={"Liste des parties que vous pouvez rejoindre :"}
+        titleLabel={"Liste des parties que vous pouvez rejoindre :"}
         parties={parties}
         selectedId={selectedId}
         setSelectedId={setSelectedId}
         onPress={joinNewGame}
-        onPressLabel={"Je rejoins !"}
+        buttonLabel={"Je rejoins !"}
+        waiting={false}
+        emptyListLabel={
+          "Il n'y a aucune partie que vous pouvez rejoindre actuellement."
+        }
       />
     </View>
   );

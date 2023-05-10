@@ -6,19 +6,22 @@ import {
   FlatList,
   TouchableOpacity,
   Dimensions,
+  Image,
 } from "react-native";
 import SizedText from "./SizedText";
 import SizedButton from "./SizedButton";
 import PropTypes from "prop-types";
-import { dateToText, secondsToText } from "../utils/dateFunctions";
+import { timeToText, dateToText, secondsToText } from "../utils/dateFunctions";
 
 export default function ListGames({
-  descriptiveLabel,
+  titleLabel,
   parties,
   onPress,
-  onPressLabel,
+  buttonLabel,
   selectedId,
   setSelectedId,
+  waiting,
+  emptyListLabel,
 }) {
   const { height } = Dimensions.get("window");
   const statusBarHeight = StatusBar.currentHeight ?? 0;
@@ -32,82 +35,99 @@ export default function ListGames({
   }
 
   function renderItem({ item }) {
-    const backgroundColor = item.idGame === selectedId ? "#668687" : "#747474";
-    const color = item.idGame === selectedId ? "white" : "black";
+    const notStarted =
+      waiting && new Date(item.dateDeb).getTime() > new Date().getTime();
+    const backgroundColor = notStarted
+      ? "#e89a9a"
+      : item.idGame === selectedId
+      ? "#668687"
+      : "#747474";
+    const color = notStarted
+      ? "black"
+      : item.idGame === selectedId
+      ? "white"
+      : "black";
 
     return (
       <TouchableOpacity
         onPress={() => selectItem(item)}
         style={[styles.item, { backgroundColor }]}
       >
-        <SizedText
-          label={`Partie n˚ ${item.idGame}`}
-          size={"large"}
-          textStyle={{ color }}
-        />
-
-        {item.idGame === selectedId && (
-          <View style={styles.itemDetails}>
+        <View style={styles.columnSeparator}>
+          <View style={styles.contentContainer}>
             <SizedText
-              label={`Nombre de joueurs : ${item.nbJoueur}`}
-              size={"small"}
-              textStyle={styles.itemDetailText}
-            />
-            <SizedText
-              label={`Duree du jour : ${secondsToText(item.dureeJour)}`}
-              size={"small"}
-              textStyle={styles.itemDetailText}
-            />
-            <SizedText
-              label={`Duree de la nuit : ${secondsToText(item.dureeNuit)}`}
-              size={"small"}
-              textStyle={styles.itemDetailText}
-            />
-            <SizedText
-              label={`Date de debut : ${dateToText(item.dateDeb)}`}
-              size={"small"}
-              textStyle={styles.itemDetailText}
-            />
-            <SizedText
-              label={`Probabilité de pouvoir : ${item.probaPouv}`}
-              size={"small"}
-              textStyle={styles.itemDetailText}
-            />
-            <SizedText
-              label={`Probabilité de loup-garou : ${item.probaLoup}`}
-              size={"small"}
-              textStyle={styles.itemDetailText}
+              label={`Partie n˚ ${item.idGame}`}
+              size={"large"}
+              textStyle={{ color }}
             />
 
-            <SizedButton
-              buttonLabel={onPressLabel}
-              onPress={onPress}
-              size={"normal"}
-              buttonStyle={styles.joinButton}
-              buttonLabelStyle={styles.joinButtonLabel}
-            />
+            {item.idGame === selectedId && (
+              <View style={styles.itemDetails}>
+                <SizedText
+                  label={`Nombre de joueurs : ${item.nbJoueur}`}
+                  size={"small"}
+                  textStyle={styles.itemDetailText}
+                />
+                <SizedText
+                  label={`Duree du jour : ${secondsToText(item.dureeJour)}`}
+                  size={"small"}
+                  textStyle={styles.itemDetailText}
+                />
+                <SizedText
+                  label={`Duree de la nuit : ${secondsToText(item.dureeNuit)}`}
+                  size={"small"}
+                  textStyle={styles.itemDetailText}
+                />
+                <SizedText
+                  label={`Date de debut : ${dateToText(
+                    item.dateDeb
+                  )} à ${timeToText(item.dateDeb)}`}
+                  size={"small"}
+                  textStyle={styles.itemDetailText}
+                />
+                <SizedText
+                  label={`Probabilité de pouvoir : ${item.probaPouv}`}
+                  size={"small"}
+                  textStyle={styles.itemDetailText}
+                />
+                <SizedText
+                  label={`Probabilité de loup-garou : ${item.probaLoup}`}
+                  size={"small"}
+                  textStyle={styles.itemDetailText}
+                />
+
+                {!notStarted && (
+                  <SizedButton
+                    buttonLabel={buttonLabel}
+                    onPress={onPress}
+                    size={"normal"}
+                    buttonStyle={styles.joinButton}
+                    buttonLabelStyle={styles.joinButtonLabel}
+                  />
+                )}
+              </View>
+            )}
           </View>
-        )}
+          {notStarted && (
+            <Image
+              style={styles.waitIcon}
+              source={require("../assets/images/wait-clock.png")}
+              resizeMethod="scale"
+              resizeMode="contain"
+            />
+          )}
+        </View>
       </TouchableOpacity>
     );
   }
 
   function noGames() {
-    return (
-      <SizedText
-        label={"Il n'y a pas encore de parties, vous pouvez en créer une !"}
-        size={"large"}
-      />
-    );
+    return <SizedText label={emptyListLabel} size="large" />;
   }
 
   return (
     <View style={{ height: flatListHeight }}>
-      <SizedText
-        label={descriptiveLabel}
-        size={"large"}
-        textStyle={styles.title}
-      />
+      <SizedText label={titleLabel} size={"large"} textStyle={styles.title} />
       <FlatList
         data={parties}
         renderItem={renderItem}
@@ -161,13 +181,26 @@ const styles = StyleSheet.create({
     color: "white",
     fontWeight: "bold",
   },
+  columnSeparator: {
+    flex: 1,
+    flexDirection: "row",
+  },
+  contentContainer: {
+    flex: 1,
+    flexDirection: "column",
+  },
+  waitIcon: {
+    height: 20,
+    width: 20,
+  },
 });
 
 ListGames.propTypes = {
-  descriptiveLabel: PropTypes.string.isRequired,
+  titleLabel: PropTypes.string.isRequired,
   parties: PropTypes.array.isRequired,
   onPress: PropTypes.func.isRequired,
-  onPressLabel: PropTypes.string.isRequired,
+  buttonLabel: PropTypes.string.isRequired,
   selectedId: PropTypes.number,
   setSelectedId: PropTypes.func.isRequired,
+  waiting: PropTypes.bool.isRequired,
 };

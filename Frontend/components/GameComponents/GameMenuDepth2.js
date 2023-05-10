@@ -1,11 +1,5 @@
 import React from "react";
-import {
-  StyleSheet,
-  View,
-  Pressable,
-  Image,
-  Dimensions,
-} from "react-native";
+import { StyleSheet, View, Pressable, Image, Dimensions } from "react-native";
 import PropTypes from "prop-types";
 import InfosGame from "./InfosGame";
 import Votes from "./Votes";
