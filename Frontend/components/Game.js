@@ -5,13 +5,21 @@ import SocketIOClient, { connect } from "socket.io-client";
 import MessagesScreen from "./GameComponents/MessagesScreen";
 import GameMenuDepth0 from "./GameComponents/GameMenuDepth0";
 
-export default function Game({ gameId, token }) {
+export default function Game({ token }) {
   // TODO
+  const [menuDepth, setMenuDepth] = useState(0);
   const [role, setRole] = useState(null);
   const [team, setTeam] = useState(null);
   const [testName, setTestName] = useState(null);
 
-  let socket = useRef(null);
+  const socket = useRef(
+    SocketIOClient("http://localhost:3000/0", {
+      auth: {
+        token,
+      },
+    })
+  );
+  // console.log(socket);
 
   useEffect(() => {
     if (socket.current === null) {
@@ -68,21 +76,9 @@ export default function Game({ gameId, token }) {
 
   return (
     <View style={styles.container}>
-      <MessagesScreen />
-      <Pressable style={[!menuShow ? styles.menuButtonShown : styles.menuButtonHidden, styles.menuButton]} onPress={() => onMenuShow()}>
-        {!menuShow ? (
-          <Image
-            style={styles.menuImage}
-            source={require("../assets/images/menu.png")}
-            resizeMethod="scale"
-            resizeMode="contain"
-          />
-        ) : (
-          <MenuShow setMenuShow={setMenuShow} />
-        )}
-      </Pressable>
+      <MessagesScreen setMenuDepth={setMenuDepth}/>
 
-      <GameMenuDepth0 />
+      <GameMenuDepth0 menuDepth={menuDepth} setMenuDepth={setMenuDepth} />
     </View>
   );
 }
@@ -94,6 +90,5 @@ const styles = StyleSheet.create({
 });
 
 Game.propTypes = {
-  gameId: PropTypes.number.isRequired,
   token: PropTypes.string.isRequired,
 };

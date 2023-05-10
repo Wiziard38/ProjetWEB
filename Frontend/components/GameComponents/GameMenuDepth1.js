@@ -35,7 +35,14 @@ export default function GameMenuDepth1({ setMenuDepth, setMenuSelection }) {
       />
       <SizedButton
         buttonLabel="Pouvoir"
-        onPress={() => handlePress("pouvoir")}
+        onPress={() => handlePress("power")}
+        size="large"
+        buttonStyle={styles.menuButton}
+        buttonLabelStyle={styles.menuButtonText}
+      />
+      <SizedButton
+        buttonLabel="Règles du jeu"
+        onPress={() => handlePress("rules")}
         size="large"
         buttonStyle={styles.menuButton}
         buttonLabelStyle={styles.menuButtonText}

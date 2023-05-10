@@ -34,6 +34,6 @@ SizedButton.propTypes = {
     "xlarge",
     "xxlarge",
   ]).isRequired,
-  buttonStyle: PropTypes.object,
-  buttonLabelStyle: PropTypes.object,
+  buttonStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
+  buttonLabelStyle: PropTypes.oneOfType([PropTypes.object, PropTypes.array]),
 };

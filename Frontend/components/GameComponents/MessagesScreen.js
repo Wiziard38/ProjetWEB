@@ -1,4 +1,5 @@
 import React, { useState, useRef } from "react";
+import PropTypes from "prop-types";
 import {
   View,
   KeyboardAvoidingView,
@@ -13,7 +14,7 @@ import {
 } from "react-native";
 import ListMessages from "./ListMessages";
 
-export default function MessagesScreen() {
+export default function MessagesScreen({ setMenuDepth }) {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const flatListRef = useRef(null);
@@ -39,6 +40,7 @@ export default function MessagesScreen() {
 
         <View style={styles.footerStyle}>
           <TextInput
+            onFocus={() => setMenuDepth(0)}
             value={message}
             onChangeText={setMessage}
             onSubmitEditing={handleSend}
@@ -97,3 +99,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#eee",
   },
 });
+
+MessagesScreen.propTypes = {
+  setMenuDepth: PropTypes.func.isRequired,
+};

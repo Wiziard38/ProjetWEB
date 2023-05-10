@@ -1,11 +1,12 @@
 import { useState, useEffect, React } from "react";
 import { StyleSheet, View } from "react-native";
 import { fetchData } from "../utils/fetchData";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import DisplayMessage from "./DisplayMessage";
 import ListGames from "./ListGames";
 import PropTypes from "prop-types";
 
-export default function ListMyGames({ setMenuState, onDisconnect, setJoinedGame }) {
+export default function ListMyGames({ setMenuState, onDisconnect }) {
   const [parties, setParties] = useState([]);
   const [selectedId, setSelectedId] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
@@ -36,7 +37,7 @@ export default function ListMyGames({ setMenuState, onDisconnect, setJoinedGame 
         onPress={() => {
           setModalVisible(false);
           setMenuState(4);
-          setJoinedGame(selectedId);
+          AsyncStorage.setItem("idGame", selectedId.toString());
         }}
       />
 
@@ -64,5 +65,4 @@ const styles = StyleSheet.create({
 ListMyGames.propTypes = {
   onDisconnect: PropTypes.func.isRequired,
   setMenuState: PropTypes.func.isRequired,
-  setJoinedGame: PropTypes.func.isRequired,
 };
