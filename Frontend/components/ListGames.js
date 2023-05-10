@@ -10,7 +10,7 @@ import {
 import SizedText from "./SizedText";
 import SizedButton from "./SizedButton";
 import PropTypes from "prop-types";
-import { dateToText, timeToText, secondsToText } from "../utils/dateFunctions";
+import { dateToText, secondsToText } from "../utils/dateFunctions";
 
 export default function ListGames({
   descriptiveLabel,
