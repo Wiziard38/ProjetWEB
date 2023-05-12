@@ -34,7 +34,6 @@ export default function Game({ token }) {
           nbJoueur: 7,
           probaLoup: 0,
           probaPouv: 0,
-          updatedAt: "2023-04-27T08:19:34.987Z",
         },
         listeJoueurs: [
           "mathis",
