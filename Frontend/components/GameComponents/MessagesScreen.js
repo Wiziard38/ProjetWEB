@@ -22,8 +22,8 @@ export default function MessagesScreen({ setMenuDepth, socket }) {
   const gameInfos = useContext(GameContext);
 
   useEffect(() => {
+
     if(socket.current !== null) {
-      console.log("ICI");
       socket.current.on("receive_msg", (msg, username) => {
         console.log(username);
         console.log("new message");
@@ -33,8 +33,10 @@ export default function MessagesScreen({ setMenuDepth, socket }) {
         ])
       })
     }
-  }, []);
-
+    return () => {
+      socket.current.off("receive_msg");
+    }
+  });
   const handleSend = () => {
     if (message !== "") {
       // setMessages([
