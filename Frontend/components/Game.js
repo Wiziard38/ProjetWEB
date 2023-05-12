@@ -12,13 +12,7 @@ export default function Game({ token }) {
   const [team, setTeam] = useState(null);
   const [testName, setTestName] = useState(null);
 
-  const socket = useRef(
-    SocketIOClient("http://localhost:3000/0", {
-      auth: {
-        token,
-      },
-    })
-  );
+  const socket = useRef(null);
   // console.log(socket);
 
   useEffect(() => {
@@ -49,9 +43,9 @@ export default function Game({ token }) {
         );
       });
 
-      socket.current.on("receive_msg", (msg) => {
-        console.log(msg);
-      });
+      // socket.current.on("receive_msg", (msg) => {
+      //   console.log(msg);
+      // });
 
       socket.current.on("day", (msg) => {
         console.log(msg);

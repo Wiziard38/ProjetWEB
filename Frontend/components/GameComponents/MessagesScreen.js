@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import PropTypes from "prop-types";
 import {
   View,
@@ -14,11 +14,18 @@ import {
 } from "react-native";
 import ListMessages from "./ListMessages";
 
-export default function MessagesScreen({ setMenuDepth }) {
+export default function MessagesScreen({ setMenuDepth, socket }) {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const flatListRef = useRef(null);
 
+  useEffect(() => {
+    if(socket.current !== null) {
+      socket.current.on("receive_msg", (msg) => {
+        console.log(msg);
+      })
+    }
+  });
   const handleSend = () => {
     if (message !== "") {
       setMessages([
