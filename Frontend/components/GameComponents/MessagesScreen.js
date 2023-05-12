@@ -21,17 +21,22 @@ export default function MessagesScreen({ setMenuDepth, socket }) {
 
   useEffect(() => {
     if(socket.current !== null) {
-      socket.current.on("receive_msg", (msg) => {
-        console.log(msg);
+      socket.current.on("receive_msg", (msg, username) => {
+        console.log(username);
+        setMessages([
+          ...messages,
+        { text: msg, date: new Date(), sender: username },
+        ])
       })
     }
   });
   const handleSend = () => {
     if (message !== "") {
-      setMessages([
-        ...messages,
-        { text: message, date: new Date(), sender: "me" },
-      ]);
+      // setMessages([
+      //   ...messages,
+      //   { text: message, date: new Date(), sender: "me" },
+      // ]);
+      socket.current.emit("message", message);
       setMessage("");
     }
   };

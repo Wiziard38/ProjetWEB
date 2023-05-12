@@ -6,8 +6,13 @@ class State {
     constructor(name) {
         this.#name = name;
     }
-    sendMessage(msg) {
-        console.log("[State.js] sendMessage : Error");
+    sendMessageDay(msg) {
+        console.log("[State.js] sendMessageDay : Error");
+        return false;
+    }
+
+    sendMessageNight(msg) {
+        console.log("[State.js] sendMessageNight : Error");
         return false;
     }
     

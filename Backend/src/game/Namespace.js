@@ -38,15 +38,16 @@ function initNamespace(/** @type {Game} */ game) {
     const state = await GameManager.getUserTeam(userName, gameID);
 
     // Créer des objets
-    const player = new Player(socket.id, userName, game, state, power);
+    const player = new Player(socket.id, username, game, state, power);
     // Add the player to the game, it let us find the user with its socket.
     game.addPlayer(player, socket.id);
 
     // Send all the game data for the player
     const gameData = await game.getGameData(socket.id);
     socket.emit("game_data", gameData);
+    // socket.emit("game_data", )
     // TODO DELETE_ALL_TEST_MSG
-    socket.emit("info_TEST", userName, power.toString(), state.toString())
+    socket.emit("info_TEST", username, power.toString(), state.toString())
     next();
   })
 
@@ -78,8 +79,8 @@ function initNamespace(/** @type {Game} */ game) {
       // io.of(game.getNamespace()).emit("receive_msg", mes);
 
       const player = game.getPlayerBySocket(socket.id);
-      player.sendMessage(mes);
-
+      //player.sendMessage(mes);
+      game.getGameState().sendMessage(player, mes);
     })
 
     socket.on('vote', async (username) => {

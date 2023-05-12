@@ -70,7 +70,7 @@ export default function Game({ token }) {
 
   return (
     <View style={styles.container}>
-      <MessagesScreen setMenuDepth={setMenuDepth}/>
+      <MessagesScreen setMenuDepth={setMenuDepth} socket={socket}/>
 
       <GameMenuDepth0 menuDepth={menuDepth} setMenuDepth={setMenuDepth} />
     </View>

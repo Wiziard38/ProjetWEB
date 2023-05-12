@@ -1,5 +1,6 @@
 const GameState = require("./GameState");
 const io = require('../ws/websockets.js');
+const AbstractGameState = require("./AbstractGameState");
 
 
 class Game {
@@ -10,6 +11,7 @@ class Game {
   #dayDuration = 15000;
   #nightDuration = 15000;
   #namespace;
+  #electedPlayer;
 
   #playerDir = new Map(); // Link socketID to player object
   #socketDir = new Map(); // Link username to socketID
@@ -91,7 +93,8 @@ class Game {
     io.of('/' + this.#gameID).removeAllListeners();
     // delete
     delete io.npst[this.#gameID];
-    GameState.remove(this.#gameID);
+    //GameState.remove(this.#gameID);
+    // TODO remove from gamemanager
   }
 
   /**
@@ -100,6 +103,7 @@ class Game {
   dayChange() {
     this.#gameState = GameState.DAY;
     io.of(this.#namespace).emit('day', 'nuit -> jour');
+    io.of(this.#namespace).emit('receive_msg', 'message de test', "test");
   }
 
   /**
@@ -160,6 +164,18 @@ class Game {
    */
   getID() {
     return this.#gameID;
+  }
+  
+  /** @return {AbstractGameState} */
+  getGameState() {
+    return this.#gameState;
+  }
+
+  /**
+   * @returns the name of the elected player
+   */
+  getElectedPlayer() {
+    return this.#electedPlayer;
   }
 }
 
