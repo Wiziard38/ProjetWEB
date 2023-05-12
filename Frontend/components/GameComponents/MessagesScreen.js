@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useContext } from "react";
 import PropTypes from "prop-types";
 import {
   View,
@@ -13,11 +13,13 @@ import {
   Keyboard,
 } from "react-native";
 import ListMessages from "./ListMessages";
+import GameContext from "./GameContext";
 
-export default function MessagesScreen({ setMenuDepth }) {
+export default function MessagesScreen({ setMenuDepth, isDead }) {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const flatListRef = useRef(null);
+  const gameContextValue = useContext(GameContext);
 
   const handleSend = () => {
     if (message !== "") {
@@ -36,37 +38,42 @@ export default function MessagesScreen({ setMenuDepth }) {
         keyboardVerticalOffset={Platform.OS === "ios" ? 110 : 0}
         style={styles.container}
       >
-        <ListMessages messages={messages} flatListRef={flatListRef} />
+        <ListMessages
+          messages={messages}
+          flatListRef={flatListRef}
+        />
 
-        <View style={styles.footerStyle}>
-          <TextInput
-            onFocus={() => setMenuDepth(0)}
-            value={message}
-            onChangeText={setMessage}
-            onSubmitEditing={handleSend}
-            placeholder="Type a message"
-            style={[
-              styles.input,
-              { width: Dimensions.get("window").width - 15 * 2 - 30 },
-            ]}
-            // multiline={true}
-          />
-          <TouchableOpacity
-            activeOpacity={0.7}
-            style={styles.buttonStyle}
-            onPress={() => {
-              handleSend();
-              Keyboard.dismiss();
-            }}
-          >
-            <Image
-              style={styles.sendImage}
-              source={require("../../assets/images/send.png")}
-              resizeMethod="scale"
-              resizeMode="contain"
+        {(!gameContextValue.isDead || gameContextValue.isElectedSpiritism) && (
+          <View style={styles.footerStyle}>
+            <TextInput
+              onFocus={() => setMenuDepth(0)}
+              value={message}
+              onChangeText={setMessage}
+              onSubmitEditing={handleSend}
+              placeholder="Type a message"
+              style={[
+                styles.input,
+                { width: Dimensions.get("window").width - 15 * 2 - 30 },
+              ]}
+              // multiline={true}
             />
-          </TouchableOpacity>
-        </View>
+            <TouchableOpacity
+              activeOpacity={0.7}
+              style={styles.buttonStyle}
+              onPress={() => {
+                handleSend();
+                Keyboard.dismiss();
+              }}
+            >
+              <Image
+                style={styles.sendImage}
+                source={require("../../assets/images/send.png")}
+                resizeMethod="scale"
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
+          </View>
+        )}
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
