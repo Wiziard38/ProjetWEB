@@ -1,6 +1,7 @@
 const GameState = require("./GameState");
 const io = require('../ws/websockets.js');
 const AbstractGameState = require("./AbstractGameState");
+const Player = require("./Player");
 
 
 class Game {
@@ -103,7 +104,7 @@ class Game {
   dayChange() {
     this.#gameState = GameState.DAY;
     io.of(this.#namespace).emit('day', 'nuit -> jour');
-    io.of(this.#namespace).emit('receive_msg', 'message de test', "test");
+    // io.of(this.#namespace).emit('receive_msg', 'message de test', "test");
   }
 
   /**
@@ -176,6 +177,14 @@ class Game {
    */
   getElectedPlayer() {
     return this.#electedPlayer;
+  }
+
+  cleanSocket(socketid) {
+    /** @type {Player} */
+    const p = this.#playerDir.get(socketid);
+    const name = p.getUsername();
+    this.#playerDir.delete(socketid);
+    this.#socketDir.delete(name);
   }
 }
 

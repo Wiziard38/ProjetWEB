@@ -61,6 +61,7 @@ function initNamespace(/** @type {Game} */ game) {
     socket.on('disconnect', () => {
       // When the user disconnect
       socket.disconnect();
+      game.cleanSocket(socket.id);
       console.log("user disconnected");
     })
     socket.on("TEST", (mes) => {

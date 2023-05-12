@@ -1,14 +1,15 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { StyleSheet, View } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import SizedText from "../SizedText";
 import SizedButton from "../SizedButton";
 import DisplayMessage from "../DisplayMessage";
 import DropDownPicker from "react-native-dropdown-picker";
+import GameContext from "./GameContext";
 
 export default function Powers() {
-  const [power, setPower] = useState(null);
-  const [powerUsed, setPowerUsed] = useState(false);
+  const gameContextValue = useContext(GameContext);
+  
   const [voyanceInfos, setVoyanceInfos] = useState(null);
 
   const [listPlayers, setListPlayers] = useState([]);
@@ -43,8 +44,6 @@ export default function Powers() {
 
   useEffect(() => {
     AsyncStorage.getItem("idGame").then((idGame) => {
-      // TODO recup le pouvoir
-      setPower("Spiritisme");
 
       // TODO recup la liste des joueurs associés au pouvoir
       const list = [
@@ -65,8 +64,6 @@ export default function Powers() {
 
       setListPlayers(list.map((player) => ({ label: player, value: player })));
 
-      // TODO recup si pouvoir deja utilisé
-      setPowerUsed(false);
       // Si deja used et le pouvoir est voyance, recup les infos du joeuur qui a été observé
       setVoyanceInfos({
         joueur: "Jules",
@@ -76,18 +73,20 @@ export default function Powers() {
     });
   }, []);
 
+  console.log(gameContextValue)
+
   function activatePower() {
     if (selectedPlayer) {
       // TODO recup infos et activer pouvoir
       const baseText = `Vous avez activé l'effet de votre pouvoir sur "${selectedPlayer}".\n\n`;
-      switch (power) {
-        case "Contamination":
+      switch (gameContextValue.power.toLowerCase()) {
+        case "contamination":
           setModalText(
             baseText + `Ce joueur va etre transformé en loup-garou.`
           );
           break;
 
-        case "Voyance": {
+        case "voyance": {
           // TODO recup les infos du joueur selectedPlayer
           const infos = { role: "loup-garou", pouvoir: "Contamination" };
           setModalText(
@@ -101,7 +100,7 @@ export default function Powers() {
           break;
         }
 
-        case "Spiritisme":
+        case "spiritisme":
           setModalText(
             baseText +
               `Vous pouvez maintenant parler au joueur mort "${selectedPlayer}".`
@@ -113,7 +112,6 @@ export default function Powers() {
       }
       setModalVisible(true);
       setSelectedPlayer(null);
-      setPowerUsed(true);
     }
   }
 
@@ -131,13 +129,13 @@ export default function Powers() {
         textStyle={styles.title}
       />
       <SizedText
-        label={`${power}`}
+        label={`${gameContextValue.power}`}
         size={"large"}
         textStyle={styles.subtitle}
       />
       <SizedText
         label={`${
-          powerDescription.find((powerItem) => powerItem.title === power)
+          powerDescription.find((powerItem) => powerItem.title.toLowerCase() === gameContextValue.power.toLowerCase())
             ?.description || ""
         }`}
         size={"small"}
@@ -146,18 +144,18 @@ export default function Powers() {
 
       <View style={styles.separator} />
 
-      {powerUsed || power === "Insomnie" ? (
+      {gameContextValue.powerUsed || gameContextValue.power === "Insomnie" ? (
         <>
           <SizedText
             label={
-              power === "Insomnie"
+              gameContextValue.power === "Insomnie"
                 ? "Il n'y a rien a faire pour votre pouvoir !"
                 : "Vous avez déjà utilisé votre pouvoir !"
             }
             size="normal"
             textStyle={styles.description}
           />
-          {power === "Voyance" && (
+          {gameContextValue.power === "Voyance" && (
             <SizedText
               label={`Le joueur ${voyanceInfos.joueur} a pour rôle ${voyanceInfos.role} et pour pouvoir ${voyanceInfos.pouvoir}.`}
               size="normal"

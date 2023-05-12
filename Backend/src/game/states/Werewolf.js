@@ -1,6 +1,4 @@
 const io = require('../../ws/websockets');
-const States = require("../States");
-const Powers = require('../Powers');
 const Alive = require("./Alive");
 const Game = require("../Game");
 
@@ -19,7 +17,9 @@ class Werewolf extends Alive {
     //     }
     // }
     sendMessageNight(msg, /** @type {Game} */ game, userName) {
-        io.of(game.getNamespace()).to(States.WEREWOLF.toString()).to(Powers.INSOMNIA.toString()).emit("receive_msg", mes, userName);
+        const States = require("../States");
+        const Powers = require('../Powers');
+        io.of(game.getNamespace()).to(States.WEREWOLF.toString()).to(Powers.INSOMNIA.toString()).emit("receive_msg", msg, userName);
         return true;
     }
 }

@@ -42,14 +42,18 @@ export default function ListMyGames({ setMenuState, onDisconnect }) {
       />
 
       <ListGames
-        descriptiveLabel={
-          "Liste des parties auxquelles vous participez déjà : (TODO)"
+        titleLabel={
+          "Liste des parties auxquelles vous êtes en cours de participation : "
         }
         parties={parties}
         selectedId={selectedId}
         setSelectedId={setSelectedId}
         onPress={joinMyGame}
-        onPressLabel={"Je lance la partie"}
+        buttonLabel={"Je lance la partie"}
+        waiting={true}
+        emptyListLabel={
+          "Vous n'êtes inscrit dans aucune partie actuellement, vous pouvez en rejoindre ou créer une."
+        }
       />
     </View>
   );

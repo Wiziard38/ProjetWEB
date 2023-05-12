@@ -1,66 +1,28 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useContext } from "react";
 import { StyleSheet, View, Text } from "react-native";
 import SizedText from "../SizedText";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { secondsToText, dateToText } from "../../utils/dateFunctions";
+import { secondsToHHMM, dateToText } from "../../utils/dateFunctions";
+import GameContext from "./GameContext";
 
 export default function InfosGame() {
-  const [game, setGame] = useState(null);
   const [gameDetails, setGameDetails] = useState([]);
-  const [role, setRole] = useState(null);
-  const [listeJoueurs, setListeJoueurs] = useState([]);
-  const [pouvoir, setPouvoir] = useState(null);
+  const gameContextValue = useContext(GameContext);
 
   useEffect(() => {
-    AsyncStorage.getItem("idGame").then((idGame) => {
-      // TODO recup les infos de la partie de idGame {idGame}
-      setGame({
-        createdAt: "2023-04-27T08:19:34.987Z",
-        dateDeb: "2023-01-17T04:33:12.000Z",
-        dureeJour: 3600,
-        dureeNuit: 3600,
-        idGame: 1,
-        nbJoueur: 7,
-        probaLoup: 0,
-        probaPouv: 0,
-        updatedAt: "2023-04-27T08:19:34.987Z",
-      });
-    });
-
-    // TODO recuperer la liste des joueurs
-    setListeJoueurs([
-      "mathis",
-      "lucacao",
-      "marcel",
-      "marcelle",
-      "camilleCosmique",
-      "joueur1",
-      "joueur2",
-      "joue",
-      "joueur4",
-      "joueur5",
-    ]);
-
-    // TODO recup le pouvoir et role (si role === mort, recuperer ancien role ?) !
-    setRole("Loup-garou");
-    setPouvoir("Contamination");
-  }, []);
-
-  useEffect(() => {
-    if (game) {
+    if (gameContextValue.gameInfos) {
       setGameDetails([
-        { label: `Numéro partie : ${game.idGame}` },
-        { label: `Nombre de joueurs : ${game.nbJoueur}` },
-        { label: `Duree du jour : ${secondsToText(game.dureeJour)}` },
-        { label: `Duree de la nuit : ${secondsToText(game.dureeNuit)}` },
-        { label: `Date de debut : ${dateToText(game.dateDeb)}` },
-        { label: `Probabilité de pouvoir : ${game.probaPouv}` },
-        { label: `Probabilité de loup-garou : ${game.probaLoup}` },
+        { label: `Numéro partie : ${gameContextValue.gameInfos.idGame}` },
+        { label: `Nombre de joueurs : ${gameContextValue.gameInfos.nbJoueur}` },
+        { label: `Duree du jour : ${secondsToHHMM(gameContextValue.gameInfos.dureeJour)}` },
+        { label: `Duree de la nuit : ${secondsToHHMM(gameContextValue.gameInfos.dureeNuit)}` },
+        { label: `Date de debut : ${dateToText(gameContextValue.gameInfos.dateDeb)}` },
+        { label: `Probabilité de pouvoir : ${gameContextValue.gameInfos.probaPouv}` },
+        { label: `Probabilité de loup-garou : ${gameContextValue.gameInfos.probaLoup}` },
       ]);
     }
-  }, [game]);
+  }, [gameContextValue.gameInfos]);
 
-  if (!game) {
+  if (!gameContextValue.gameInfos) {
     return null; // or a loading indicator if desired
   }
 
@@ -92,10 +54,10 @@ export default function InfosGame() {
           textStyle={styles.title}
         />
         <Text style={[styles.infosJoueurs, styles.gameDetail]}>
-          {listeJoueurs.map((joueur, index) => (
+          {gameContextValue.listeJoueurs.map((joueur, index) => (
             <SizedText
               key={joueur}
-              label={joueur + (index !== listeJoueurs.length - 1 ? " - " : "")}
+              label={joueur + (index !== gameContextValue.listeJoueurs.length - 1 ? " - " : "")}
               size={"normal"}
             />
           ))}
@@ -112,14 +74,14 @@ export default function InfosGame() {
         />
         <SizedText
           label={
-            `Vous êtes : ${role}` +
-            (role === "mort" ? " (anciennement LG)" : "")
+            `Vous êtes : ${gameContextValue.role}` +
+            (gameContextValue.role === "mort" ? " (anciennement ???)" : "")
           } // TODO changer anciennement
           size={"normal"}
           textStyle={styles.gameDetail}
         />
         <SizedText
-          label={`Vous avez le pouvoir : ${pouvoir}`}
+          label={`Vous avez le pouvoir : ${gameContextValue.power}`}
           size={"normal"}
           textStyle={styles.gameDetail}
         />

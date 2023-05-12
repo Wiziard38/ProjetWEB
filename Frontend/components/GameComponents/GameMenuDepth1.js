@@ -1,13 +1,24 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { View, StyleSheet, Image, Pressable } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import PropTypes from "prop-types";
 import SizedButton from "../SizedButton";
 
 export default function GameMenuDepth1({ setMenuDepth, setMenuSelection }) {
+  const [power, setPower] = useState(null);
+
   const handlePress = (selection) => {
     setMenuSelection(selection);
     setMenuDepth(2);
   };
+
+  useEffect(() => {
+    AsyncStorage.getItem("idGame").then((idGame) => {
+      // TODO recup le pouvoir
+      setPower("Spiritisme");
+      // setPower(null);
+    });
+  }, []);
 
   return (
     <View style={styles.container}>
@@ -33,13 +44,15 @@ export default function GameMenuDepth1({ setMenuDepth, setMenuSelection }) {
         buttonStyle={styles.menuButton}
         buttonLabelStyle={styles.menuButtonText}
       />
-      <SizedButton
-        buttonLabel="Pouvoir"
-        onPress={() => handlePress("power")}
-        size="large"
-        buttonStyle={styles.menuButton}
-        buttonLabelStyle={styles.menuButtonText}
-      />
+      {power !== null && (
+        <SizedButton
+          buttonLabel="Pouvoir"
+          onPress={() => handlePress("power")}
+          size="large"
+          buttonStyle={styles.menuButton}
+          buttonLabelStyle={styles.menuButtonText}
+        />
+      )}
       <SizedButton
         buttonLabel="Règles du jeu"
         onPress={() => handlePress("rules")}

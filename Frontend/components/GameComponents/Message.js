@@ -32,18 +32,18 @@ export default class Message extends React.PureComponent {
   }
 }
 
-
 const styles = StyleSheet.create({
   itemContainer: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: 5,
+    paddingHorizontal: 15,
     marginVertical: 6,
     marginHorizontal: 15,
-    backgroundColor: "#f9b6b6",
+    backgroundColor: "#ffffffcc",
   },
   messageHeader: {
     flex: 1,
     flexDirection: "row",
+    justifyContent: "space-between",
   },
   senderStyle: {
     fontWeight: "bold",
@@ -53,9 +53,10 @@ const styles = StyleSheet.create({
     marginLeft: 5,
   },
   messageBody: {
-    border: 1,
-    borderColor: "gray",
-    backgroundColor: "#ffffff",
+    paddingTop: 5,
+    marginTop: 2,
+    borderTopWidth: 1,
+    borderColor: "#b5b5b5",
   },
   messageTextStyle: {},
 });

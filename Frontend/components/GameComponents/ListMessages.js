@@ -1,16 +1,22 @@
-import React from "react";
+import React, { useContext } from "react";
 import { View, StyleSheet, FlatList } from "react-native";
 import SizedText from "../SizedText";
 import PropTypes from "prop-types";
 import Message from "./Message";
+import GameContext from "./GameContext";
 
-export default function ListMessages({ messages, flatListRef }) {
+export default function ListMessages({ messages, flatListRef, isDead }) {
   const renderItem = ({ item }) => <Message item={item} />;
+  const gameContextValue = useContext(GameContext);
 
   function noGames() {
     return (
       <SizedText
-        label={"Soyez le premier a envoyer un message !"}
+        label={
+          gameContextValue.isDead
+            ? "Il n'y a pas encore de messages envoyés pour l'instant"
+            : "Soyez le premier a envoyer un message !"
+        }
         size={"normal"}
         textStyle={styles.noMessage}
       />
@@ -43,16 +49,16 @@ export default function ListMessages({ messages, flatListRef }) {
 const styles = StyleSheet.create({
   listContainer: {
     flex: 1,
-    backgroundColor: "lightblue",
     paddingRight: 20,
     paddingTop: 10,
   },
   noMessage: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: 5,
+    paddingLeft: 15,
+    paddingRight: 50,
     marginVertical: 6,
     marginHorizontal: 15,
-    backgroundColor: "#f9b6b6",
+    backgroundColor: "#ffffffcc",
   },
 });
 
