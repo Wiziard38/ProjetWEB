@@ -1,13 +1,14 @@
 const GameState = require("./GameState");
+const usersgamesModel = require("../models/usersgames.js");
+const vivantsModel = require("../models/vivants.js");
 const io = require('../ws/websockets.js');
-
 
 class Game {
     #gameState;
     #loopID;
     #namespace;
     #gameID;
-    #nbPlayers;
+    #nbPlayersRequired;
     #beginTime;
     #dayDuration;
     #nightDuration;
@@ -17,20 +18,19 @@ class Game {
     #playerDir = new Map(); // Link socketID to player object
     #socketDir = new Map(); // Link username to socketID
 
+    /* constructeur d'une partie - initialisation des champs */
     constructor(id, nbJoueur, dureeJour, dureeNuit, dateDeb, probaPouv, probaLoup) {
         console.log("constructor")
-        console.log("idGame: " + id);
-        console.log("nbJoueur: " + nbJoueur);
-        console.log("dureeJour: " + dureeJour);
-        console.log("dureeNuit: " + dureeNuit);
-        console.log("dateDeb: " + dateDeb);
-        console.log("probaPouv: " + probaPouv);
-        console.log("probaLoup: " + probaLoup);
+        console.log("beginTime: " + dateDeb);
+        //console.log("beginTime: " + dateDeb.getTime());
+        console.log("dayDuration: " + dureeJour * 1000);
+        console.log("nightDuration: " + dureeNuit * 1000);
+        console.log("date actuelle: " + new Date());
         this.#gameID = id;
-        this.#nbPlayers = nbJoueur;
-        this.#beginTime = dateDeb; // TODO: traduire en millisecondes
-        this.#dayDuration = dureeJour; // TODO: traduire en millisecondes
-        this.#nightDuration = dureeNuit; // TODO: traduire en millisecondes
+        this.#nbPlayersRequired = nbJoueur;
+        this.#beginTime = dateDeb; // TODO: traduire date en millisecondes
+        this.#dayDuration = dureeJour * 1000; // traduction de secondes en millisecondes
+        this.#nightDuration = dureeNuit * 1000; // traduction de secondes en millisecondes
         this.#probaPower = probaPouv;
         this.#probaWerewolf = probaLoup;
         this.#namespace = '/' + id;
@@ -63,24 +63,57 @@ class Game {
         }, this.#beginTime);
     }
 
-    init() {
+    /* initialise les données de la partie qui va commencer */
+    async init() {
         console.log("init")
-        // calculs
-        // changer le champ aCommence false->true
+        // création des loups-garous
+        const nbWerewolves = Math.max(1, Math.ceil(this.#probaWerewolf * this.#nbPlayersRequired));
+
+        // création des pouvoirs
+        // TODO:
+
+        // création des humains
+        const nbHumans = this.#nbPlayersRequired - nbWerewolves;
+
+        const villagers = await usersgamesModel.findAll({ where: {gameIdGame:this.#gameID} });
+        console.log(villagers);
+
+        // TODO: mélanger aléatoirement le tableau villagers
+
+        for (let i = 0; i < villagers.length; i++) {
+            console.log("idUser : " + villagers[i].userIdUser);
+            if (i >= 0 && i < nbWerewolves) {
+                // c'est un loup-garou
+                await vivantsModel.create({typeVivant: "loup-garou", usersgameIdUsergame: villagers[i].idUsergame});
+            } else {
+                // c'est un humain
+                await vivantsModel.create({typeVivant: "humain", usersgameIdUsergame: villagers[i].idUsergame});
+            }
+        }
+
+        // TODO: changer le champ aCommence false->true
+
     }
 
-    begin() {
+    /* méthode appelée lorsque l'horaire de début de partie est atteint */
+    async begin() {
         console.log("begin")
-        this.init()
-        this.#gameState = GameState.DAY;
-        this.dayChange();
-        this.#loopID = setInterval(() => {
-            this.nightChange();
-
-            setTimeout(() => {
-                this.dayChange();
-            }, this.#nightDuration)
-        }, this.#dayDuration + this.#nightDuration);
+        const nbPlayersRegistered = await usersgamesModel.count({ where: {gameIdGame:this.#gameID} });
+        if (nbPlayersRegistered == this.#nbPlayersRequired) {
+            // la partie est lancée si le nombre de joueurs requis est atteint
+            this.init()
+            this.#gameState = GameState.DAY;
+            this.dayChange();
+            this.#loopID = setInterval(() => {
+                this.nightChange();
+                setTimeout(() => {
+                    this.dayChange();
+                }, this.#nightDuration)
+            }, this.#dayDuration + this.#nightDuration);
+        } else {
+            // sinon la partie est annulée
+            // TODO:
+        }
     }
 
     finish() {
@@ -113,7 +146,7 @@ class Game {
         const socket = io.of(this.#namespace).sockets.get(socketID);
 
         if (socket) {
-            //TODO changer cela pour prendre en compte le vrai "Power"
+            // TODO: changer cela pour prendre en compte le vrai "Power"
             if (power.toString() !== "none") {
                 socket.join(power.toString());
             }
