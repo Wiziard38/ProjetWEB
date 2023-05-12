@@ -22,7 +22,6 @@ export default function MessagesScreen({ setMenuDepth, socket }) {
   const gameInfos = useContext(GameContext);
 
   useEffect(() => {
-
     if(socket.current !== null) {
       socket.current.on("receive_msg", (msg, username) => {
         console.log(username);
@@ -37,6 +36,7 @@ export default function MessagesScreen({ setMenuDepth, socket }) {
       socket.current.off("receive_msg");
     }
   });
+
   const handleSend = () => {
     if (message !== "") {
       // setMessages([
@@ -60,7 +60,7 @@ export default function MessagesScreen({ setMenuDepth, socket }) {
           flatListRef={flatListRef}
         />
 
-        {(!gameInfos.isDead || gameInfos.isElectedSpiritism) && (
+        {(!gameInfos.role === "mort" || gameInfos.isElectedSpiritism) && (
           <View style={styles.footerStyle}>
             <TextInput
               onFocus={() => setMenuDepth(0)}

@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import Message from "./Message";
 import GameContext from "./GameContext";
 
-export default function ListMessages({ messages, flatListRef, isDead }) {
+export default function ListMessages({ messages, flatListRef }) {
   const renderItem = ({ item }) => <Message item={item} />;
   const gameInfos = useContext(GameContext);
 
@@ -13,7 +13,7 @@ export default function ListMessages({ messages, flatListRef, isDead }) {
     return (
       <SizedText
         label={
-          gameInfos.isDead
+          gameInfos.role === "mort"
             ? "Il n'y a pas encore de messages envoyés pour l'instant"
             : "Soyez le premier a envoyer un message !"
         }

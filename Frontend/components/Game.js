@@ -20,12 +20,10 @@ export default function Game({ token }) {
       // TODO RECUP TOUTES LES INFOS DE LA PARTIE
       setGameInfos({
         isDay: true,
-        // team: null,
-        isDead: false,
+        role: "LG",
         power: "voyance",
         powerUsed: false,
         isElectedSpiritism: false,
-        role: "LG",
         switchTime: 0,
         infos: {
           createdAt: "2023-04-27T08:19:34.987Z",
@@ -79,7 +77,7 @@ export default function Game({ token }) {
       });
 
       socket.current.on("day", (msg, dayDuration) => {
-        console.log(msg, dayDuration);
+        console.log(`${msg}, duration jour : ${dayDuration}ms`);
         setGameInfos((prevGameInfos) => ({
           ...prevGameInfos, // Copy the previous gameInfos object
           isDay: true,
@@ -88,7 +86,7 @@ export default function Game({ token }) {
       });
 
       socket.current.on("night", (msg, nightDuration) => {
-        console.log(msg, nightDuration);
+        console.log(`${msg}, duration nuit : ${nightDuration}ms`);
         setGameInfos((prevGameInfos) => ({
           ...prevGameInfos, // Copy the previous gameInfos object
           isDay: false,
@@ -100,6 +98,14 @@ export default function Game({ token }) {
         console.log(msg);
       });
     }
+    return () => {
+      socket.current.off("begin");
+      socket.current.off("night");
+      socket.current.off("day");
+      socket.current.off("game_data");
+      socket.current.off("disconnect");
+      socket.current.off("connect");
+    }
   }, []);
 
   if (gameInfos == null) {
@@ -110,7 +116,7 @@ export default function Game({ token }) {
     <View style={styles.container}>
       <GameContext.Provider value={gameInfos}>
         <GameHeader />
-        
+
         <ImageBackground
           source={
             gameInfos.isDay
