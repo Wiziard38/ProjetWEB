@@ -43,16 +43,16 @@ export default function ListMessages({ messages, flatListRef }) {
 const styles = StyleSheet.create({
   listContainer: {
     flex: 1,
-    backgroundColor: "lightblue",
     paddingRight: 20,
     paddingTop: 10,
   },
   noMessage: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: 5,
+    paddingLeft: 15,
+    paddingRight: 50,
     marginVertical: 6,
     marginHorizontal: 15,
-    backgroundColor: "#f9b6b6",
+    backgroundColor: "#ffffffcc",
   },
 });
 

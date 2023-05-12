@@ -33,7 +33,7 @@ export default function MessagesScreen({ setMenuDepth }) {
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "margin"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 70 : 0}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 110 : 0}
         style={styles.container}
       >
         <ListMessages messages={messages} flatListRef={flatListRef} />
@@ -75,7 +75,6 @@ export default function MessagesScreen({ setMenuDepth }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
   },
   footerStyle: {
     flexDirection: "row",

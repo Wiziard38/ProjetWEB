@@ -11,7 +11,7 @@ import {
 import SizedText from "./SizedText";
 import SizedButton from "./SizedButton";
 import PropTypes from "prop-types";
-import { timeToText, dateToText, secondsToText } from "../utils/dateFunctions";
+import { timeToText, dateToText, secondsToHHMM } from "../utils/dateFunctions";
 
 export default function ListGames({
   titleLabel,
@@ -69,12 +69,12 @@ export default function ListGames({
                   textStyle={styles.itemDetailText}
                 />
                 <SizedText
-                  label={`Duree du jour : ${secondsToText(item.dureeJour)}`}
+                  label={`Duree du jour : ${secondsToHHMM(item.dureeJour)}`}
                   size={"small"}
                   textStyle={styles.itemDetailText}
                 />
                 <SizedText
-                  label={`Duree de la nuit : ${secondsToText(item.dureeNuit)}`}
+                  label={`Duree de la nuit : ${secondsToHHMM(item.dureeNuit)}`}
                   size={"small"}
                   textStyle={styles.itemDetailText}
                 />

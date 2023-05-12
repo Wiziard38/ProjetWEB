@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import { StyleSheet, View, Text } from "react-native";
 import SizedText from "../SizedText";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { secondsToText, dateToText } from "../../utils/dateFunctions";
+import { secondsToHHMM, dateToText } from "../../utils/dateFunctions";
 
 export default function InfosGame() {
   const [game, setGame] = useState(null);
@@ -51,8 +51,8 @@ export default function InfosGame() {
       setGameDetails([
         { label: `Numéro partie : ${game.idGame}` },
         { label: `Nombre de joueurs : ${game.nbJoueur}` },
-        { label: `Duree du jour : ${secondsToText(game.dureeJour)}` },
-        { label: `Duree de la nuit : ${secondsToText(game.dureeNuit)}` },
+        { label: `Duree du jour : ${secondsToHHMM(game.dureeJour)}` },
+        { label: `Duree de la nuit : ${secondsToHHMM(game.dureeNuit)}` },
         { label: `Date de debut : ${dateToText(game.dateDeb)}` },
         { label: `Probabilité de pouvoir : ${game.probaPouv}` },
         { label: `Probabilité de loup-garou : ${game.probaLoup}` },

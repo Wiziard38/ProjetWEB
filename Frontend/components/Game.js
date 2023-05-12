@@ -1,9 +1,10 @@
 import React, { useRef, useState, useEffect } from "react";
 import PropTypes from "prop-types";
-import { View, StyleSheet } from "react-native";
+import { View, StyleSheet, ImageBackground } from "react-native";
 import SocketIOClient, { connect } from "socket.io-client";
 import MessagesScreen from "./GameComponents/MessagesScreen";
 import GameMenuDepth0 from "./GameComponents/GameMenuDepth0";
+import GameHeader from "./GameComponents/GameHeader";
 
 export default function Game({ token }) {
   // TODO
@@ -11,6 +12,10 @@ export default function Game({ token }) {
   const [role, setRole] = useState(null);
   const [team, setTeam] = useState(null);
   const [testName, setTestName] = useState(null);
+  const [switchTime, setSwitchTime] = useState(
+    new Date().setHours(new Date().getHours() + 1)
+  ); // TODO recup time
+  const [isDay, setIsDay] = useState(true);
 
   const socket = useRef(
     SocketIOClient("http://localhost:3000/0", {
@@ -71,15 +76,29 @@ export default function Game({ token }) {
 
   return (
     <View style={styles.container}>
-      <MessagesScreen setMenuDepth={setMenuDepth}/>
+      <GameHeader switchTime={switchTime} isDay={isDay} />
 
-      <GameMenuDepth0 menuDepth={menuDepth} setMenuDepth={setMenuDepth} />
+      <ImageBackground
+        source={
+          isDay
+            ? require("../assets/images/bg_day.jpg")
+            : require("../assets/images/bg_night.jpg")
+        }
+        style={styles.imageBackground}
+      >
+        <MessagesScreen setMenuDepth={setMenuDepth} />
+
+        <GameMenuDepth0 menuDepth={menuDepth} setMenuDepth={setMenuDepth} />
+      </ImageBackground>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
+    flex: 1,
+  },
+  imageBackground: {
     flex: 1,
   },
 });
