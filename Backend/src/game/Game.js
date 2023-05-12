@@ -103,7 +103,7 @@ class Game {
    */
   dayChange() {
     this.#gameState = GameState.DAY;
-    io.of(this.#namespace).emit('day', 'nuit -> jour');
+    io.of(this.#namespace).emit('day', 'nuit -> jour', this.#dayDuration);
     // io.of(this.#namespace).emit('receive_msg', 'message de test', "test");
   }
 
@@ -112,7 +112,7 @@ class Game {
    */
   nightChange() {
     this.#gameState = GameState.NIGHT;
-    io.of(this.#namespace).emit('night', 'jour -> nuit');
+    io.of(this.#namespace).emit('night', 'jour -> nuit', this.#nightDuration);
   }
 
 

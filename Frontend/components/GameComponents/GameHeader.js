@@ -1,35 +1,46 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef, useContext } from "react";
 import PropTypes from "prop-types";
 import { View, StyleSheet, Image } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import SizedText from "../SizedText";
 import { timeDifference, secondsToHHMMSS } from "../../utils/dateFunctions";
+import GameContext from "./GameContext";
 
-export default function GameHeader({ switchTime, isDay }) {
-  const [gameId, setGameId] = useState(0);
-  const [time, setTime] = useState(null);
+export default function GameHeader() {
+  const gameInfos = useContext(GameContext);
+  const [time, setTime] = useState(Math.floor(gameInfos.switchTime / 1000));
 
-  useEffect(() => {
-    setTime(timeDifference(switchTime));
+  const timerRef = useRef(null);
 
-    const timer = setInterval(() => {
-      setTime((prevTime) => prevTime - 1);
+  const startTimer = () => {
+    timerRef.current = setInterval(() => {
+      setTime((prevTime) => {
+        if (prevTime > 0) {
+          return prevTime - 1;
+        } else {
+          return 0;
+        }
+      });
     }, 1000);
+  };
 
-    // Clean up the timer when the component unmounts
-    return () => clearInterval(timer);
-  }, [switchTime]);
+  const restartTimer = () => {
+    clearInterval(timerRef.current);
+    setTime(gameInfos.switchTime / 1000);
+    startTimer();
+  };
 
   useEffect(() => {
-    AsyncStorage.getItem("idGame").then((idGame) => {
-      setGameId(idGame);
-    });
-  }, []);
+    restartTimer(); // Reset the timer when isDay or switchTime changes
+    
+    return () => {
+      clearInterval(timerRef.current);
+    };
+  }, [gameInfos.isDay]); // Add isDay and switchTime as dependencies
 
   return (
     <View style={styles.container}>
       <SizedText
-        label={`Partie n˚${gameId}`}
+        label={`Partie n˚${gameInfos.infos.idGame}`}
         size="large"
         textStyle={styles.title}
       />
@@ -38,7 +49,7 @@ export default function GameHeader({ switchTime, isDay }) {
         <Image
           style={styles.gameTimeIcon}
           source={
-            isDay
+            gameInfos.isDay
               ? require("../../assets/images/sun.png")
               : require("../../assets/images/moon.png")
           }
@@ -83,7 +94,7 @@ const styles = StyleSheet.create({
   },
 });
 
-GameHeader.propTypes = {
-  switchTime: PropTypes.number.isRequired,
-  isDay: PropTypes.bool.isRequired,
-};
+// GameHeader.propTypes = {
+//   switchTime: PropTypes.number.isRequired,
+//   isDay: PropTypes.bool.isRequired,
+// };

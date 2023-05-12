@@ -19,7 +19,7 @@ export default function MessagesScreen({ setMenuDepth, socket }) {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const flatListRef = useRef(null);
-  const gameContextValue = useContext(GameContext);
+  const gameInfos = useContext(GameContext);
 
   useEffect(() => {
     if(socket.current !== null) {
@@ -33,7 +33,8 @@ export default function MessagesScreen({ setMenuDepth, socket }) {
         ])
       })
     }
-  });
+  }, []);
+
   const handleSend = () => {
     if (message !== "") {
       // setMessages([
@@ -57,7 +58,7 @@ export default function MessagesScreen({ setMenuDepth, socket }) {
           flatListRef={flatListRef}
         />
 
-        {(!gameContextValue.isDead || gameContextValue.isElectedSpiritism) && (
+        {(!gameInfos.isDead || gameInfos.isElectedSpiritism) && (
           <View style={styles.footerStyle}>
             <TextInput
               onFocus={() => setMenuDepth(0)}

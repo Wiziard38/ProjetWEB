@@ -7,13 +7,13 @@ import GameContext from "./GameContext";
 
 export default function ListMessages({ messages, flatListRef, isDead }) {
   const renderItem = ({ item }) => <Message item={item} />;
-  const gameContextValue = useContext(GameContext);
+  const gameInfos = useContext(GameContext);
 
   function noGames() {
     return (
       <SizedText
         label={
-          gameContextValue.isDead
+          gameInfos.isDead
             ? "Il n'y a pas encore de messages envoyés pour l'instant"
             : "Soyez le premier a envoyer un message !"
         }

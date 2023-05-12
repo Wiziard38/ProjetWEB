@@ -8,7 +8,7 @@ import DropDownPicker from "react-native-dropdown-picker";
 import GameContext from "./GameContext";
 
 export default function Powers() {
-  const gameContextValue = useContext(GameContext);
+  const gameInfos = useContext(GameContext);
   
   const [voyanceInfos, setVoyanceInfos] = useState(null);
 
@@ -73,13 +73,13 @@ export default function Powers() {
     });
   }, []);
 
-  console.log(gameContextValue)
+  console.log(gameInfos)
 
   function activatePower() {
     if (selectedPlayer) {
       // TODO recup infos et activer pouvoir
       const baseText = `Vous avez activé l'effet de votre pouvoir sur "${selectedPlayer}".\n\n`;
-      switch (gameContextValue.power.toLowerCase()) {
+      switch (gameInfos.power.toLowerCase()) {
         case "contamination":
           setModalText(
             baseText + `Ce joueur va etre transformé en loup-garou.`
@@ -129,13 +129,13 @@ export default function Powers() {
         textStyle={styles.title}
       />
       <SizedText
-        label={`${gameContextValue.power}`}
+        label={`${gameInfos.power}`}
         size={"large"}
         textStyle={styles.subtitle}
       />
       <SizedText
         label={`${
-          powerDescription.find((powerItem) => powerItem.title.toLowerCase() === gameContextValue.power.toLowerCase())
+          powerDescription.find((powerItem) => powerItem.title.toLowerCase() === gameInfos.power.toLowerCase())
             ?.description || ""
         }`}
         size={"small"}
@@ -144,18 +144,18 @@ export default function Powers() {
 
       <View style={styles.separator} />
 
-      {gameContextValue.powerUsed || gameContextValue.power === "Insomnie" ? (
+      {gameInfos.powerUsed || gameInfos.power === "Insomnie" ? (
         <>
           <SizedText
             label={
-              gameContextValue.power === "Insomnie"
+              gameInfos.power === "Insomnie"
                 ? "Il n'y a rien a faire pour votre pouvoir !"
                 : "Vous avez déjà utilisé votre pouvoir !"
             }
             size="normal"
             textStyle={styles.description}
           />
-          {gameContextValue.power === "Voyance" && (
+          {gameInfos.power === "Voyance" && (
             <SizedText
               label={`Le joueur ${voyanceInfos.joueur} a pour rôle ${voyanceInfos.role} et pour pouvoir ${voyanceInfos.pouvoir}.`}
               size="normal"

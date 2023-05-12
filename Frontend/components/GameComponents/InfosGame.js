@@ -6,23 +6,23 @@ import GameContext from "./GameContext";
 
 export default function InfosGame() {
   const [gameDetails, setGameDetails] = useState([]);
-  const gameContextValue = useContext(GameContext);
+  const gameInfos = useContext(GameContext);
 
   useEffect(() => {
-    if (gameContextValue.gameInfos) {
+    if (gameInfos.infos) {
       setGameDetails([
-        { label: `Numéro partie : ${gameContextValue.gameInfos.idGame}` },
-        { label: `Nombre de joueurs : ${gameContextValue.gameInfos.nbJoueur}` },
-        { label: `Duree du jour : ${secondsToHHMM(gameContextValue.gameInfos.dureeJour)}` },
-        { label: `Duree de la nuit : ${secondsToHHMM(gameContextValue.gameInfos.dureeNuit)}` },
-        { label: `Date de debut : ${dateToText(gameContextValue.gameInfos.dateDeb)}` },
-        { label: `Probabilité de pouvoir : ${gameContextValue.gameInfos.probaPouv}` },
-        { label: `Probabilité de loup-garou : ${gameContextValue.gameInfos.probaLoup}` },
+        { label: `Numéro partie : ${gameInfos.infos.idGame}` },
+        { label: `Nombre de joueurs : ${gameInfos.infos.nbJoueur}` },
+        { label: `Duree du jour : ${secondsToHHMM(gameInfos.infos.dureeJour)}` },
+        { label: `Duree de la nuit : ${secondsToHHMM(gameInfos.infos.dureeNuit)}` },
+        { label: `Date de debut : ${dateToText(gameInfos.infos.dateDeb)}` },
+        { label: `Probabilité de pouvoir : ${gameInfos.infos.probaPouv}` },
+        { label: `Probabilité de loup-garou : ${gameInfos.infos.probaLoup}` },
       ]);
     }
-  }, [gameContextValue.gameInfos]);
+  }, [gameInfos.infos]);
 
-  if (!gameContextValue.gameInfos) {
+  if (!gameInfos.infos) {
     return null; // or a loading indicator if desired
   }
 
@@ -54,10 +54,10 @@ export default function InfosGame() {
           textStyle={styles.title}
         />
         <Text style={[styles.infosJoueurs, styles.gameDetail]}>
-          {gameContextValue.listeJoueurs.map((joueur, index) => (
+          {gameInfos.listeJoueurs.map((joueur, index) => (
             <SizedText
               key={joueur}
-              label={joueur + (index !== gameContextValue.listeJoueurs.length - 1 ? " - " : "")}
+              label={joueur + (index !== gameInfos.listeJoueurs.length - 1 ? " - " : "")}
               size={"normal"}
             />
           ))}
@@ -74,14 +74,14 @@ export default function InfosGame() {
         />
         <SizedText
           label={
-            `Vous êtes : ${gameContextValue.role}` +
-            (gameContextValue.role === "mort" ? " (anciennement ???)" : "")
+            `Vous êtes : ${gameInfos.role}` +
+            (gameInfos.role === "mort" ? " (anciennement ???)" : "")
           } // TODO changer anciennement
           size={"normal"}
           textStyle={styles.gameDetail}
         />
         <SizedText
-          label={`Vous avez le pouvoir : ${gameContextValue.power}`}
+          label={`Vous avez le pouvoir : ${gameInfos.power}`}
           size={"normal"}
           textStyle={styles.gameDetail}
         />
