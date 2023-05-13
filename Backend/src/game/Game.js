@@ -4,6 +4,7 @@ const vivantsModel = require("../models/vivants.js");
 const io = require('../ws/websockets.js');
 const AbstractGameState = require("./AbstractGameState");
 const Player = require("./Player");
+const users = require("../models/users");
 
 class Game {
   #gameState;
@@ -136,8 +137,47 @@ class Game {
    * Send to the player the current state of the game
    * @param {*} socketID 
    */
-  getGameData(socketID) {
-    //Send to the player game data
+  async getGameData(socketID) {
+    console.log("calling gameData ?")
+    const players = await users.findAll({ 
+      attributes: ['username'],
+      include: { 
+        model: usersgamesModel,
+        attributes: [],
+        where: { gameIdGame: this.#gameID } 
+      },
+      raw : true
+    });
+    const listPlayers = players.map(obj => obj.username);
+
+    // const death = await users.findAll({ 
+    //   attributes: ['username'],
+    //   include: { 
+    //     model: usersgamesModel,
+    //     attributes: [],
+    //     where: { gameIdGame: this.#gameID } 
+    //   },
+    //   raw : true
+    // });
+    // console.log(await users.findAll({ attributes: ['username'], include: { model: usersgamesModel, where: { gameIdGame: this.#gameID } } }))
+    console.log(listPlayers)
+    const gameData = {
+      "isDay": this.isDay(),
+      "switchTime": 0,
+      "infos": {
+        "createdAt": 0,
+        "dateDeb": 0,
+        "dureeJour": this.#dayDuration,
+        "dureeNuit": this.#nightDuration,
+        "idGame": this.#gameID,
+        "nbJoueur": listPlayers.length,
+        "probaLoup": this.#probaWerewolf,
+        "probaPouv": this.#probaPower
+      },
+      "listeJoueurs": listPlayers
+    };
+
+    return gameData;
   }
 
   /**
@@ -161,160 +201,156 @@ class Game {
       /* constructeur d'une partie - initialisation des champs */
     }
   }
-    /**
-     * @returns the game's namespace
-     */
-    getNamespace() {
-      return this.#namespace;
-    }
+  /**
+   * @returns the game's namespace
+   */
+  getNamespace() {
+    return this.#namespace;
+  }
 
-    /**
-     * @param {*} socketID 
-     * @returns socket object with the socket id
-     */
-    getSocket(socketID) {
-      return io.of(this.#namespace).sockets.get(socketID);
-    }
+  /**
+   * @param {*} socketID 
+   * @returns socket object with the socket id
+   */
+  getSocket(socketID) {
+    return io.of(this.#namespace).sockets.get(socketID);
+  }
 
-    /**
-     * @returns the current game's id
-     */
-    getID() {
-      return this.#gameID;
-    }
+  /**
+   * @returns the current game's id
+   */
+  getID() {
+    return this.#gameID;
+  }
 
-    /** @return {AbstractGameState} */
-    getGameState() {
-      return this.#gameState;
-    }
+  /** @return {AbstractGameState} */
+  getGameState() {
+    return this.#gameState;
+  }
 
-    /**
-     * @returns the name of the elected player
-     */
-    getElectedPlayer() {
-      return this.#electedPlayer;
-    }
+  /**
+   * @returns the name of the elected player
+   */
+  getElectedPlayer() {
+    return this.#electedPlayer;
+  }
 
-    cleanSocket(socketid) {
-      /** @type {Player} */
-      const p = this.#playerDir.get(socketid);
-      const name = p.getUsername();
-      this.#playerDir.delete(socketid);
-      this.#socketDir.delete(name);
-    }
-    create() {
-      console.log("create")
-      const initNamespace = require('./Namespace');
-      initNamespace(this);
-      setTimeout(() => {
-        this.begin();
-      }, this.#beginTime);
-    }
+  cleanSocket(socketid) {
+    /** @type {Player} */
+    const p = this.#playerDir.get(socketid);
+    const name = p.getUsername();
+    this.#playerDir.delete(socketid);
+    this.#socketDir.delete(name);
+  }
+  create() {
+    console.log("create")
+    const initNamespace = require('./Namespace');
+    initNamespace(this);
+    setTimeout(() => {
+      this.begin();
+    }, this.#beginTime);
+  }
 
   /* initialise les données de la partie qui va commencer */
   async init() {
-      console.log("init")
-      // création des loups-garous
-      const nbWerewolves = Math.max(1, Math.ceil(this.#probaWerewolf * this.#nbPlayersRequired));
+    console.log("init")
+    // création des loups-garous
+    const nbWerewolves = Math.max(1, Math.ceil(this.#probaWerewolf * this.#nbPlayersRequired));
 
-      // création des pouvoirs
-      // TODO:
+    // création des pouvoirs
+    // TODO:
 
-      // création des humains
-      const nbHumans = this.#nbPlayersRequired - nbWerewolves;
+    // création des humains
+    const nbHumans = this.#nbPlayersRequired - nbWerewolves;
 
-      const villagers = await usersgamesModel.findAll({ where: { gameIdGame: this.#gameID } });
-      console.log(villagers);
+    const villagers = await usersgamesModel.findAll({ where: { gameIdGame: this.#gameID } });
+    // console.log(villagers);
 
-      // TODO: mélanger aléatoirement le tableau villagers
+    // TODO: mélanger aléatoirement le tableau villagers
 
-      for (let i = 0; i < villagers.length; i++) {
-        console.log("idUser : " + villagers[i].userIdUser);
-        if (i >= 0 && i < nbWerewolves) {
-          // c'est un loup-garou
-          await vivantsModel.create({ typeVivant: "loup-garou", usersgameIdUsergame: villagers[i].idUsergame });
-        } else {
-          // c'est un humain
-          await vivantsModel.create({ typeVivant: "humain", usersgameIdUsergame: villagers[i].idUsergame });
-        }
+    for (let i = 0; i < villagers.length; i++) {
+      // console.log("idUser : " + villagers[i].userIdUser);
+      if (i >= 0 && i < nbWerewolves) {
+        // c'est un loup-garou
+        await vivantsModel.create({ typeVivant: "loup-garou", usersgameIdUsergame: villagers[i].idUsergame });
+      } else {
+        // c'est un humain
+        await vivantsModel.create({ typeVivant: "humain", usersgameIdUsergame: villagers[i].idUsergame });
       }
-
-      // TODO: changer le champ aCommence false->true
-
     }
+
+    // TODO: changer le champ aCommence false->true
+
+  }
 
   /* méthode appelée lorsque l'horaire de début de partie est atteint */
   async begin() {
-      console.log("begin")
-      const nbPlayersRegistered = await usersgamesModel.count({ where: { gameIdGame: this.#gameID } });
-      if (nbPlayersRegistered == this.#nbPlayersRequired) {
-        // la partie est lancée si le nombre de joueurs requis est atteint
-        this.init()
-        this.#gameState = GameState.DAY;
-        this.dayChange();
-        this.#loopID = setInterval(() => {
-          this.nightChange();
-          setTimeout(() => {
-            this.dayChange();
-          }, this.#nightDuration)
-        }, this.#dayDuration + this.#nightDuration);
-      } else {
-        // sinon la partie est annulée
-        // TODO:
-      }
-    }
-
-    finish() {
-      clearInterval(this.#loopID);
-      io.of('/' + this.#gameID).removeAllListeners();
-      // delete
-      delete io.npst[this.#gameID];
-      GameState.remove(this.#gameID);
-    }
-
-    dayChange() {
+    console.log("begin")
+    const nbPlayersRegistered = await usersgamesModel.count({ where: { gameIdGame: this.#gameID } });
+    if (nbPlayersRegistered == this.#nbPlayersRequired || 1) {
+      //TODO virer le || 1 utilisé ici pour bypass le test durant la phase de test
+      // la partie est lancée si le nombre de joueurs requis est atteint
+      this.init()
       this.#gameState = GameState.DAY;
-      io.of(this.#namespace).emit('day', 'nuit -> jour');
-    }
-
-    nightChange() {
-      this.#gameState = GameState.NIGHT;
-      io.of(this.#namespace).emit('night', 'jour -> nuit');
-    }
-
-
-    getGameData(socketID) {
-      //Send to the player game data
-    }
-
-    setPlayerRoom(socketID) {
-      const player = this.getPlayerBySocket(socketID);
-      const power = player.getPower();
-      const state = player.getState();
-      const socket = io.of(this.#namespace).sockets.get(socketID);
-
-      if (socket) {
-        // TODO: changer cela pour prendre en compte le vrai "Power"
-        if (power.toString() !== "none") {
-          socket.join(power.toString());
-        }
-        socket.join(state.toString());
-      } else {
-        console.log("[Game.js] setPlayerRoom : SocketID Invalid")
-      }
-    }
-
-    getNamespace() {
-      return this.#namespace;
-    }
-
-    getSocket(socketID) {
-      return io.of(this.#namespace).sockets.get(socketID);
-    }
-
-    getID() {
-      return this.#gameID;
+      this.dayChange();
+      this.#loopID = setInterval(() => {
+        this.nightChange();
+        setTimeout(() => {
+          this.dayChange();
+        }, this.#nightDuration)
+      }, this.#dayDuration + this.#nightDuration);
+    } else {
+      // sinon la partie est annulée
+      // TODO:
     }
   }
+
+  finish() {
+    clearInterval(this.#loopID);
+    io.of('/' + this.#gameID).removeAllListeners();
+    // delete
+    delete io.npst[this.#gameID];
+    GameState.remove(this.#gameID);
+  }
+
+  dayChange() {
+    this.#gameState = GameState.DAY;
+    io.of(this.#namespace).emit('day', 'nuit -> jour');
+  }
+
+  nightChange() {
+    this.#gameState = GameState.NIGHT;
+    io.of(this.#namespace).emit('night', 'jour -> nuit');
+  }
+
+  setPlayerRoom(socketID) {
+    const player = this.getPlayerBySocket(socketID);
+    const power = player.getPower();
+    const state = player.getState();
+    const socket = io.of(this.#namespace).sockets.get(socketID);
+
+    if (socket) {
+      // TODO: changer cela pour prendre en compte le vrai "Power"
+      if (power.toString() !== "none") {
+        socket.join(power.toString());
+      }
+      socket.join(state.toString());
+    } else {
+      console.log("[Game.js] setPlayerRoom : SocketID Invalid")
+    }
+  }
+
+  getNamespace() {
+    return this.#namespace;
+  }
+
+  getSocket(socketID) {
+    return io.of(this.#namespace).sockets.get(socketID);
+  }
+
+  getID() {
+    return this.#gameID;
+  }
+}
 
 module.exports = Game;

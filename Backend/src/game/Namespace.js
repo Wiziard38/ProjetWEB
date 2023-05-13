@@ -43,11 +43,10 @@ function initNamespace(/** @type {Game} */ game) {
     game.addPlayer(player, socket.id);
 
     // Send all the game data for the player
+    //const {day, powerUsed, elected, switchTime, dayDuration, nightDuration, idGame, nbJoueur, probaLG, probaPower} = await game.getGameData(socket.id);
+    // game.getGameData(socket.id);
     const gameData = await game.getGameData(socket.id);
-    socket.emit("game_data", gameData);
-    // socket.emit("game_data", )
-    // TODO DELETE_ALL_TEST_MSG
-    socket.emit("info_TEST", username, power.toString(), state.toString())
+    socket.emit("game_data", JSON.stringify(gameData), power.toString(), state.toString());
     next();
   })
 
