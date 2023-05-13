@@ -14,6 +14,7 @@ const io = require('./ws/websockets.js')
 const GameManager = require('./game/GameManager.js')
 const Game = require("./game/Game.js")
 const game = new Game(1);
+console.log("zarbi ?")
 game.create();
 GameManager.addGame(game);
 // GameManager.createGame('0');
