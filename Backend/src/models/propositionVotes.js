@@ -2,7 +2,7 @@ const Sequelize = require("sequelize");
 const db = require("./database.js");
 const usersGames = require("./usersgames");
 
-const propositionVote = db.define("propositionVote", {
+const propositionVotes= db.define("propositionVotes", {
   idProp: {
     primaryKey: true,
     type: Sequelize.INTEGER,
@@ -12,13 +12,12 @@ const propositionVote = db.define("propositionVote", {
     type: Sequelize.INTEGER,
     allowNull: false,
   },
-  usernameVote: {
-    type: Sequelize.STRING(50),
-    allowNull: false
-  }
 });
 
-propositionVote.belongsTo(usersGames);
-usersGames.hasMany(propositionVote);
+usersGames.hasMany(propositionVotes, {foreignKey: "usernameVotantId"});
+propositionVotes.belongsTo(usersGames, {as: "usernameVotant"});
 
-module.exports = propositionVote;
+usersGames.hasMany(propositionVotes, {foreignKey: "usernameVoteId"});
+propositionVotes.belongsTo(usersGames, {as: "usernameVote"});
+
+module.exports = propositionVotes;

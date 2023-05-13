@@ -31,6 +31,10 @@ const games = db.define("games", {
     type: Sequelize.FLOAT,
     allowNull: false,
   },
+  aCommence: {
+    type: Sequelize.BOOLEAN,
+    allowNull: false,
+  }
 });
 
 module.exports = games;

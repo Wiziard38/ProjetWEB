@@ -10,6 +10,10 @@ const vivants = db.define("vivants", {
   typeVivant: {
     type: Sequelize.DataTypes.ENUM("loup-garou", "humain")
   },
+  pouvoir: {
+    type: Sequelize.DataTypes.ENUM("spiritisme", "insomnie", "voyance", "contamination"),
+    allowNull: true,
+  }
 });
 
 module.exports = vivants;

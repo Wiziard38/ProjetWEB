@@ -18,6 +18,6 @@ const ratifications = db.define("ratifications", {
 ratifications.belongsTo(usersGames);
 usersGames.hasMany(ratifications);
 ratifications.belongsTo(propositionVotes);
-usersGames.hasMany(ratifications);
+propositionVotes.hasMany(ratifications);
 
 module.exports = ratifications;
