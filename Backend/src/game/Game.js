@@ -9,7 +9,7 @@ class Game {
   #loopID;
   #gameID;
   #beginTime = 1000;
-  #dayDuration = 15000;
+  #dayDuration = 150000;
   #nightDuration = 15000;
   #namespace;
   #electedPlayer;

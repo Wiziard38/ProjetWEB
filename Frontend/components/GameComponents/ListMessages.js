@@ -5,18 +5,14 @@ import PropTypes from "prop-types";
 import Message from "./Message";
 import GameContext from "./GameContext";
 
-export default function ListMessages({ messages, flatListRef }) {
+export default function ListMessages({ messages, flatListRef, noMessageText }) {
   const renderItem = ({ item }) => <Message item={item} />;
   const gameInfos = useContext(GameContext);
 
   function noGames() {
     return (
       <SizedText
-        label={
-          gameInfos.role === "mort"
-            ? "Il n'y a pas encore de messages envoyés pour l'instant"
-            : "Soyez le premier a envoyer un message !"
-        }
+        label={noMessageText}
         size={"normal"}
         textStyle={styles.noMessage}
       />
@@ -49,7 +45,6 @@ export default function ListMessages({ messages, flatListRef }) {
 const styles = StyleSheet.create({
   listContainer: {
     flex: 1,
-    paddingRight: 20,
     paddingTop: 10,
   },
   noMessage: {
@@ -65,4 +60,5 @@ const styles = StyleSheet.create({
 ListMessages.propTypes = {
   messages: PropTypes.array.isRequired,
   flatListRef: PropTypes.object.isRequired,
+  noMessageText: PropTypes.string.isRequired,
 };

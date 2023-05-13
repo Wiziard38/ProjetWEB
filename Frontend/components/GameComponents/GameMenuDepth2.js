@@ -5,6 +5,7 @@ import InfosGame from "./InfosGame";
 import Votes from "./Votes";
 import Powers from "./Powers";
 import Rules from "./Rules";
+import Archives from "./Archives";
 
 export default function GameMenuDepth2({ setMenuDepth, menuSelection }) {
   const windowWidth = Dimensions.get("window").width * 0.8;
@@ -31,6 +32,8 @@ export default function GameMenuDepth2({ setMenuDepth, menuSelection }) {
           <Powers />
         ) : menuSelection === "rules" ? (
           <Rules />
+        ) : menuSelection === "archive" ? (
+          <Archives />
         ) : (
           <></>
         )}

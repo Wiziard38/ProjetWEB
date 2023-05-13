@@ -67,7 +67,7 @@ const styles = StyleSheet.create({
     borderColor: "black",
     borderWidth: 1,
     borderRadius: 40,
-    padding: 20,
+    padding: 10,
   },
   menuDepth1: {
     backgroundColor: "white",
@@ -86,6 +86,7 @@ const styles = StyleSheet.create({
   menuImage: {
     width: 40,
     height: 40,
+    margin: 10,
   },
 });
 

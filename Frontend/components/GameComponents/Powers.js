@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from "react";
-import { StyleSheet, View } from "react-native";
+import { StyleSheet, View, Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import SizedText from "../SizedText";
 import SizedButton from "../SizedButton";
@@ -9,7 +9,7 @@ import GameContext from "./GameContext";
 
 export default function Powers() {
   const gameInfos = useContext(GameContext);
-  
+
   const [voyanceInfos, setVoyanceInfos] = useState(null);
 
   const [listPlayers, setListPlayers] = useState([]);
@@ -44,7 +44,6 @@ export default function Powers() {
 
   useEffect(() => {
     AsyncStorage.getItem("idGame").then((idGame) => {
-
       // TODO recup la liste des joueurs associés au pouvoir
       const list = [
         "mathis",
@@ -72,8 +71,6 @@ export default function Powers() {
       });
     });
   }, []);
-
-  console.log(gameInfos)
 
   function activatePower() {
     if (selectedPlayer) {
@@ -135,8 +132,10 @@ export default function Powers() {
       />
       <SizedText
         label={`${
-          powerDescription.find((powerItem) => powerItem.title.toLowerCase() === gameInfos.power.toLowerCase())
-            ?.description || ""
+          powerDescription.find(
+            (powerItem) =>
+              powerItem.title.toLowerCase() === gameInfos.power.toLowerCase()
+          )?.description || ""
         }`}
         size={"small"}
         textStyle={styles.description}
@@ -177,6 +176,8 @@ export default function Powers() {
               textStyle={!open && { fontWeight: "bold", color: "white" }}
               dropDownContainerStyle={{ width: "90%", alignSelf: "center" }}
               placeholder="Choisir un joueur"
+              containerStyle={styles.pickerContainer}
+              maxHeight={150}
             />
           ) : (
             <SizedText
@@ -211,7 +212,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "column",
-    // justifyContent: "space-between",
     backgroundColor: "#ffffffaa",
     padding: 10,
     minWidth: "100%",
@@ -227,7 +227,14 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   select: {
+    flex: 1,
     alignItems: "center",
+    justifyContent: "center",
+  },
+  pickerContainer: {
+    zIndex: 5555,
+    minHeight: 500,
+    marginBottom: -450,
   },
   separator: {
     borderTopWidth: 1,
@@ -260,7 +267,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingVertical: 10,
     paddingHorizontal: 20,
-    marginTop: 10,
+    marginTop: 25,
     marginBottom: 10,
   },
   submitButtonLabel: {

@@ -100,122 +100,122 @@ export default function Votes() {
         onPress={() => setModalVisible(false)}
       />
 
-      <View style={[styles.createVote, open1 && { zIndex: 9999 }]}>
-        <SizedText
-          label={`Créer un nouveau vote`}
-          size={"xlarge"}
-          textStyle={styles.title}
-        />
+      <SizedText
+        label={`Créer un nouveau vote`}
+        size={"xlarge"}
+        textStyle={styles.title}
+      />
 
-        <SizedText
-          label={"Vous souhaitez créer un nouveau vote contre un joueur ?"}
-          size={"small"}
-          textStyle={styles.description}
-        />
+      <SizedText
+        label={"Vous souhaitez créer un nouveau vote contre un joueur ?"}
+        size={"small"}
+        textStyle={styles.description}
+      />
 
-        <View style={styles.select}>
-          {listPlayers1.length > 0 ? (
-            <DropDownPicker
-              open={open1}
-              setOpen={setOpen1}
-              value={selectedPlayer1}
-              setValue={setSelectedPlayer1}
-              items={listPlayers1}
-              setItems={setListPlayers1}
-              style={styles.dropDownPicker}
-              textStyle={!open1 && styles.submitButtonLabel}
-              dropDownContainerStyle={{ width: "90%", alignSelf: "center" }}
-              placeholder="Choisir un joueur"
-              onOpen={() => setOpen2(false)}
-            />
-          ) : (
-            <SizedText
-              label="Aucun joueur possible"
-              size="normal"
-              textStyle={styles.emptyList}
-            />
-          )}
-
-          <SizedButton
-            buttonLabel={`Vote contre ${
-              selectedPlayer1 !== null
-                ? selectedPlayer1.length > 12
-                  ? selectedPlayer1.slice(0, 9) + "..."
-                  : selectedPlayer1
-                : "[choisir]"
-            }`}
-            onPress={createVote}
-            size="normal"
-            buttonStyle={[
-              styles.submitButton,
-              selectedPlayer1 === null && { backgroundColor: "gray" },
-            ]}
-            buttonLabelStyle={[
-              styles.submitButtonLabel,
-              selectedPlayer1 === null && { color: "#000000" },
-            ]}
+      <View style={[styles.select, open1 && { zIndex: 9000 }]}>
+        {listPlayers1.length > 0 ? (
+          <DropDownPicker
+            open={open1}
+            setOpen={setOpen1}
+            value={selectedPlayer1}
+            setValue={setSelectedPlayer1}
+            items={listPlayers1}
+            setItems={setListPlayers1}
+            style={styles.dropDownPicker}
+            textStyle={!open1 && styles.submitButtonLabel}
+            dropDownContainerStyle={{ width: "90%", alignSelf: "center" }}
+            placeholder="Choisir un joueur"
+            onOpen={() => setOpen2(false)}
+            containerStyle={styles.pickerContainer1}
           />
-        </View>
+        ) : (
+          <SizedText
+            label="Aucun joueur possible"
+            size="normal"
+            textStyle={styles.emptyList}
+          />
+        )}
+
+        <SizedButton
+          buttonLabel={`Vote contre ${
+            selectedPlayer1 !== null
+              ? selectedPlayer1.length > 12
+                ? selectedPlayer1.slice(0, 9) + "..."
+                : selectedPlayer1
+              : "[choisir]"
+          }`}
+          onPress={createVote}
+          size="normal"
+          buttonStyle={[
+            styles.submitButton,
+            selectedPlayer1 === null && { backgroundColor: "gray" },
+          ]}
+          buttonLabelStyle={[
+            styles.submitButtonLabel,
+            selectedPlayer1 === null && { color: "#000000" },
+          ]}
+        />
       </View>
 
       <View style={styles.separator} />
 
-      <View style={styles.ratifyVote}>
-        <SizedText
-          label={`Ratifier un vote existant`}
-          size={"xlarge"}
-          textStyle={styles.title}
-        />
+      <SizedText
+        label={`Ratifier un vote existant`}
+        size={"xlarge"}
+        textStyle={styles.title}
+      />
 
-        <SizedText
-          label={"Vous souhaitez ratifier un vote déjà existant ?"}
-          size={"small"}
-          textStyle={styles.description}
-        />
+      <SizedText
+        label={"Vous souhaitez ratifier un vote déjà existant ?"}
+        size={"small"}
+        textStyle={styles.description}
+      />
 
-        <View style={styles.select}>
-          {listPlayers2.length > 0 ? (
-            <DropDownPicker
-              open={open2}
-              setOpen={setOpen2}
-              value={selectedPlayer2}
-              setValue={setSelectedPlayer2}
-              items={listPlayers2}
-              setItems={setListPlayers2}
-              style={styles.dropDownPicker}
-              textStyle={!open2 && styles.submitButtonLabel}
-              dropDownContainerStyle={{ width: "90%", alignSelf: "center" }}
-              placeholder="Choisir un joueur"
-              onOpen={() => setOpen1(false)}
-            />
-          ) : (
-            <SizedText
-              label="Aucun joueur possible"
-              size="normal"
-              textStyle={styles.emptyList}
-            />
-          )}
-
-          <SizedButton
-            buttonLabel={`Vote contre ${
-              selectedPlayer2 !== null
-                ? selectedPlayer2.length > 12
-                  ? selectedPlayer2.slice(0, 9) + "..."
-                  : selectedPlayer2
-                : "[choisir]"
-            }`}
-            onPress={ratifyVote}
-            size="normal"
-            buttonStyle={[
-              styles.submitButton,
-              selectedPlayer2 === null && { backgroundColor: "gray" },
-            ]}
-            buttonLabelStyle={[
-              styles.submitButtonLabel,
-              selectedPlayer2 === null && { color: "#000000" },
-            ]}
+      <View style={styles.select}>
+        {listPlayers2.length > 0 ? (
+          <DropDownPicker
+            open={open2}
+            setOpen={setOpen2}
+            value={selectedPlayer2}
+            setValue={setSelectedPlayer2}
+            items={listPlayers2}
+            setItems={setListPlayers2}
+            style={styles.dropDownPicker}
+            textStyle={!open2 && styles.submitButtonLabel}
+            dropDownContainerStyle={{ width: "90%", alignSelf: "center" }}
+            placeholder="Choisir un joueur"
+            onOpen={() => setOpen1(false)}
+            containerStyle={styles.pickerContainer2}
+            dropDownDirection="BOTTOM"
+            maxHeight={110}
           />
-        </View>
+        ) : (
+          <SizedText
+            label="Aucun joueur possible"
+            size="normal"
+            textStyle={styles.emptyList}
+          />
+        )}
+
+        <SizedButton
+          buttonLabel={`Vote contre ${
+            selectedPlayer2 !== null
+              ? selectedPlayer2.length > 12
+                ? selectedPlayer2.slice(0, 9) + "..."
+                : selectedPlayer2
+              : "[choisir]"
+          }`}
+          onPress={ratifyVote}
+          size="normal"
+          buttonStyle={[
+            styles.submitButton,
+            selectedPlayer2 === null && { backgroundColor: "gray" },
+          ]}
+          buttonLabelStyle={[
+            styles.submitButtonLabel,
+            selectedPlayer2 === null && { color: "#000000" },
+          ]}
+        />
       </View>
     </View>
   );
@@ -230,14 +230,6 @@ const styles = StyleSheet.create({
     width: "100%",
     padding: 10,
   },
-  createVote: {
-    flex: 1,
-    width: "100%",
-  },
-  ratifyVote: {
-    flex: 1,
-    width: "100%",
-  },
   select: {
     flex: 1,
     minWidth: "100%",
@@ -245,6 +237,16 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     alignItems: "center",
     justifyContent: "center",
+  },
+  pickerContainer1: {
+    zIndex: 5555,
+    minHeight: 500,
+    marginBottom: -450,
+  },
+  pickerContainer2: {
+    zIndex: 5555,
+    height: 500,
+    marginBottom: -450,
   },
   separator: {
     borderTopWidth: 1,

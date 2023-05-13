@@ -29,21 +29,25 @@ export default function GameMenuDepth1({ setMenuDepth, setMenuSelection }) {
         buttonStyle={styles.menuButton}
         buttonLabelStyle={styles.menuButtonText}
       />
-      <SizedButton
-        buttonLabel="Votes"
-        onPress={() => handlePress("votes")}
-        size="large"
-        buttonStyle={styles.menuButton}
-        buttonLabelStyle={styles.menuButtonText}
-      />
-      {gameInfos.power !== null && (
-        <SizedButton
-          buttonLabel="Pouvoir"
-          onPress={() => handlePress("power")}
-          size="large"
-          buttonStyle={styles.menuButton}
-          buttonLabelStyle={styles.menuButtonText}
-        />
+      {gameInfos.role !== "mort" && (
+        <>
+          <SizedButton
+            buttonLabel="Votes"
+            onPress={() => handlePress("votes")}
+            size="large"
+            buttonStyle={styles.menuButton}
+            buttonLabelStyle={styles.menuButtonText}
+          />
+          {gameInfos.power !== null && (
+            <SizedButton
+              buttonLabel="Pouvoir"
+              onPress={() => handlePress("power")}
+              size="large"
+              buttonStyle={styles.menuButton}
+              buttonLabelStyle={styles.menuButtonText}
+            />
+          )}
+        </>
       )}
       <SizedButton
         buttonLabel="Règles du jeu"
@@ -52,6 +56,15 @@ export default function GameMenuDepth1({ setMenuDepth, setMenuSelection }) {
         buttonStyle={styles.menuButton}
         buttonLabelStyle={styles.menuButtonText}
       />
+      {gameInfos.role === "mort" && (
+        <SizedButton
+          buttonLabel="Archives"
+          onPress={() => handlePress("archive")}
+          size="large"
+          buttonStyle={styles.menuButton}
+          buttonLabelStyle={styles.menuButtonText}
+        />
+      )}
     </View>
   );
 }
