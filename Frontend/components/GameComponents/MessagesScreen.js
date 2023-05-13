@@ -131,4 +131,5 @@ const styles = StyleSheet.create({
 
 MessagesScreen.propTypes = {
   setMenuDepth: PropTypes.func.isRequired,
+  socket: PropTypes.object.isRequired,
 };

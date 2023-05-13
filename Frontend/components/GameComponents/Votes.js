@@ -4,7 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import SizedText from "../SizedText";
 import SizedButton from "../SizedButton";
 import DisplayMessage from "../DisplayMessage";
-import DropDownPicker from "react-native-dropdown-picker";
+import DropDownPicker from "./DropDownPicker";
 
 export default function Votes() {
   const [listPlayers1, setListPlayers1] = useState([]);
@@ -100,123 +100,96 @@ export default function Votes() {
         onPress={() => setModalVisible(false)}
       />
 
-      <SizedText
-        label={`Créer un nouveau vote`}
-        size={"xlarge"}
-        textStyle={styles.title}
-      />
+      <View>
+        <SizedText
+          label={`Créer un nouveau vote`}
+          size={"xlarge"}
+          textStyle={styles.title}
+        />
 
-      <SizedText
-        label={"Vous souhaitez créer un nouveau vote contre un joueur ?"}
-        size={"small"}
-        textStyle={styles.description}
-      />
-
-      <View style={[styles.select, open1 && { zIndex: 9000 }]}>
-        {listPlayers1.length > 0 ? (
-          <DropDownPicker
-            open={open1}
-            setOpen={setOpen1}
-            value={selectedPlayer1}
-            setValue={setSelectedPlayer1}
-            items={listPlayers1}
-            setItems={setListPlayers1}
-            style={styles.dropDownPicker}
-            textStyle={!open1 && styles.submitButtonLabel}
-            dropDownContainerStyle={{ width: "90%", alignSelf: "center" }}
-            placeholder="Choisir un joueur"
-            onOpen={() => setOpen2(false)}
-            containerStyle={styles.pickerContainer1}
-          />
-        ) : (
-          <SizedText
-            label="Aucun joueur possible"
-            size="normal"
-            textStyle={styles.emptyList}
-          />
-        )}
-
-        <SizedButton
-          buttonLabel={`Vote contre ${
-            selectedPlayer1 !== null
-              ? selectedPlayer1.length > 12
-                ? selectedPlayer1.slice(0, 9) + "..."
-                : selectedPlayer1
-              : "[choisir]"
-          }`}
-          onPress={createVote}
-          size="normal"
-          buttonStyle={[
-            styles.submitButton,
-            selectedPlayer1 === null && { backgroundColor: "gray" },
-          ]}
-          buttonLabelStyle={[
-            styles.submitButtonLabel,
-            selectedPlayer1 === null && { color: "#000000" },
-          ]}
+        <SizedText
+          label={"Vous souhaitez créer un nouveau vote contre un joueur ?"}
+          size={"small"}
+          textStyle={styles.description}
         />
       </View>
+
+      <DropDownPicker
+        open={open1}
+        setOpen={setOpen1}
+        players={listPlayers1}
+        selectedPlayer={selectedPlayer1}
+        setSelectedPlayer={setSelectedPlayer1}
+        emptyListLabel={"Aucun joueur possible"}
+        onOpenTrigger={() => setOpen2(false)}
+      />
+
+      <SizedButton
+        buttonLabel={`Vote contre ${
+          selectedPlayer1 !== null
+            ? selectedPlayer1.length > 12
+              ? selectedPlayer1.slice(0, 9) + "..."
+              : selectedPlayer1
+            : "[choisir]"
+        }`}
+        onPress={createVote}
+        size="normal"
+        buttonStyle={[
+          styles.submitButton,
+          selectedPlayer1 === null && { backgroundColor: "gray" },
+        ]}
+        buttonLabelStyle={[
+          styles.submitButtonLabel,
+          selectedPlayer1 === null && { color: "#000000" },
+        ]}
+      />
 
       <View style={styles.separator} />
 
-      <SizedText
-        label={`Ratifier un vote existant`}
-        size={"xlarge"}
-        textStyle={styles.title}
-      />
+      <View>
+        <SizedText
+          label={`Ratifier un vote existant`}
+          size={"xlarge"}
+          textStyle={styles.title}
+        />
 
-      <SizedText
-        label={"Vous souhaitez ratifier un vote déjà existant ?"}
-        size={"small"}
-        textStyle={styles.description}
-      />
-
-      <View style={styles.select}>
-        {listPlayers2.length > 0 ? (
-          <DropDownPicker
-            open={open2}
-            setOpen={setOpen2}
-            value={selectedPlayer2}
-            setValue={setSelectedPlayer2}
-            items={listPlayers2}
-            setItems={setListPlayers2}
-            style={styles.dropDownPicker}
-            textStyle={!open2 && styles.submitButtonLabel}
-            dropDownContainerStyle={{ width: "90%", alignSelf: "center" }}
-            placeholder="Choisir un joueur"
-            onOpen={() => setOpen1(false)}
-            containerStyle={styles.pickerContainer2}
-            dropDownDirection="BOTTOM"
-            maxHeight={110}
-          />
-        ) : (
-          <SizedText
-            label="Aucun joueur possible"
-            size="normal"
-            textStyle={styles.emptyList}
-          />
-        )}
-
-        <SizedButton
-          buttonLabel={`Vote contre ${
-            selectedPlayer2 !== null
-              ? selectedPlayer2.length > 12
-                ? selectedPlayer2.slice(0, 9) + "..."
-                : selectedPlayer2
-              : "[choisir]"
-          }`}
-          onPress={ratifyVote}
-          size="normal"
-          buttonStyle={[
-            styles.submitButton,
-            selectedPlayer2 === null && { backgroundColor: "gray" },
-          ]}
-          buttonLabelStyle={[
-            styles.submitButtonLabel,
-            selectedPlayer2 === null && { color: "#000000" },
-          ]}
+        <SizedText
+          label={"Vous souhaitez ratifier un vote déjà existant ?"}
+          size={"small"}
+          textStyle={styles.description}
         />
       </View>
+
+      <DropDownPicker
+        open={open2}
+        setOpen={setOpen2}
+        players={listPlayers2}
+        selectedPlayer={selectedPlayer2}
+        setSelectedPlayer={setSelectedPlayer2}
+        emptyListLabel={"Aucun joueur possible"}
+        openDirection="TOP"
+        onOpenTrigger={() => setOpen1(false)}
+      />
+
+      <SizedButton
+        buttonLabel={`Vote contre ${
+          selectedPlayer2 !== null
+            ? selectedPlayer2.length > 12
+              ? selectedPlayer2.slice(0, 9) + "..."
+              : selectedPlayer2
+            : "[choisir]"
+        }`}
+        onPress={ratifyVote}
+        size="normal"
+        buttonStyle={[
+          styles.submitButton,
+          selectedPlayer2 === null && { backgroundColor: "gray" },
+        ]}
+        buttonLabelStyle={[
+          styles.submitButtonLabel,
+          selectedPlayer2 === null && { color: "#000000" },
+        ]}
+      />
     </View>
   );
 }
@@ -227,8 +200,11 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: "space-between",
     backgroundColor: "#ffffffaa",
-    width: "100%",
+    minWidth: "100%",
+    maxWidth: "100%",
+    alignSelf: "stretch",
     padding: 10,
+    zIndex: 1,
   },
   select: {
     flex: 1,
@@ -237,16 +213,7 @@ const styles = StyleSheet.create({
     alignSelf: "stretch",
     alignItems: "center",
     justifyContent: "center",
-  },
-  pickerContainer1: {
-    zIndex: 5555,
-    minHeight: 500,
-    marginBottom: -450,
-  },
-  pickerContainer2: {
-    zIndex: 5555,
-    height: 500,
-    marginBottom: -450,
+    zIndex: 1,
   },
   separator: {
     borderTopWidth: 1,
@@ -258,12 +225,7 @@ const styles = StyleSheet.create({
   },
   description: {
     fontStyle: "italic",
-    marginBottom: 15,
-  },
-  dropDownPicker: {
-    alignSelf: "center",
-    width: "80%",
-    backgroundColor: "#8000008d",
+    marginBottom: 5,
   },
   submitButton: {
     alignSelf: "center",
@@ -274,24 +236,10 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingVertical: 10,
     paddingHorizontal: 20,
-    marginTop: 10,
-    marginBottom: 10,
+    marginVertical: 5,
   },
   submitButtonLabel: {
     fontWeight: "bold",
     color: "white",
-  },
-  emptyList: {
-    alignSelf: "center",
-    justifyContent: "center",
-    borderWidth: 1,
-    backgroundColor: "#8000008d",
-    borderColor: "black",
-    borderRadius: 12,
-    overflow: "hidden",
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    fontWeight: "bold",
-    color: "black",
   },
 });

@@ -1,13 +1,11 @@
-import React, { useContext } from "react";
+import React from "react";
 import { View, StyleSheet, FlatList } from "react-native";
 import SizedText from "../SizedText";
 import PropTypes from "prop-types";
 import Message from "./Message";
-import GameContext from "./GameContext";
 
 export default function ListMessages({ messages, flatListRef, noMessageText }) {
   const renderItem = ({ item }) => <Message item={item} />;
-  const gameInfos = useContext(GameContext);
 
   function noGames() {
     return (

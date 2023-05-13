@@ -1,10 +1,10 @@
 import React, { useEffect, useState, useContext } from "react";
-import { StyleSheet, View, Platform } from "react-native";
+import { StyleSheet, View } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import SizedText from "../SizedText";
 import SizedButton from "../SizedButton";
 import DisplayMessage from "../DisplayMessage";
-import DropDownPicker from "react-native-dropdown-picker";
+import DropDownPicker from "./DropDownPicker";
 import GameContext from "./GameContext";
 
 export default function Powers() {
@@ -164,28 +164,14 @@ export default function Powers() {
         </>
       ) : (
         <View style={styles.select}>
-          {listPlayers.length > 0 ? (
-            <DropDownPicker
-              open={open}
-              setOpen={setOpen}
-              value={selectedPlayer}
-              setValue={setSelectedPlayer}
-              items={listPlayers}
-              setItems={setListPlayers}
-              style={styles.dropDownPicker}
-              textStyle={!open && { fontWeight: "bold", color: "white" }}
-              dropDownContainerStyle={{ width: "90%", alignSelf: "center" }}
-              placeholder="Choisir un joueur"
-              containerStyle={styles.pickerContainer}
-              maxHeight={150}
-            />
-          ) : (
-            <SizedText
-              label="Aucun joueur possible"
-              size="normal"
-              textStyle={styles.emptyList}
-            />
-          )}
+          <DropDownPicker
+            open={open}
+            setOpen={setOpen}
+            players={listPlayers}
+            selectedPlayer={selectedPlayer}
+            setSelectedPlayer={setSelectedPlayer}
+            emptyListLabel={"Aucun joueur possible"}
+          />
 
           <SizedButton
             buttonLabel={`Utiliser mon pouvoir sur ${

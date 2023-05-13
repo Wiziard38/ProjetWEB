@@ -77,8 +77,8 @@ const styles = StyleSheet.create({
     borderColor: "black",
   },
   menuDepth2: {
-    backgroundColor: "#f9b6b6ee",
-    padding: 19,
+    backgroundColor: "white",
+    padding: 10,
     borderRadius: 10,
     borderWidth: 2,
     borderColor: "black",

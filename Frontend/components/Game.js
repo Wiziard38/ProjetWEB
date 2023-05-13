@@ -21,7 +21,7 @@ export default function Game({ token }) {
       setGameInfos({
         isDay: true,
         role: "LG",
-        power: "voyance",
+        power: "Voyance",
         powerUsed: false,
         isElectedSpiritism: false,
         switchTime: 0,

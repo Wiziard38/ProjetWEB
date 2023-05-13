@@ -88,7 +88,7 @@ export default function Archives() {
   }
 
   function noArchive() {
-    return <SizedText label={emptyListLabel} size="large" />;
+    return <SizedText label={"Il n'y a aucune archive pour l'instant"} size="large" />;
   }
 
   return (

@@ -8,8 +8,8 @@ import Rules from "./Rules";
 import Archives from "./Archives";
 
 export default function GameMenuDepth2({ setMenuDepth, menuSelection }) {
-  const windowWidth = Dimensions.get("window").width * 0.8;
-  const windowHeight = Dimensions.get("window").height * 0.7;
+  const windowWidth = Dimensions.get("window").width * 0.87;
+  const windowHeight = Dimensions.get("window").height * 0.73;
 
   return (
     <View

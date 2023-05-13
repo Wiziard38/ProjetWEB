@@ -1,8 +1,7 @@
 import React, { useState, useEffect, useRef, useContext } from "react";
-import PropTypes from "prop-types";
 import { View, StyleSheet, Image } from "react-native";
 import SizedText from "../SizedText";
-import { timeDifference, secondsToHHMMSS } from "../../utils/dateFunctions";
+import { secondsToHHMMSS } from "../../utils/dateFunctions";
 import GameContext from "./GameContext";
 
 export default function GameHeader() {
@@ -74,7 +73,6 @@ const styles = StyleSheet.create({
     flex: 1,
     maxHeight: 40,
     backgroundColor: "#59647e",
-    justifyContent: "center",
     paddingLeft: 10,
     flexDirection: "row",
     alignItems: "center",
