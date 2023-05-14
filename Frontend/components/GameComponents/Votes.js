@@ -48,17 +48,17 @@ export default function Votes({token, socket}) {
       .catch(error=>console.log(error));
     });
 
-    socket.current.on("recepVote", (usernameVote) => {
-      console.log("recep vote", usernameVote);
-      console.log("Création list2:",listPlayers1);
-      console.log("Création list1:",listPlayers2)
-      const index = listPlayers1.indexOf({label: usernameVote, value: usernameVote});
-      console.log(index)
-      if (index != -1) {
-        setListPlayers1(listPlayers1.splice(index, 1));
-      }
-      setListPlayers2(listPlayers2.push(usernameVote));
-    });
+    // socket.current.on("recepVote", (usernameVote) => {
+    //   console.log("recep vote", usernameVote);
+    //   console.log("Création list2:",listPlayers1);
+    //   console.log("Création list1:",listPlayers2)
+    //   const index = listPlayers1.indexOf({label: usernameVote, value: usernameVote});
+    //   console.log(index)
+    //   if (index != -1) {
+    //     setListPlayers1(listPlayers1.splice(index, 1));
+    //   }
+    //   setListPlayers2(listPlayers2.push(usernameVote));
+    // });
     fetchData("whoami", "GET")
     .then(json=>setUsername(json.username));
       // TODO recup la liste des joueurs deja un vote et nb votes
