@@ -35,43 +35,35 @@ export default function MessagesScreen({ setMenuDepth, socket }) {
 
       socket.current.on("day", handleDayChange);
       socket.current.on("night", handleDayChange);
-      socket.current.on("messages", handleMessages)
+      socket.current.on("messages", handleMessages);
     }
     return () => {
       socket.current.off("receive_msg");
-      socket.current.off("day", handleDayChange)
-      socket.current.off("night", handleDayChange)
-      socket.current.off("messages", handleMessages)
+      socket.current.off("day", handleDayChange);
+      socket.current.off("night", handleDayChange);
+      socket.current.off("messages", handleMessages);
     };
   });
-
 
   const handleDayChange = () => {
     setMessages([]);
   };
 
   const handleMessages = (msg) => {
-    console.log(msg);
-    JSON.parse(msg).forEach(element => {
-      // console.log(element);
-      const { contenu, date, user } = element;
-      console.log(date)
-      // const dateObject = Date.parse(date);
-      console.log(contenu);
-      
+    const messageList = JSON.parse(msg);
+    console.log(messageList);
+    const transformedList = messageList.map(({ contenu, date, user }) => ({
+      text: contenu,
+      date: new Date(Date.parse(date)),
+      sender: user,
+    }));
+    console.log(transformedList);
 
-      setMessages([
-        ...messages,
-        { text: contenu, date: new Date(), sender: user },
-      ]);
-    });
+    setMessages(transformedList);
   };
+
   const handleSend = () => {
     if (message !== "") {
-      // setMessages([
-      //   ...messages,
-      //   { text: message, date: new Date(), sender: "me" },
-      // ]);
       socket.current.emit("message", message);
       setMessage("");
     }
@@ -109,7 +101,7 @@ export default function MessagesScreen({ setMenuDepth, socket }) {
                 }}
                 onBlur={() => {
                   needsFocus && textInputRef.current.focus();
-                  setNeedsFocus(false)
+                  setNeedsFocus(false);
                 }}
                 value={message}
                 onChangeText={setMessage}
