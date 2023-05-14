@@ -79,7 +79,7 @@ export default function Game({ token }) {
       });
 
       socket.current.on("connect", () => {
-        console.log("Connected to server");
+        socket.current.emit("ask_game_data");
         // socket.emit('proposal', 'bin voui c ez');
       });
 
@@ -89,7 +89,8 @@ export default function Game({ token }) {
       });
 
       socket.current.on("game_data", (msg) => {
-        console.log(msg)
+        // console.log(msg)
+        console.log("game_data reçu")
         setGameInfos(JSON.parse(msg));
       });
 

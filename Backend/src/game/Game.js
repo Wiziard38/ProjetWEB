@@ -137,7 +137,7 @@ class Game {
       
 
     }
-    this.getSocket(socketID).emit("messages", JSON.stringify(listMessages));
+    this.getSocket(socketID).emit("messages", listMessages);
 
   }
   /**

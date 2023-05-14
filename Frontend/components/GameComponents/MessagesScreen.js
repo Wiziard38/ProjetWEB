@@ -52,18 +52,19 @@ export default function MessagesScreen({ setMenuDepth, socket }) {
 
   const handleMessages = (msg) => {
     console.log(msg);
-    JSON.parse(msg).forEach(element => {
+    msg.forEach(element => {
       // console.log(element);
       const { contenu, date, user } = element;
       console.log(date)
       // const dateObject = Date.parse(date);
       console.log(contenu);
-      
+      console.log(messages)
 
       setMessages([
         ...messages,
         { text: contenu, date: new Date(), sender: user },
       ]);
+      console.log(messages);
     });
   };
   const handleSend = () => {

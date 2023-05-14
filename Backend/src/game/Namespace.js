@@ -63,8 +63,10 @@ function initNamespace(/** @type {Game} */ game) {
   namespace.on('connection', async (socket) => {
     // game.setPlayerRoom( socket.id);
     game.setPlayerRoom(socket.id);
-    await game.getGameData(socket.id);
-    await game.sendMessages(socket.id);
+    socket.on('ask_game_data', async () => {
+      await game.getGameData(socket.id);
+      await game.sendMessages(socket.id);
+    })
     // socket.setTimeout(20000);
     // Géré les multiconnection ?
     // console.log('utilisateur se connecte dans ' + gameID + " avec la socket : " + socket.id);
