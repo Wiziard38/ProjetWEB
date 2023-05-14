@@ -6,7 +6,7 @@ class AbstractGameState {
         this.#name = name;
     }
 
-    sendMessage(player, msg) {
+    async sendMessage(player, msg) {
         console.log("[AbstractGameState] Not implemented yet : sendMessage")
     }
 }

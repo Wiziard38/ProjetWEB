@@ -88,8 +88,10 @@ export default function Game({ token }) {
         socket.current.disconnect();
       });
 
-      socket.current.on("game_data", (msg) => {
-        // console.log(msg);
+      socket.current.on("game_data", (msg, power, state) => {
+        console.log(msg);
+        console.log(power);
+        console.log(state);
       });
 
       socket.current.on("day", (msg, dayDuration) => {

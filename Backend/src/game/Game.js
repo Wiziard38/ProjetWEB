@@ -10,6 +10,8 @@ const morts = require("../models/morts");
 const usersgames = require("../models/usersgames.js");
 const vivants = require("../models/vivants.js");
 const games = require("../models/games");
+const discussions = require("../models/discussions");
+const messages = require("../models/messages");
 
 class Game {
   #gameState;
@@ -82,34 +84,6 @@ class Game {
     return this.#gameState === GameState.NIGHT;
   }
 
-  create() {
-    const initNamespace = require('./Namespace');
-    initNamespace(this);
-    setTimeout(() => {
-      this.begin();
-    }, this.#beginTime);
-  }
-
-  /**
-   * Begin of the game, this start the game loop.
-   */
-  begin() {
-    this.gameLoop()
-    // The first loop is called after the wait time
-    this.#loopID = setInterval(() => this.gameLoop(), this.#dayDuration + this.#nightDuration);
-  }
-
-  /**
-   * Gameloop, day/night cycle
-   */
-  gameLoop() {
-    this.dayChange();
-
-    setTimeout(() => {
-      this.nightChange();
-    }, this.#dayDuration);
-  }
-
   /**
    * End the game and close all connections
    */
@@ -122,42 +96,69 @@ class Game {
     // TODO remove from gamemanager
   }
 
-  /**
-   * Change the game to day
-   */
-  dayChange() {
-    this.#gameState = GameState.DAY;
-    io.of(this.#namespace).emit('day', 'nuit -> jour', this.#dayDuration);
-    // io.of(this.#namespace).emit('receive_msg', 'message de test', "test");
+  async sendMessages(socketID) {
+    /** @type {Player} */
+    const player = this.#playerDir.get(socketID);
+    const States = require("./States.js")
+    const discussion = this.isDay() ? "jour" : player.getState() == States.WEREWOLF ? "repaire" : this.getElectedPlayer() === player.getUsername() ? "spiritisme" : "none";
+
+    const listMessages = [];
+
+    if(discussion !== "none") {
+      const { idDiscussion } = await discussions.findOne({
+        attributes: ["idDiscussion"],
+        where: { date: this.getSwitchTime(), typeDiscussion: discussion },
+        raw: true
+      });
+
+      const msgs = await messages.findAll({
+        attributes: ["contenu", "createdAt"],
+        where: {discussionIdDiscussion: idDiscussion},
+        include: {
+          model: usersgames,
+          attributes: [],
+          include: {
+            model: users,
+            attributes: ["username"]
+          }
+        },
+        raw: true
+      })
+      msgs.forEach(element => {
+        const {contenu, createdAt} = element
+        const sender = element['usersgame.user.username']
+        const msg = {
+          "contenu": contenu,
+          "date": createdAt,
+          "user": sender
+        }
+        listMessages.push(msg)
+      });
+      
+
+    }
+    this.getSocket(socketID).emit("messages", JSON.stringify(listMessages));
+
   }
-
-  /**
-   * Change the game to night
-   */
-  nightChange() {
-    this.#gameState = GameState.NIGHT;
-    io.of(this.#namespace).emit('night', 'jour -> nuit', this.#nightDuration);
-  }
-
-
   /**
    * Send to the player the current state of the game
    * @param {*} socketID 
    */
   async getGameData(socketID) {
-    console.log("calling gameData ?")
-    const players = await users.findAll({ 
+    /** @type {Player} */
+    const player = this.#playerDir.get(socketID);
+    const players = await users.findAll({
       attributes: ['username'],
-      include: { 
+      include: {
         model: usersgamesModel,
         attributes: [],
-        where: { gameIdGame: this.#gameID } 
+        where: { gameIdGame: this.#gameID }
       },
-      raw : true
+      raw: true
     });
     const listPlayers = players.map(obj => obj.username);
 
-    const deads = await morts.findAll({ 
+    const deads = await morts.findAll({
       attributes: [],
       required: true,
       include: {
@@ -175,11 +176,11 @@ class Game {
           }
         }
       },
-      raw : true
+      raw: true
     });
     const listDeads = deads.map(obj => obj['etat.usersgame.user.username']);
 
-    const alive = await vivants.findAll({ 
+    const alive = await vivants.findAll({
       attributes: [],
       required: true,
       include: {
@@ -197,20 +198,22 @@ class Game {
           }
         }
       },
-      raw : true
+      raw: true
     });
+
     const listAlive = alive.map(obj => obj['etat.usersgame.user.username']);
-    
-    const gameDates = await games.findOne({attributes: ["dateDeb", "createdAt"], where: { idGame: this.#gameID }, raw: true})
+
+    const gameDates = await games.findOne({ attributes: ["dateDeb", "createdAt"], where: { idGame: this.#gameID }, raw: true })
 
     const currentDate = new Date();
     const elapsedTime = currentDate - this.switchTime;
     const timeLeft = this.isDay() ? this.#dayDuration - elapsedTime : this.#nightDuration - elapsedTime;
 
-
     const gameData = {
       "isDay": this.isDay(),
       "switchTime": timeLeft,
+      "pouvoir": player.getPower().toString(),
+      "team": player.getState().toString(),
       "infos": {
         "createdAt": gameDates.createdAt,
         "dateDeb": gameDates.dateDeb,
@@ -226,7 +229,7 @@ class Game {
       "listeMorts": listDeads
     };
 
-    return gameData;
+    this.getSocket(socketID).emit("game_data", JSON.stringify(gameData));
   }
 
   /**
@@ -362,15 +365,45 @@ class Game {
     GameState.remove(this.#gameID);
   }
 
-  dayChange() {
+  async dayChange() {
+    if (this.#switchDate !== undefined) {
+      await discussions.update({ Archivee: true }, {
+        where: { date: this.#switchDate }
+      });
+    }
     this.#switchDate = new Date();
     this.#gameState = GameState.DAY;
+    await discussions.create({
+      date: this.#switchDate,
+      typeDiscussion: "jour",
+      Archivee: false,
+      gameIdGame: this.#gameID
+    })
     io.of(this.#namespace).emit('day', 'nuit -> jour', this.#dayDuration);
   }
 
-  nightChange() {
+  async nightChange() {
+    await discussions.update({ Archivee: true }, {
+      where: { date: this.#switchDate }
+    });
+
     this.#switchDate = new Date();
     this.#gameState = GameState.NIGHT;
+
+    await discussions.create({
+      date: this.#switchDate,
+      typeDiscussion: "repaire",
+      Archivee: false,
+      gameIdGame: this.#gameID
+    });
+
+    await discussions.create({
+      date: this.#switchDate,
+      typeDiscussion: "spiritisme",
+      Archivee: false,
+      gameIdGame: this.#gameID
+    });
+
     io.of(this.#namespace).emit('night', 'jour -> nuit', this.#nightDuration);
   }
 
@@ -401,6 +434,10 @@ class Game {
 
   getID() {
     return this.#gameID;
+  }
+
+  getSwitchTime() {
+    return this.#switchDate;
   }
 }
 

@@ -13,7 +13,7 @@ const server = require('./httpserver.js')
 const io = require('./ws/websockets.js')
 const GameManager = require('./game/GameManager.js')
 const Game = require("./game/Game.js")
-const game = new Game(1, 5, 5, 5, 1000, 0.2, 0.3);
+const game = new Game(1, 15, 15, 5, 1000, 0.2, 0.3);
 // game.create();
 GameManager.addGame(game);
 // GameManager.createGame('0');
