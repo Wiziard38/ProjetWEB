@@ -1,8 +1,10 @@
 const gamesModel = require("../models/games.js");
 const usersgamesModel = require("../models/usersgames.js");
 const Sequelize = require("sequelize");
+const propositionVoteModel = require("../models/propositionVotes")
 const { Op } = require("sequelize");
-
+const users = require("../models/users.js");
+const ratifications = require("../models/ratifiacations.js");
 module.exports = {
   async createGame(req, res) {
     try {
@@ -32,9 +34,54 @@ module.exports = {
       res.status(500).json({ error });
     }
   },
+  async listRatification(req, res) {
+    try {
+      const idGame = req.params.idGame;
+      const propositions = await propositionVoteModel.findAll({
+        include: [
+          {model: usersgamesModel, as: "usernameVote", include:{model:users}, where: {gameIdGame: idGame}}
+        ]});
+      const playersRat = [];
+      for (prop of propositions) {
+          console.log("prop:",prop);
+          playersRat.push({name: prop.usernameVote.user.username, votes: propositionVoteModel.nbVotant || 0});
+      }
+      res.json({status: true, playersRat: playersRat});
+    }
+    catch(error) {
+      console.error(error);
+      res.status(500).json({ error });
+    }
+  },
+
+  //Fonction pour récupérer la liste des joueurs pouvant être voté
+  async listAllPlayerVote(req, res) {
+    try {
+      const idGame = req.params.idGame;
+      const propositions = await propositionVoteModel.findAll({
+        include: [
+          {model: usersgamesModel, as: "usernameVote", include:{model:users}, where: {gameIdGame: idGame}}
+        ]});
+      const playersVoted = propositions.map((prop) => (prop.usernameVote.user.username));
+      console.log("propositions:", playersVoted);
+      const players = await usersgamesModel.findAll({where: {gameIdGame: idGame}, include: {model: users}});  
+      const playerAvailable = [];
+      for (player of players) {
+        if (!(playersVoted.includes(player.user.username))) {
+          playerAvailable.push(player.user.username);
+        }
+      }
+      console.log("playerAvailable",playerAvailable)
+      res.json({status: true, playersAvailable: playerAvailable});
+    }
+    catch(error) {
+      console.error(error);
+      res.status(500).json({ error });
+    }
+  },
 
   async listMyGames(req, res) {
-    console.log("listMyGames");
+    console.log("listMyGames"); 
     try {
       // On recupere les parties auxquelles il participe
       const records = await usersgamesModel.findAll({

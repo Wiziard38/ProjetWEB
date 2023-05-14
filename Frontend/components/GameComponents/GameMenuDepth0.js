@@ -4,7 +4,7 @@ import { StyleSheet, View, Pressable, Image, Keyboard } from "react-native";
 import GameMenuDepth1 from "./GameMenuDepth1";
 import GameMenuDepth2 from "./GameMenuDepth2";
 
-export default function GameMenu({ menuDepth, setMenuDepth }) {
+export default function GameMenu({ menuDepth, setMenuDepth, token, socket }) {
   const [menuSelection, setMenuSelection] = useState(null);
 
   const menuButtonStyle =
@@ -40,6 +40,8 @@ export default function GameMenu({ menuDepth, setMenuDepth }) {
           <GameMenuDepth2
             setMenuDepth={setMenuDepth}
             menuSelection={menuSelection}
+            token = {token}
+            socket = {socket}
           />
         )}
       </View>

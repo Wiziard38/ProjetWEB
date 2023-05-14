@@ -1,6 +1,10 @@
 const io = require('../ws/websockets.js')
 const Game = require('./Game.js')
 const Player = require('./Player.js')
+const usersgames = require("../models/usersgames");
+const users = require("../models/users");
+const games = require("../models/games");
+const propositionVote = require('../models/propositionVotes.js');
 
 function initNamespace(game) {
   const gameID = game.getID();
@@ -35,16 +39,18 @@ function initNamespace(game) {
     next();
   })
   
+
   // Function call on connection
   namespace.on('connection', (socket) => {
+    console.log("youpiii")
     // game.setPlayerRoom( socket.id);
     game.setPlayerRoom(socket.id);
     // socket.setTimeout(20000);
     // Géré les multiconnection ?
     //console.log('utilisateur se connecte dans ' + gameID + " avec la socket : " + socket.id);
-    socket.on('disconnect', () => {
+    socket.on('disconnect', async () => {
       // When the user disconnect
-      socket.disconnect();
+      socket.disconnect();const usergameVotant = await usersgames.findOne({where: {userIdUser: userVotant.idUser}, include: {model: games, where: {idGame: gameID}}});
       console.log("user disconnected");
     })
     socket.on("TEST", (mes) => {
@@ -52,8 +58,7 @@ function initNamespace(game) {
     })
     socket.on('message', (mes) => {
       //Fonction utiliser quand l'utilisateur envoie un message dans le chat
-      //Il faut vérifier si l'utilisateur à bien le droit de faire cette opération
-      //Ajouter le message à la discution si c'est pertinant
+      //Il faut vérifier si l'utilisateur à bien le droit de faire cette opératiusernameVote
       //Il est probable qu'on ait besoin de rajouter d'autres paramètre (en plus de socket)
       // const state = GameManager.states.get(gameID)
       // const role = GameManager.socketToRoom.get(socket.id);
@@ -65,8 +70,17 @@ function initNamespace(game) {
       const player = game.getPlayerBySocket(socket.id);
       player.sendMessage(mes);
 
-    })
-    
+    });
+    socket.on("test_vote", ()=>console.log("youpi"));
+    socket.on("propVote", async (userNameVotant, usernameVote) => {
+      console.log("Le joueur "+userNameVotant+" vote "+usernameVote);
+      const userVotant = await users.findOne({where: {username: userNameVotant}});
+      const usergameVotant = await usersgames.findOne({where: {userIdUser: userVotant.idUser}, include: {model: games, where: {idGame: gameID}}});
+      const userVote = await users.findOne({where: {username: usernameVote}});
+      const usergameVote = await usersgames.findOne({where: {userIdUser: userVote.idUser}, include: {model: games, where: {idGame: gameID}}});
+      const propVote = await propositionVote.create({})
+    });
+
     socket.on('vote', async (username) => {
       // When the player send a vote
       // const state = GameManager.states.get(gameID)

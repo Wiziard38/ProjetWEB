@@ -13,7 +13,7 @@ export default function Game({ token }) {
   const [testName, setTestName] = useState(null);
 
   const socket = useRef(
-    SocketIOClient("http://localhost:3000/0", {
+    SocketIOClient("http://192.168.246.101:3000/0", {
       auth: {
         token,
       },
@@ -73,7 +73,7 @@ export default function Game({ token }) {
     <View style={styles.container}>
       <MessagesScreen setMenuDepth={setMenuDepth}/>
 
-      <GameMenuDepth0 menuDepth={menuDepth} setMenuDepth={setMenuDepth} />
+      <GameMenuDepth0 menuDepth={menuDepth} setMenuDepth={setMenuDepth} token={token} socket={socket} />
     </View>
   );
 }

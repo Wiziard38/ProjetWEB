@@ -5,8 +5,12 @@ import SizedText from "../SizedText";
 import SizedButton from "../SizedButton";
 import DisplayMessage from "../DisplayMessage";
 import DropDownPicker from "react-native-dropdown-picker";
+import { fetchData } from "../../utils/fetchData";
+import SocketIOClient, { connect } from "socket.io-client";
+const config = require("../../config.js");
+const { BACKEND } = config;
 
-export default function Votes() {
+export default function Votes(token, socket) {
   const [listPlayers1, setListPlayers1] = useState([]);
   const [listPlayers2, setListPlayers2] = useState([]);
   const [selectedPlayer1, setSelectedPlayer1] = useState(null);
@@ -16,49 +20,42 @@ export default function Votes() {
 
   const [modalVisible, setModalVisible] = useState(false);
   const [modalText, setModalText] = useState("");
-
+  
   useEffect(() => {
     AsyncStorage.getItem("idGame").then((idGame) => {
+      
+      console.log(socket.current);
+      if (socket.current) {
+        socket.current.emit("test_vote");
+      }
       // TODO recup nb joueurs
       const nbJoueurs = 17;
       // TODO recup la liste des joueurs pas encore un vote
-      const list1 = [
-        "mathis",
-        "lucacao",
-        "marcel",
-        "marcelle",
-        "camilleCos",
-        "camilleCosm",
-        "camilleCosmi",
-        "camilleCosmiq",
-        "camilleCosmiqu",
-        "camilleCosmique",
-        "joueur1",
-        "joue",
-        "joueur4",
-      ];
-      // TODO recup la liste des joueurs deja un vote et nb votes
-      const list2 = [
-        { name: "jullleeessss", votes: 5 },
-        { name: "jullleeessss22", votes: 4 },
-        { name: "jules3", votes: 1 },
-        { name: "jules5", votes: 3 },
-        { name: "jules4", votes: 2 },
-        { name: "camcam", votes: 1 },
-      ];
-
-      setListPlayers1(
-        list1.map((player) => ({ label: player, value: player }))
-      );
-      setListPlayers2(
-        list2.map((player, index) => ({
-          label: `[${player.votes}/${nbJoueurs}] - ${player.name}`,
-          value: player.name,
-          key: index.toString(),
-          votes: player.votes,
-        }))
-      );
+      console.log(token);
+      fetchData(`game/playerVote/${idGame}`, 'GET')
+        .then(json => {
+          let list1 = json.playersAvailable;
+          setListPlayers1(
+            list1.map((player) => ({ label: player, value: player }))
+          );
+        })
+        .catch(error=>console.log(error));
+      fetchData(`game/listRatification/${idGame}`, 'GET')
+      .then(json=> {
+        const list2 = json.playersRat;
+        console.log(list2);
+        setListPlayers2(
+          list2.map((player, index) => ({
+            label: `[${player.votes}/${nbJoueurs}] - ${player.name}`,
+            value: player.name,
+            key: index.toString(),
+            votes: player.votes,
+          }))
+        );
+      })
+      .catch(error=>console.log(error));
     });
+      // TODO recup la liste des joueurs deja un vote et nb votes
   }, []);
 
   function createVote() {
@@ -66,6 +63,7 @@ export default function Votes() {
     setOpen2(false);
     if (selectedPlayer1 !== null) {
       // TODO A FAIRE
+
       console.log("Creer vote contre " + selectedPlayer1);
       setSelectedPlayer1(null);
       setModalText(`Vous avez créé un nouveau vote contre ${selectedPlayer1}`);
@@ -81,6 +79,7 @@ export default function Votes() {
         (player) => player.value === selectedPlayer2
       );
       // TODO A FAIRE
+      
       console.log("Creer vote contre " + selectedPlayer2);
       setSelectedPlayer2(null);
       setModalText(

@@ -7,5 +7,7 @@ router.post("/game", auth, game.createGame);
 router.get("/game", auth, game.listMyGames);
 router.get("/game/newgame", auth, game.listNewGamesAvailable);
 router.post("/game/newgame/:idGame", auth, game.joinNewGame);
+router.get("/game/playerVote/:idGame", auth, game.listAllPlayerVote);
+router.get("/game/listRatification/:idGame", auth, game.listRatification);
 
 module.exports = router;
