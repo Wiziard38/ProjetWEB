@@ -47,6 +47,23 @@ export default function Game({ token }) {
           "joueur4",
           "joueur5",
         ],
+        listeJoueursMorts: [
+          "mathis",
+          "marcel",
+          "camilleCosmique",
+          "joueur1",
+          "joueur2",
+          "joueur4",
+        ],
+        listeJoueursVivants: [
+          "lucacao",
+          "marcelle",
+          "joue",
+          "joueur5",
+          "joueur1214432",
+          "joueur6",
+          "joueur7",
+        ],
       });
     });
   }, []);
@@ -104,7 +121,7 @@ export default function Game({ token }) {
       socket.current.off("game_data");
       socket.current.off("disconnect");
       socket.current.off("connect");
-    }
+    };
   }, []);
 
   if (gameInfos == null) {
