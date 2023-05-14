@@ -9,7 +9,7 @@ const config = require("../../config.js");
 const { BACKEND } = config;
 import DropDownPicker from "./DropDownPicker";
 
-export default function Votes({token, socket}) {
+export default function Votes({socket}) {
   const [listPlayers1, setListPlayers1] = useState([]);
   const [listPlayers2, setListPlayers2] = useState([]);
   const [selectedPlayer1, setSelectedPlayer1] = useState(null);
@@ -19,49 +19,48 @@ export default function Votes({token, socket}) {
   const [username, setUsername] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [modalText, setModalText] = useState("");
+  const [nbJoueur, setNbJoueur] = useState(17);
   
   useEffect(() => {
+    socket.current.on("recepVote", (usernameVote) => {
+      console.log("recep vote", usernameVote);
+
+      if (listPlayers1.includes({label: usernameVote, value: usernameVote})) {
+        setListPlayers1(listPlayers1.filter((item) => item !== {label: usernameVote, value: usernameVote}));
+      }
+      console.log(listPlayers2);
+      const newRat = {label: `[1/${nbJoueur}] - ${usernameVote}` , value: usernameVote};
+      setListPlayers2([...listPlayers2, newRat]);
+    });
+    fetchData("whoami", "GET")
+    .then(json=>setUsername(json.username));
+      // TODO recup la liste des joueurs deja un vote et nb votes
     AsyncStorage.getItem("idGame").then((idGame) => {
       // TODO recup nb joueurs
       const nbJoueurs = 17;
       // TODO recup la liste des joueurs pas encore un vote
       fetchData(`game/playerVote/${idGame}`, 'GET')
         .then(json => {
-          let list1 = json.playersAvailable;
-          list1 = list1.map((player) => ({ label: player, value: player }));
-          setListPlayers1(list1);
+          const list1 = json.playersAvailable;
+          const list2 = list1.map((player) => ({ label: player, value: player }));
+          console.log("list1:",list2)
+          setListPlayers1(list2);
           console.log("Création list1:",listPlayers1)
         })
         .catch(error=>console.log(error));
       fetchData(`game/listRatification/${idGame}`, 'GET')
       .then(json=> {
-        let list2 = json.playersRat;
-        list2 = list2.map((player, index) => ({
+        const list1 = json.playersRat;
+        const list2 = list1.map((player, index) => ({
           label: `[${player.votes}/${nbJoueurs}] - ${player.name}`,
           value: player.name,
-          key: index.toString(),
-          votes: player.votes,
         }));
+        console.log("list2:",list2)
         setListPlayers2(list2);
-        console.log("Création list2:",list2)
+        console.log("Création list2:",listPlayers2)
       })
       .catch(error=>console.log(error));
     });
-
-    // socket.current.on("recepVote", (usernameVote) => {
-    //   console.log("recep vote", usernameVote);
-    //   console.log("Création list2:",listPlayers1);
-    //   console.log("Création list1:",listPlayers2)
-    //   const index = listPlayers1.indexOf({label: usernameVote, value: usernameVote});
-    //   console.log(index)
-    //   if (index != -1) {
-    //     setListPlayers1(listPlayers1.splice(index, 1));
-    //   }
-    //   setListPlayers2(listPlayers2.push(usernameVote));
-    // });
-    fetchData("whoami", "GET")
-    .then(json=>setUsername(json.username));
-      // TODO recup la liste des joueurs deja un vote et nb votes
   }, []);
 
   function createVote() {

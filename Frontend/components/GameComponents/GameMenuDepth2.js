@@ -7,7 +7,7 @@ import Powers from "./Powers";
 import Rules from "./Rules";
 import Archives from "./Archives";
 
-export default function GameMenuDepth2({ setMenuDepth, menuSelection }) {
+export default function GameMenuDepth2({ socket, setMenuDepth, menuSelection }) {
   const windowWidth = Dimensions.get("window").width * 0.87;
   const windowHeight = Dimensions.get("window").height * 0.73;
 
@@ -27,7 +27,7 @@ export default function GameMenuDepth2({ setMenuDepth, menuSelection }) {
         {menuSelection === "infos" ? (
           <InfosGame />
         ) : menuSelection === "votes" ? (
-          <Votes token={token} socket = {socket}/>
+          <Votes socket = {socket}/>
         ) : menuSelection === "power" ? (
           <Powers />
         ) : menuSelection === "rules" ? (

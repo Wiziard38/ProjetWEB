@@ -84,7 +84,22 @@ function initNamespace(/** @type {Game} */ game) {
       //player.sendMessage(mes);
       game.getGameState().sendMessage(player, mes);
     })
+    
+    socket.on("propVote", (userNameVotant, usernameVote) => {
+      console.log("Vote recu");
+      socket.emit("receive_msg", `Le joueur ${userNameVotant} a voté contre ${usernameVote}`, "Serveur");
+      socket.emit("recepVote", usernameVote);
+      socket.broadcast.emit("receive_msg", `Le joueur ${userNameVotant} a voté contre ${usernameVote}`, "Serveur");
+      socket.broadcast.emit("recepVote", usernameVote);
+      // console.log("Le joueur "+userNameVotant+" vote "+usernameVote);
+      // const userVotant = await users.findOne({where: {username: userNameVotant}});
+      // const usergameVotant = await usersgames.findOne({where: {userIdUser: userVotant.idUser}, include: {model: games, where: {idGame: gameID}}});
+      // const userVote = await users.findOne({where: {username: usernameVote}});
+      // const usergameVote = await usersgames.findOne({where: {userIdUser: userVote.idUser}, include: {model: games, where: {idGame: gameID}}});
+      // const propVote = await propositionVote.create({})
+    });
 
+    
     socket.on('vote', async (username) => {
       // When the player send a vote
       // const state = GameManager.states.get(gameID)
