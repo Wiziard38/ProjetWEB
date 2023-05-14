@@ -24,8 +24,6 @@ export default function MessagesScreen({ setMenuDepth, socket }) {
   useEffect(() => {
     if (socket.current !== null) {
       socket.current.on("receive_msg", (msg, username) => {
-        console.log(username);
-        console.log("new message");
         setMessages([
           ...messages,
           { text: msg, date: new Date(), sender: username },
@@ -53,14 +51,16 @@ export default function MessagesScreen({ setMenuDepth, socket }) {
     console.log(msg);
     JSON.parse(msg).forEach(element => {
       // console.log(element);
-      const {contenu, date, user} = element;
+      const { contenu, date, user } = element;
       console.log(date)
       // const dateObject = Date.parse(date);
+      console.log(contenu);
+      
 
       setMessages([
         ...messages,
-        { text: contenu, date: new Date(), sender: user},
-      ])
+        { text: contenu, date: new Date(), sender: user },
+      ]);
     });
   };
   const handleSend = () => {
@@ -103,7 +103,7 @@ export default function MessagesScreen({ setMenuDepth, socket }) {
                 styles.input,
                 { width: Dimensions.get("window").width - 15 * 2 - 30 },
               ]}
-              // multiline={true}
+            // multiline={true}
             />
             <TouchableOpacity
               activeOpacity={0.7}

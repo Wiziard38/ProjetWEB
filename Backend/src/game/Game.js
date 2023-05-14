@@ -206,27 +206,28 @@ class Game {
     const gameDates = await games.findOne({ attributes: ["dateDeb", "createdAt"], where: { idGame: this.#gameID }, raw: true })
 
     const currentDate = new Date();
-    const elapsedTime = currentDate - this.switchTime;
+    const elapsedTime = currentDate - this.#switchDate;
     const timeLeft = this.isDay() ? this.#dayDuration - elapsedTime : this.#nightDuration - elapsedTime;
-
+    console.log(timeLeft)
     const gameData = {
-      "isDay": this.isDay(),
-      "switchTime": timeLeft,
-      "pouvoir": player.getPower().toString(),
-      "team": player.getState().toString(),
-      "infos": {
-        "createdAt": gameDates.createdAt,
-        "dateDeb": gameDates.dateDeb,
-        "dureeJour": this.#dayDuration,
-        "dureeNuit": this.#nightDuration,
-        "idGame": this.#gameID,
-        "nbJoueur": listPlayers.length,
-        "probaLoup": this.#probaWerewolf,
-        "probaPouv": this.#probaPower
+      isDay: this.isDay(),
+      role: player.getState().toString(),
+      power: player.getPower().toString(),
+      powerUsed: false,
+      switchTime: timeLeft,
+      infos: {
+        createdAt: gameDates.createdAt,
+        dateDeb: gameDates.dateDeb,
+        dureeJour: this.#dayDuration,
+        dureeNuit: this.#nightDuration,
+        idGame: this.#gameID,
+        nbJoueur: listPlayers.length,
+        probaLoup: this.#probaWerewolf,
+        probaPouv: this.#probaPower
       },
-      "listeJoueurs": listPlayers,
-      "listeVivants": listAlive,
-      "listeMorts": listDeads
+      listeJoueurs: listPlayers,
+      listeJoueursMorts: listDeads,
+      listeJoueursVivants: listAlive
     };
 
     this.getSocket(socketID).emit("game_data", JSON.stringify(gameData));
