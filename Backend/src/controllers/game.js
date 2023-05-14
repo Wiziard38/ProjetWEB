@@ -85,6 +85,7 @@ module.exports = {
 
   async joinNewGame(req, res) {
     console.log("joinNewGame");
+    // TODO: vérifier que le nombre maximal de joueur n'est pas atteint
     try {
       // un joueur ne peut être qu'une seule fois dans la base de données
       const userAlreadyInGame = await usersgamesModel.findOne({

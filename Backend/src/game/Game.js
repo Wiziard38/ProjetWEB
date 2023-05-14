@@ -1,6 +1,7 @@
 const GameState = require("./GameState");
 const gamesModel = require("../models/games");
 const usersgamesModel = require("../models/usersgames.js");
+const etatsModel = require("../models/etats.js");
 const vivantsModel = require("../models/vivants.js");
 const io = require('../ws/websockets.js');
 const AbstractGameState = require("./AbstractGameState");
@@ -106,28 +107,33 @@ class Game {
   /* initialise les données de la partie qui va commencer */
   async init() {
     console.log("init");
-    // création des loups-garous
+    // On détermine le nombre de loups-garous ...
     const nbWerewolves = Math.max(1, Math.ceil(this.#probaWerewolf * this.#nbPlayersRequired));
-    // création des pouvoirs
-    // TODO:
-    // création des humains
+    // ... le nombre de pouvoirs ...
+    // TODO: implémenter l'attribution des pouvoirs
+    // ... et le nombre d'humains.
     const nbHumans = this.#nbPlayersRequired - nbWerewolves;
     const villagers = await usersgamesModel.findAll({ attributes: ['userIdUser', 'idUsergame'], where: {gameIdGame:this.#gameID} });
     console.log(villagers);
     // TODO: mélanger aléatoirement le tableau villagers
+    // attribution des rôles
     for (let i = 0; i < villagers.length; i++) {
-      if (i >= 0 && i < nbWerewolves) {
-        // c'est un loup-garou
-        await vivantsModel.create({typeVivant: "loup-garou", usersgameIdUsergame: villagers[i].idUsergame});
-      } else {
-        // c'est un humain
-        await vivantsModel.create({typeVivant: "humain", usersgameIdUsergame: villagers[i].idUsergame});
-      }
-      let vivant = await vivantsModel.findOne({ attributes: ["typeVivant"], where: {usersgameIdUsergame: villagers[i].idUsergame}});
+      // on crée une instance d'état et de vivant dans la base de données pour chaque joueur
+      const etatVillageois = await etatsModel.create({usersgameIdUsergame: villagers[i].idUsergame});
       console.log("idUser : " + villagers[i].userIdUser);
       console.log("idUsergame: " + villagers[i].idUsergame);
-      console.log("id/rôle du joueur: " + vivant.typeVivant);
+      console.log("etatId: " + etatVillageois.id);
+      if (i >= 0 && i < nbWerewolves) {
+        // c'est un loup-garou
+        const vivant = await vivantsModel.create({typeVivant: "loup-garou", etatId: etatVillageois.id });
+        console.log("etatId - idVivant - rôle du joueur: " + vivant.etatId + " " + vivant.idVivant + " " + vivant.typeVivant);
+      } else {
+        // c'est un humain
+        const vivant = await vivantsModel.create({typeVivant: "humain", etatId: etatVillageois.id });
+        console.log("etatId - idVivant - rôle du joueur: " + vivant.etatId + " " + vivant.idVivant + " " + vivant.typeVivant);
+      }
     }
+    // TODO: émettre un message pour dire que la partie a commencé
   }
 
   /**
