@@ -64,9 +64,13 @@ export default function DropDownPicker({
           style={[
             styles.container,
             openDirection === "TOP"
-              ? { flexDirection: "column-reverse" }
-              : { flexDirection: "column" },
+              ? {
+                  flexDirection: "column-reverse",
+                  marginTop: -flatListHeight,
+                }
+              : { flexDirection: "column", marginBottom: -flatListHeight },
             open && { zIndex: 8888 },
+            { height: 50 + flatListHeight },
           ]}
         >
           <Pressable
