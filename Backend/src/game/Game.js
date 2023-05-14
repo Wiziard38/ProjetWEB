@@ -1,25 +1,42 @@
 const GameState = require("./GameState");
+const usersgamesModel = require("../models/usersgames.js");
+const vivantsModel = require("../models/vivants.js");
 const io = require('../ws/websockets.js');
 const AbstractGameState = require("./AbstractGameState");
 const Player = require("./Player");
 
-
 class Game {
-  #gameState;
-  #loopID;
   #gameID;
-  #beginTime = 1000;
-  #dayDuration = 150000;
-  #nightDuration = 15000;
+  #nbPlayersRequired;
+  #beginTime;
+  #dayDuration;
+  #nightDuration;
+  #probaPower;
+  #probaWerewolf;
+  #loopID;
   #namespace;
+  #gameState;  
   #electedPlayer;
-
   #playerDir = new Map(); // Link socketID to player object
   #socketDir = new Map(); // Link username to socketID
 
-  constructor(gameID) {
-    this.#gameID = gameID;
-    this.#namespace = '/' + gameID;
+  /* constructeur d'une partie - initialisation des champs */
+  constructor(id, nbJoueur, dureeJour, dureeNuit, dateDeb, probaPouv, probaLoup) {
+    console.log("constructor");
+    console.log("beginTime: " + dateDeb);
+    //console.log("beginTime: " + dateDeb.getTime());
+    console.log("dayDuration: " + dureeJour * 1000);
+    console.log("nightDuration: " + dureeNuit * 1000);
+    console.log("date actuelle: " + new Date());
+    this.#gameID = id;
+    this.#nbPlayersRequired = nbJoueur;
+    this.#beginTime = dateDeb; // TODO: traduire date en millisecondes
+    this.#dayDuration = dureeJour * 1000; // traduction de secondes en millisecondes
+    this.#nightDuration = dureeNuit * 1000; // traduction de secondes en millisecondes
+    this.#probaPower = probaPouv;
+    this.#probaWerewolf = probaLoup;
+    this.#namespace = '/' + id;
+    this.create();
   }
 
   /**
@@ -59,20 +76,55 @@ class Game {
   }
 
   create() {
+    console.log("create")
     const initNamespace = require('./Namespace');
     initNamespace(this);
     setTimeout(() => {
       this.begin();
-    }, this.#beginTime);
+    }, this.#beginTime); // TODO: traduire en milliseconde
   }
 
   /**
    * Begin of the game, this start the game loop.
    */
-  begin() {
-    this.gameLoop()
+  async begin() {
+    console.log("begin");
+    const nbPlayersRegistered = await usersgamesModel.count({ where: {gameIdGame:this.#gameID} });
+    // la partie est lancée si le nombre de joueurs requis est atteint
+    if (nbPlayersRegistered != this.#nbPlayersRequired) {
+      // la partie est annulée
+      // TODO:
+    }
+    this.init();
+    this.#gameState = GameState.DAY;
+    this.gameLoop();
     // The first loop is called after the wait time
     this.#loopID = setInterval(() => this.gameLoop(), this.#dayDuration + this.#nightDuration);
+  }
+
+  /* initialise les données de la partie qui va commencer */
+  async init() {
+    console.log("init");
+    // création des loups-garous
+    const nbWerewolves = Math.max(1, Math.ceil(this.#probaWerewolf * this.#nbPlayersRequired));
+    // création des pouvoirs
+    // TODO:
+    // création des humains
+    const nbHumans = this.#nbPlayersRequired - nbWerewolves;
+    const villagers = await usersgamesModel.findAll({ where: {gameIdGame:this.#gameID} });
+    console.log(villagers);
+    // TODO: mélanger aléatoirement le tableau villagers
+    for (let i = 0; i < villagers.length; i++) {
+      console.log("idUser : " + villagers[i].userIdUser);
+      if (i >= 0 && i < nbWerewolves) {
+        // c'est un loup-garou
+        await vivantsModel.create({typeVivant: "loup-garou", usersgameIdUsergame: villagers[i].idUsergame});
+      } else {
+        // c'est un humain
+        await vivantsModel.create({typeVivant: "humain", usersgameIdUsergame: villagers[i].idUsergame});
+      }
+    }
+    // TODO: changer le champ aCommence false->true
   }
 
   /**
@@ -80,7 +132,6 @@ class Game {
    */
   gameLoop() {
     this.dayChange();
-
     setTimeout(() => {
       this.nightChange();
     }, this.#dayDuration);
@@ -92,10 +143,8 @@ class Game {
   finish() {
     clearInterval(this.#loopID);
     io.of('/' + this.#gameID).removeAllListeners();
-    // delete
     delete io.npst[this.#gameID];
-    //GameState.remove(this.#gameID);
-    // TODO remove from gamemanager
+    GameState.remove(this.#gameID);
   }
 
   /**
@@ -104,7 +153,6 @@ class Game {
   dayChange() {
     this.#gameState = GameState.DAY;
     io.of(this.#namespace).emit('day', 'nuit -> jour', this.#dayDuration);
-    // io.of(this.#namespace).emit('receive_msg', 'message de test', "test");
   }
 
   /**
@@ -114,7 +162,6 @@ class Game {
     this.#gameState = GameState.NIGHT;
     io.of(this.#namespace).emit('night', 'jour -> nuit', this.#nightDuration);
   }
-
 
   /**
    * Send to the player the current state of the game
@@ -135,13 +182,13 @@ class Game {
     const socket = io.of(this.#namespace).sockets.get(socketID);
 
     if (socket) {
-      //TODO changer cela pour prendre en compte le vrai "Power"
+      //TODO: changer cela pour prendre en compte le vrai "Power"
       if (power.toString() !== "none") {
         socket.join(power.toString());
       }
       socket.join(state.toString());
     } else {
-      console.log("[Game.js] setPlayerRoom : SocketID Invalid")
+      console.log("[Game.js] setPlayerRoom : SocketID Invalid");
     }
   }
 
@@ -166,7 +213,7 @@ class Game {
   getID() {
     return this.#gameID;
   }
-  
+
   /** @return {AbstractGameState} */
   getGameState() {
     return this.#gameState;
@@ -186,6 +233,7 @@ class Game {
     this.#playerDir.delete(socketid);
     this.#socketDir.delete(name);
   }
+
 }
 
 module.exports = Game;
