@@ -17,6 +17,7 @@ module.exports = {
         dateDeb: data.dateDeb,
         probaPouv: data.probaPouv,
         probaLoup: data.probaLoup,
+        aCommence: true,
       });
       
       await usersgamesModel.create({

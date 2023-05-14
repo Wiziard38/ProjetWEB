@@ -13,7 +13,7 @@ export default function Game({ token }) {
   const [testName, setTestName] = useState(null);
 
   const socket = useRef(
-    SocketIOClient("http://192.168.246.101:3000/0", {
+    SocketIOClient("http://192.168.43.167:3000/0", {
       auth: {
         token,
       },
