@@ -129,6 +129,7 @@ export default function ListGames({
     <View style={{ height: flatListHeight }}>
       <SizedText label={titleLabel} size={"large"} textStyle={styles.title} />
       <FlatList
+        testID="listGames"
         data={parties}
         renderItem={renderItem}
         keyExtractor={(item) => item.idGame}

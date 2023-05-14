@@ -94,6 +94,7 @@ export default function MessagesScreen({ setMenuDepth, socket }) {
           <View style={styles.footerStyle}>
             {Platform.OS === "web" ? (
               <WebTextInput
+                testID="messageInput"
                 ref={textInputRef}
                 onFocus={() => {
                   setMenuDepth(0);
@@ -134,6 +135,7 @@ export default function MessagesScreen({ setMenuDepth, socket }) {
               }}
             >
               <Image
+                testID="sendMessage"
                 style={styles.sendImage}
                 source={require("../../assets/images/send.png")}
                 resizeMethod="scale"

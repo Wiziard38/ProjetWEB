@@ -19,6 +19,7 @@ export default function GameMenuDepth1({ setMenuDepth, setMenuSelection }) {
     <View style={styles.container}>
       <Pressable style={styles.closeButton} onPress={() => setMenuDepth(0)}>
         <Image
+          testID="closeInGameMenu"
           style={styles.closeImage}
           source={require("../../assets/images/close.png")}
           resizeMethod="scale"

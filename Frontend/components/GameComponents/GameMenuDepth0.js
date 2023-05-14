@@ -25,6 +25,7 @@ export default function GameMenu({ menuDepth, setMenuDepth, token, socket }) {
             }}
           >
             <Image
+              testID="inGameMenuOpen"
               style={styles.menuImage}
               source={require("../../assets/images/menu.png")}
               resizeMethod="scale"
