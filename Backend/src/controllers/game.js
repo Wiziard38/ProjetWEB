@@ -8,7 +8,7 @@ module.exports = {
     console.log("createGame");
     try {
       const data = req.body;
-      //console.log(data);
+      // ajout de la partie dans la base de données
       const game = await gamesModel.create({
         nbJoueur: data.nbJoueur,
         dureeJour: data.dureeJour,
@@ -17,13 +17,12 @@ module.exports = {
         probaPouv: data.probaPouv,
         probaLoup: data.probaLoup,
       });
-      
+      // le joueur qui crée la partie est ajouté à la partie dans la base de données
       await usersgamesModel.create({
         userIdUser: req.user.idUser,
         gameIdGame: game.idGame,
       });
       res.json({ status: true });
-      
       //Création de la partie côté backend
       const GameManager = require("../game/GameManager.js");
       const Game = require("../game/Game.js");
@@ -77,7 +76,6 @@ module.exports = {
           },
         },
       });
-
       res.json(games);
     } catch (error) {
       console.error(error);
@@ -88,11 +86,16 @@ module.exports = {
   async joinNewGame(req, res) {
     console.log("joinNewGame");
     try {
-      await usersgamesModel.create({
-        gameIdGame: req.params.idGame,
-        userIdUser: req.user.idUser,
+      // un joueur ne peut être qu'une seule fois dans la base de données
+      const userAlreadyInGame = await usersgamesModel.findOne({
+        where: { gameIdGame: req.params.idGame, userIdUser: req.user.idUser }
       });
-
+      if (!userAlreadyInGame) {
+        await usersgamesModel.create({
+          gameIdGame: req.params.idGame,
+          userIdUser: req.user.idUser,
+        });
+      }
       res.json({ status: true });
     } catch (error) {
       console.error(error);

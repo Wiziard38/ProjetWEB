@@ -31,6 +31,12 @@ const games = db.define("games", {
     type: Sequelize.FLOAT,
     allowNull: false,
   },
+  statusGame: {
+    type: Sequelize.DataTypes.ENUM("enAttente", "enCours", "annulee", "terminee"),
+    defaultValue: "enAttente",
+    allowNull: false,
+
+  }
 });
 
 module.exports = games;

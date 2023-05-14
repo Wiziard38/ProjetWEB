@@ -1,4 +1,5 @@
 const GameState = require("./GameState");
+const gamesModel = require("../models/games");
 const usersgamesModel = require("../models/usersgames.js");
 const vivantsModel = require("../models/vivants.js");
 const io = require('../ws/websockets.js');
@@ -8,9 +9,9 @@ const Player = require("./Player");
 class Game {
   #gameID;
   #nbPlayersRequired;
-  #beginTime;
-  #dayDuration;
-  #nightDuration;
+  #beginTime; // durée avant le début de la partie en milliseconde
+  #dayDuration; // en milliseconde
+  #nightDuration; // en milliseconde
   #probaPower;
   #probaWerewolf;
   #loopID;
@@ -23,16 +24,11 @@ class Game {
   /* constructeur d'une partie - initialisation des champs */
   constructor(id, nbJoueur, dureeJour, dureeNuit, dateDeb, probaPouv, probaLoup) {
     console.log("constructor");
-    console.log("beginTime: " + dateDeb);
-    //console.log("beginTime: " + dateDeb.getTime());
-    console.log("dayDuration: " + dureeJour * 1000);
-    console.log("nightDuration: " + dureeNuit * 1000);
-    console.log("date actuelle: " + new Date());
     this.#gameID = id;
     this.#nbPlayersRequired = nbJoueur;
-    this.#beginTime = dateDeb; // TODO: traduire date en millisecondes
-    this.#dayDuration = dureeJour * 1000; // traduction de secondes en millisecondes
-    this.#nightDuration = dureeNuit * 1000; // traduction de secondes en millisecondes
+    this.#beginTime = dateDeb - new Date();
+    this.#dayDuration = dureeJour * 1000;
+    this.#nightDuration = dureeNuit * 1000;
     this.#probaPower = probaPouv;
     this.#probaWerewolf = probaLoup;
     this.#namespace = '/' + id;
@@ -81,7 +77,7 @@ class Game {
     initNamespace(this);
     setTimeout(() => {
       this.begin();
-    }, this.#beginTime); // TODO: traduire en milliseconde
+    }, this.#beginTime);
   }
 
   /**
@@ -91,15 +87,20 @@ class Game {
     console.log("begin");
     const nbPlayersRegistered = await usersgamesModel.count({ where: {gameIdGame:this.#gameID} });
     // la partie est lancée si le nombre de joueurs requis est atteint
+    console.log("nombre de joueurs requis: " + this.#nbPlayersRequired);
+    console.log("nombre de joueurs inscrits: " + nbPlayersRegistered);
     if (nbPlayersRegistered != this.#nbPlayersRequired) {
       // la partie est annulée
-      // TODO:
+      await gamesModel.update({ statusGame: 'annulee'}, { where: {idGame: this.#gameID}});
+      // TODO: émettre un message aux joueurs de la partie connectés pour dire que la partie est annulée
+    } else {
+      await gamesModel.update({ statusGame: 'enCours'}, { where: {idGame: this.#gameID}});
+      this.init();
+      this.#gameState = GameState.DAY;
+      this.gameLoop();
+      // The first loop is called after the wait time
+      this.#loopID = setInterval(() => this.gameLoop(), this.#dayDuration + this.#nightDuration);
     }
-    this.init();
-    this.#gameState = GameState.DAY;
-    this.gameLoop();
-    // The first loop is called after the wait time
-    this.#loopID = setInterval(() => this.gameLoop(), this.#dayDuration + this.#nightDuration);
   }
 
   /* initialise les données de la partie qui va commencer */
@@ -111,11 +112,10 @@ class Game {
     // TODO:
     // création des humains
     const nbHumans = this.#nbPlayersRequired - nbWerewolves;
-    const villagers = await usersgamesModel.findAll({ where: {gameIdGame:this.#gameID} });
+    const villagers = await usersgamesModel.findAll({ attributes: ['userIdUser', 'idUsergame'], where: {gameIdGame:this.#gameID} });
     console.log(villagers);
     // TODO: mélanger aléatoirement le tableau villagers
     for (let i = 0; i < villagers.length; i++) {
-      console.log("idUser : " + villagers[i].userIdUser);
       if (i >= 0 && i < nbWerewolves) {
         // c'est un loup-garou
         await vivantsModel.create({typeVivant: "loup-garou", usersgameIdUsergame: villagers[i].idUsergame});
@@ -123,8 +123,11 @@ class Game {
         // c'est un humain
         await vivantsModel.create({typeVivant: "humain", usersgameIdUsergame: villagers[i].idUsergame});
       }
+      let vivant = await vivantsModel.findOne({ attributes: ["typeVivant"], where: {usersgameIdUsergame: villagers[i].idUsergame}});
+      console.log("idUser : " + villagers[i].userIdUser);
+      console.log("idUsergame: " + villagers[i].idUsergame);
+      console.log("id/rôle du joueur: " + vivant.typeVivant);
     }
-    // TODO: changer le champ aCommence false->true
   }
 
   /**

@@ -5,7 +5,7 @@ import PropTypes from "prop-types";
 import SocketIOClient,  {connect} from "socket.io-client";
 
 export default function TestVote({}) {
-    const socket = useRef(SocketIOClient('http://localhost:3000/1'));
+    const socket = useRef(SocketIOClient('http://192.168.1.27:3000/1'));
     return (
         <View style={styles.container}>
         <SizedButton
