@@ -41,9 +41,9 @@ export default function ConnectedHeader({
           />
         )}
 
-        <Pressable onPress={onDisconnect}>
+        <Pressable onPress={onDisconnect} style={{ marginLeft: 10 }}>
           <Image
-            style={[styles.headerIcon, { marginLeft: 10 }]}
+            style={styles.headerIcon}
             source={require("../assets/images/logout-icon.png")}
             resizeMethod="scale"
             resizeMode="contain"

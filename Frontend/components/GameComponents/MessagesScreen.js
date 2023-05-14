@@ -19,24 +19,24 @@ export default function MessagesScreen({ setMenuDepth, socket }) {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const flatListRef = useRef(null);
-  const gameContextValue = useContext(GameContext);
+  const gameInfos = useContext(GameContext);
 
   useEffect(() => {
-
-    if(socket.current !== null) {
+    if (socket.current !== null) {
       socket.current.on("receive_msg", (msg, username) => {
         console.log(username);
         console.log("new message");
         setMessages([
           ...messages,
-        { text: msg, date: new Date(), sender: username },
-        ])
-      })
+          { text: msg, date: new Date(), sender: username },
+        ]);
+      });
     }
     return () => {
       socket.current.off("receive_msg");
-    }
+    };
   });
+
   const handleSend = () => {
     if (message !== "") {
       // setMessages([
@@ -58,9 +58,14 @@ export default function MessagesScreen({ setMenuDepth, socket }) {
         <ListMessages
           messages={messages}
           flatListRef={flatListRef}
+          noMessageText={
+            gameInfos.role === "mort"
+              ? "Il n'y a pas encore de messages envoyés pour l'instant"
+              : "Soyez le premier a envoyer un message !"
+          }
         />
 
-        {(!gameContextValue.isDead || gameContextValue.isElectedSpiritism) && (
+        {(gameInfos.role !== "mort" || gameInfos.isElectedSpiritism) && (
           <View style={styles.footerStyle}>
             <TextInput
               onFocus={() => setMenuDepth(0)}
@@ -99,6 +104,7 @@ export default function MessagesScreen({ setMenuDepth, socket }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+    paddingRight: 20,
   },
   footerStyle: {
     flexDirection: "row",
@@ -125,4 +131,5 @@ const styles = StyleSheet.create({
 
 MessagesScreen.propTypes = {
   setMenuDepth: PropTypes.func.isRequired,
+  socket: PropTypes.object.isRequired,
 };

@@ -203,4 +203,5 @@ ListGames.propTypes = {
   selectedId: PropTypes.number,
   setSelectedId: PropTypes.func.isRequired,
   waiting: PropTypes.bool.isRequired,
+  emptyListLabel: PropTypes.string.isRequired,
 };

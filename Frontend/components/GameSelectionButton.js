@@ -24,8 +24,8 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   selectionButton: {
-    paddingHorizontal: 25,
     width: "100%",
+    alignSelf: "center",
   },
   selectionButtonLabel: {
     backgroundColor: "rgba(143, 190, 187, 0.597)",

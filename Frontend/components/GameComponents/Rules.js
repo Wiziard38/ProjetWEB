@@ -82,10 +82,11 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "column",
-    justifyContent: "space-between",
     backgroundColor: "#ffffffaa",
-    width: "100%",
     padding: 10,
+    minWidth: "100%",
+    maxWidth: "100%",
+    alignSelf: "stretch",
   },
   title: {
     fontWeight: "bold",

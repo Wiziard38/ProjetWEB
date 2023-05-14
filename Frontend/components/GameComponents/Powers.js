@@ -4,12 +4,12 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import SizedText from "../SizedText";
 import SizedButton from "../SizedButton";
 import DisplayMessage from "../DisplayMessage";
-import DropDownPicker from "react-native-dropdown-picker";
+import DropDownPicker from "./DropDownPicker";
 import GameContext from "./GameContext";
 
 export default function Powers() {
-  const gameContextValue = useContext(GameContext);
-  
+  const gameInfos = useContext(GameContext);
+
   const [voyanceInfos, setVoyanceInfos] = useState(null);
 
   const [listPlayers, setListPlayers] = useState([]);
@@ -44,7 +44,6 @@ export default function Powers() {
 
   useEffect(() => {
     AsyncStorage.getItem("idGame").then((idGame) => {
-
       // TODO recup la liste des joueurs associés au pouvoir
       const list = [
         "mathis",
@@ -73,13 +72,11 @@ export default function Powers() {
     });
   }, []);
 
-  console.log(gameContextValue)
-
   function activatePower() {
     if (selectedPlayer) {
       // TODO recup infos et activer pouvoir
       const baseText = `Vous avez activé l'effet de votre pouvoir sur "${selectedPlayer}".\n\n`;
-      switch (gameContextValue.power.toLowerCase()) {
+      switch (gameInfos.power.toLowerCase()) {
         case "contamination":
           setModalText(
             baseText + `Ce joueur va etre transformé en loup-garou.`
@@ -129,14 +126,16 @@ export default function Powers() {
         textStyle={styles.title}
       />
       <SizedText
-        label={`${gameContextValue.power}`}
+        label={`${gameInfos.power}`}
         size={"large"}
         textStyle={styles.subtitle}
       />
       <SizedText
         label={`${
-          powerDescription.find((powerItem) => powerItem.title.toLowerCase() === gameContextValue.power.toLowerCase())
-            ?.description || ""
+          powerDescription.find(
+            (powerItem) =>
+              powerItem.title.toLowerCase() === gameInfos.power.toLowerCase()
+          )?.description || ""
         }`}
         size={"small"}
         textStyle={styles.description}
@@ -144,18 +143,18 @@ export default function Powers() {
 
       <View style={styles.separator} />
 
-      {gameContextValue.powerUsed || gameContextValue.power === "Insomnie" ? (
+      {gameInfos.powerUsed || gameInfos.power === "Insomnie" ? (
         <>
           <SizedText
             label={
-              gameContextValue.power === "Insomnie"
+              gameInfos.power === "Insomnie"
                 ? "Il n'y a rien a faire pour votre pouvoir !"
                 : "Vous avez déjà utilisé votre pouvoir !"
             }
             size="normal"
             textStyle={styles.description}
           />
-          {gameContextValue.power === "Voyance" && (
+          {gameInfos.power === "Voyance" && (
             <SizedText
               label={`Le joueur ${voyanceInfos.joueur} a pour rôle ${voyanceInfos.role} et pour pouvoir ${voyanceInfos.pouvoir}.`}
               size="normal"
@@ -165,26 +164,14 @@ export default function Powers() {
         </>
       ) : (
         <View style={styles.select}>
-          {listPlayers.length > 0 ? (
-            <DropDownPicker
-              open={open}
-              setOpen={setOpen}
-              value={selectedPlayer}
-              setValue={setSelectedPlayer}
-              items={listPlayers}
-              setItems={setListPlayers}
-              style={styles.dropDownPicker}
-              textStyle={!open && { fontWeight: "bold", color: "white" }}
-              dropDownContainerStyle={{ width: "90%", alignSelf: "center" }}
-              placeholder="Choisir un joueur"
-            />
-          ) : (
-            <SizedText
-              label="Aucun joueur possible"
-              size="normal"
-              textStyle={styles.emptyList}
-            />
-          )}
+          <DropDownPicker
+            open={open}
+            setOpen={setOpen}
+            players={listPlayers}
+            selectedPlayer={selectedPlayer}
+            setSelectedPlayer={setSelectedPlayer}
+            emptyListLabel={"Aucun joueur possible"}
+          />
 
           <SizedButton
             buttonLabel={`Utiliser mon pouvoir sur ${
@@ -211,7 +198,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     flexDirection: "column",
-    // justifyContent: "space-between",
     backgroundColor: "#ffffffaa",
     padding: 10,
     minWidth: "100%",
@@ -227,7 +213,14 @@ const styles = StyleSheet.create({
     width: "100%",
   },
   select: {
+    flex: 1,
     alignItems: "center",
+    justifyContent: "center",
+  },
+  pickerContainer: {
+    zIndex: 5555,
+    minHeight: 500,
+    marginBottom: -450,
   },
   separator: {
     borderTopWidth: 1,
@@ -260,7 +253,7 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     paddingVertical: 10,
     paddingHorizontal: 20,
-    marginTop: 10,
+    marginTop: 25,
     marginBottom: 10,
   },
   submitButtonLabel: {

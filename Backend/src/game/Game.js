@@ -5,6 +5,11 @@ const io = require('../ws/websockets.js');
 const AbstractGameState = require("./AbstractGameState");
 const Player = require("./Player");
 const users = require("../models/users");
+const etats = require("../models/etats");
+const morts = require("../models/morts");
+const usersgames = require("../models/usersgames.js");
+const vivants = require("../models/vivants.js");
+const games = require("../models/games");
 
 class Game {
   #gameState;
@@ -21,6 +26,8 @@ class Game {
 
   #playerDir = new Map(); // Link socketID to player object
   #socketDir = new Map(); // Link username to socketID
+
+  #switchDate; //Quand le jour/nuit change on met a jour cette variable
 
   constructor(id, nbJoueur, dureeJour, dureeNuit, dateDeb, probaPouv, probaLoup) {
     console.log("constructor")
@@ -120,7 +127,7 @@ class Game {
    */
   dayChange() {
     this.#gameState = GameState.DAY;
-    io.of(this.#namespace).emit('day', 'nuit -> jour');
+    io.of(this.#namespace).emit('day', 'nuit -> jour', this.#dayDuration);
     // io.of(this.#namespace).emit('receive_msg', 'message de test', "test");
   }
 
@@ -129,7 +136,7 @@ class Game {
    */
   nightChange() {
     this.#gameState = GameState.NIGHT;
-    io.of(this.#namespace).emit('night', 'jour -> nuit');
+    io.of(this.#namespace).emit('night', 'jour -> nuit', this.#nightDuration);
   }
 
 
@@ -150,23 +157,63 @@ class Game {
     });
     const listPlayers = players.map(obj => obj.username);
 
-    // const death = await users.findAll({ 
-    //   attributes: ['username'],
-    //   include: { 
-    //     model: usersgamesModel,
-    //     attributes: [],
-    //     where: { gameIdGame: this.#gameID } 
-    //   },
-    //   raw : true
-    // });
-    // console.log(await users.findAll({ attributes: ['username'], include: { model: usersgamesModel, where: { gameIdGame: this.#gameID } } }))
-    console.log(listPlayers)
+    const deads = await morts.findAll({ 
+      attributes: [],
+      required: true,
+      include: {
+        model: etats,
+        attributes: [],
+        required: true,
+        include: {
+          model: usersgames,
+          attributes: [],
+          required: true,
+          include: {
+            model: users,
+            required: true,
+            attributes: ["username"],
+          }
+        }
+      },
+      raw : true
+    });
+    const listDeads = deads.map(obj => obj['etat.usersgame.user.username']);
+
+    const alive = await vivants.findAll({ 
+      attributes: [],
+      required: true,
+      include: {
+        model: etats,
+        attributes: [],
+        required: true,
+        include: {
+          model: usersgames,
+          attributes: [],
+          required: true,
+          include: {
+            model: users,
+            required: true,
+            attributes: ["username"],
+          }
+        }
+      },
+      raw : true
+    });
+    const listAlive = alive.map(obj => obj['etat.usersgame.user.username']);
+    
+    const gameDates = await games.findOne({attributes: ["dateDeb", "createdAt"], where: { idGame: this.#gameID }, raw: true})
+
+    const currentDate = new Date();
+    const elapsedTime = currentDate - this.switchTime;
+    const timeLeft = this.isDay() ? this.#dayDuration - elapsedTime : this.#nightDuration - elapsedTime;
+
+
     const gameData = {
       "isDay": this.isDay(),
-      "switchTime": 0,
+      "switchTime": timeLeft,
       "infos": {
-        "createdAt": 0,
-        "dateDeb": 0,
+        "createdAt": gameDates.createdAt,
+        "dateDeb": gameDates.dateDeb,
         "dureeJour": this.#dayDuration,
         "dureeNuit": this.#nightDuration,
         "idGame": this.#gameID,
@@ -174,7 +221,9 @@ class Game {
         "probaLoup": this.#probaWerewolf,
         "probaPouv": this.#probaPower
       },
-      "listeJoueurs": listPlayers
+      "listeJoueurs": listPlayers,
+      "listeVivants": listAlive,
+      "listeMorts": listDeads
     };
 
     return gameData;
@@ -314,13 +363,15 @@ class Game {
   }
 
   dayChange() {
+    this.#switchDate = new Date();
     this.#gameState = GameState.DAY;
-    io.of(this.#namespace).emit('day', 'nuit -> jour');
+    io.of(this.#namespace).emit('day', 'nuit -> jour', this.#dayDuration);
   }
 
   nightChange() {
+    this.#switchDate = new Date();
     this.#gameState = GameState.NIGHT;
-    io.of(this.#namespace).emit('night', 'jour -> nuit');
+    io.of(this.#namespace).emit('night', 'jour -> nuit', this.#nightDuration);
   }
 
   setPlayerRoom(socketID) {

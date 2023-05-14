@@ -39,7 +39,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     justifyContent: "center",
     padding: 25,
-    // backgroundColor: "#614f344c",
+    marginHorizontal: 20,
   },
 });
 

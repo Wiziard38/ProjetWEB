@@ -12,59 +12,63 @@ const config = require("../config.js");
 const { BACKEND } = config;
 
 export default function Game({ token }) {
-  // TODO
   const [menuDepth, setMenuDepth] = useState(0);
-  const [role, setRole] = useState(null);
-  const [team, setTeam] = useState(null);
-  const [testName, setTestName] = useState(null);
-  const [switchTime, setSwitchTime] = useState(
-    new Date().setHours(new Date().getHours() + 1)
-  ); // TODO recup time
-  const [powerUsed, setPowerUsed] = useState(false);
-  const [isDay, setIsDay] = useState(true);
-  const [isDead, setIsDead] = useState(true);
-  const [power, setPower] = useState(null);
-  const [isElectedSpiritism, setIsElectedSpiritism] = useState(null);
-  const [listeJoueurs, setListeJoueurs] = useState([]);
   const [gameInfos, setGameInfos] = useState(null);
 
   useEffect(() => {
     AsyncStorage.getItem("idGame").then((idGame) => {
       // TODO RECUP TOUTES LES INFOS DE LA PARTIE
-      setIsDay(true);
-      setIsDead(false);
-      setPowerUsed(false);
-      setPower("voyance");
-      setIsElectedSpiritism(false);
-      setRole("LG");
       setGameInfos({
-        createdAt: "2023-04-27T08:19:34.987Z",
-        dateDeb: "2023-01-17T04:33:12.000Z",
-        dureeJour: 3600,
-        dureeNuit: 3600,
-        idGame: 1,
-        nbJoueur: 7,
-        probaLoup: 0,
-        probaPouv: 0,
-        updatedAt: "2023-04-27T08:19:34.987Z",
+        isDay: true,
+        role: "LG",
+        power: "Voyance",
+        powerUsed: false,
+        isElectedSpiritism: false,
+        switchTime: 0,
+        infos: {
+          createdAt: "2023-04-27T08:19:34.987Z",
+          dateDeb: "2023-01-17T04:33:12.000Z",
+          dureeJour: 3600,
+          dureeNuit: 3600,
+          idGame: 1,
+          nbJoueur: 7,
+          probaLoup: 0,
+          probaPouv: 0,
+        },
+        listeJoueurs: [
+          "mathis",
+          "lucacao",
+          "marcel",
+          "marcelle",
+          "camilleCosmique",
+          "joueur1",
+          "joueur2",
+          "joue",
+          "joueur4",
+          "joueur5",
+        ],
+        listeJoueursMorts: [
+          "mathis",
+          "marcel",
+          "camilleCosmique",
+          "joueur1",
+          "joueur2",
+          "joueur4",
+        ],
+        listeJoueursVivants: [
+          "lucacao",
+          "marcelle",
+          "joue",
+          "joueur5",
+          "joueur1214432",
+          "joueur6",
+          "joueur7",
+        ],
       });
-      setListeJoueurs([
-        "mathis",
-        "lucacao",
-        "marcel",
-        "marcelle",
-        "camilleCosmique",
-        "joueur1",
-        "joueur2",
-        "joue",
-        "joueur4",
-        "joueur5",
-      ]);
     });
   }, []);
 
   const socket = useRef(null);
-  // console.log(socket);
 
   useEffect(() => {
     if (socket.current === null) {
@@ -72,81 +76,72 @@ export default function Game({ token }) {
         auth: {
           token: token,
         },
-      })
-      // console.log(socket.current);
+      });
+
       socket.current.on("connect", () => {
         console.log("Connected to server");
         // socket.emit('proposal', 'bin voui c ez');
       });
+
       socket.current.on("disconnect", () => {
         console.log("disconnect");
         socket.current.disconnect();
       });
+
       socket.current.on("game_data", (msg) => {
         // console.log(msg);
       });
-      // TODO DELETE_ALL_TEST_MSG
-      socket.current.on("info_TEST", (userName, role, team) => {
-        setRole(role);
-        setTeam(team);
-        setTestName(userName);
-        console.log(
-          "userName : " + userName + ", role : " + role + ", team : " + team
-        );
+
+      socket.current.on("day", (msg, dayDuration) => {
+        console.log(`${msg}, duration jour : ${dayDuration}ms`);
+        setGameInfos((prevGameInfos) => ({
+          ...prevGameInfos, // Copy the previous gameInfos object
+          isDay: true,
+          switchTime: dayDuration,
+        }));
       });
 
-      // socket.current.on("receive_msg", (msg) => {
-      //   console.log(msg);
-      // });
-
-      socket.current.on("day", (msg) => {
-        console.log(msg);
-        setIsDay(true);
-      });
-
-      socket.current.on("night", (msg) => {
-        console.log(msg);
-        setIsDay(false);
+      socket.current.on("night", (msg, nightDuration) => {
+        console.log(`${msg}, duration nuit : ${nightDuration}ms`);
+        setGameInfos((prevGameInfos) => ({
+          ...prevGameInfos, // Copy the previous gameInfos object
+          isDay: false,
+          switchTime: nightDuration,
+        }));
       });
 
       socket.current.on("begin", (msg) => {
         console.log(msg);
       });
     }
+    return () => {
+      socket.current.off("begin");
+      socket.current.off("night");
+      socket.current.off("day");
+      socket.current.off("game_data");
+      socket.current.off("disconnect");
+      socket.current.off("connect");
+    };
   }, []);
 
-  function emission() {
-    socket.current.emit(
-      "message",
-      "Je suis : " + testName + ", mon role : " + role + ", ma team : " + team
-    );
+  if (gameInfos == null) {
+    return;
   }
 
   return (
     <View style={styles.container}>
-      <GameContext.Provider
-        value={{
-          isDay,
-          isDead,
-          power,
-          isElectedSpiritism,
-          role,
-          powerUsed,
-          gameInfos,
-          listeJoueurs,
-        }}
-      >
-        <GameHeader switchTime={switchTime} isDay={isDay} />
+      <GameContext.Provider value={gameInfos}>
+        <GameHeader />
 
         <ImageBackground
           source={
-            isDay
+            gameInfos.isDay
               ? require("../assets/images/bg_day.jpg")
               : require("../assets/images/bg_night.jpg")
           }
           style={styles.imageBackground}
         >
-          <MessagesScreen setMenuDepth={setMenuDepth} socket={socket}/>
+          <MessagesScreen setMenuDepth={setMenuDepth} socket={socket} />
 
           <GameMenuDepth0 menuDepth={menuDepth} setMenuDepth={setMenuDepth} />
         </ImageBackground>
