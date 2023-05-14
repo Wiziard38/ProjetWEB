@@ -85,13 +85,15 @@ module.exports = {
 
   async joinNewGame(req, res) {
     console.log("joinNewGame");
-    // TODO: vérifier que le nombre maximal de joueur n'est pas atteint
     try {
+      // on vérifie que la partie n'est pas complète
+      const nbPlayersRegistered = await usersgamesModel.count({ where: {gameIdGame: req.params.idGame } });
+      const nbPlayersRequired = await gamesModel.findOne({ attributes: ['nbJoueur'], where: {idGame: req.params.idGame} })
       // un joueur ne peut être qu'une seule fois dans la base de données
       const userAlreadyInGame = await usersgamesModel.findOne({
         where: { gameIdGame: req.params.idGame, userIdUser: req.user.idUser }
       });
-      if (!userAlreadyInGame) {
+      if ((!userAlreadyInGame) && (nbPlayersRegistered < nbPlayersRequired)) {
         await usersgamesModel.create({
           gameIdGame: req.params.idGame,
           userIdUser: req.user.idUser,

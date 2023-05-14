@@ -88,8 +88,8 @@ class Game {
     console.log("begin");
     const nbPlayersRegistered = await usersgamesModel.count({ where: {gameIdGame:this.#gameID} });
     // la partie est lancée si le nombre de joueurs requis est atteint
-    console.log("nombre de joueurs requis: " + this.#nbPlayersRequired);
-    console.log("nombre de joueurs inscrits: " + nbPlayersRegistered);
+    //console.log("nombre de joueurs requis: " + this.#nbPlayersRequired);
+    //console.log("nombre de joueurs inscrits: " + nbPlayersRegistered);
     if (nbPlayersRegistered != this.#nbPlayersRequired) {
       // la partie est annulée
       await gamesModel.update({ statusGame: 'annulee'}, { where: {idGame: this.#gameID}});
@@ -114,23 +114,23 @@ class Game {
     // ... et le nombre d'humains.
     const nbHumans = this.#nbPlayersRequired - nbWerewolves;
     const villagers = await usersgamesModel.findAll({ attributes: ['userIdUser', 'idUsergame'], where: {gameIdGame:this.#gameID} });
-    console.log(villagers);
+    //console.log(villagers);
     // TODO: mélanger aléatoirement le tableau villagers
     // attribution des rôles
     for (let i = 0; i < villagers.length; i++) {
       // on crée une instance d'état et de vivant dans la base de données pour chaque joueur
       const etatVillageois = await etatsModel.create({usersgameIdUsergame: villagers[i].idUsergame});
-      console.log("idUser : " + villagers[i].userIdUser);
-      console.log("idUsergame: " + villagers[i].idUsergame);
-      console.log("etatId: " + etatVillageois.id);
+      //console.log("idUser : " + villagers[i].userIdUser);
+      //console.log("idUsergame: " + villagers[i].idUsergame);
+      //console.log("etatId: " + etatVillageois.id);
       if (i >= 0 && i < nbWerewolves) {
         // c'est un loup-garou
         const vivant = await vivantsModel.create({typeVivant: "loup-garou", etatId: etatVillageois.id });
-        console.log("etatId - idVivant - rôle du joueur: " + vivant.etatId + " " + vivant.idVivant + " " + vivant.typeVivant);
+        //console.log("etatId - idVivant - rôle du joueur: " + vivant.etatId + " " + vivant.idVivant + " " + vivant.typeVivant);
       } else {
         // c'est un humain
         const vivant = await vivantsModel.create({typeVivant: "humain", etatId: etatVillageois.id });
-        console.log("etatId - idVivant - rôle du joueur: " + vivant.etatId + " " + vivant.idVivant + " " + vivant.typeVivant);
+        //console.log("etatId - idVivant - rôle du joueur: " + vivant.etatId + " " + vivant.idVivant + " " + vivant.typeVivant);
       }
     }
     // TODO: émettre un message pour dire que la partie a commencé
@@ -197,7 +197,7 @@ class Game {
       }
       socket.join(state.toString());
     } else {
-      console.log("[Game.js] setPlayerRoom : SocketID Invalid");
+      //console.log("[Game.js] setPlayerRoom : SocketID Invalid");
     }
   }
 
