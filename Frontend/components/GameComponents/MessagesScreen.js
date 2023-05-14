@@ -14,7 +14,7 @@ import {
 } from "react-native";
 import ListMessages from "./ListMessages";
 
-export default function MessagesScreen({ setMenuDepth }) {
+export default function MessagesScreen({ setMenuDepth, socket }) {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const flatListRef = useRef(null);
@@ -28,7 +28,10 @@ export default function MessagesScreen({ setMenuDepth }) {
       setMessage("");
     }
   };
-
+  socket.current.on("receive_msg", (msg, sender) => {
+    setMessages([...messages,
+      {text: msg, date: new Date(), sender: sender}]);
+  });
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <KeyboardAvoidingView

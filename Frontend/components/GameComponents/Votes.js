@@ -6,55 +6,61 @@ import SizedButton from "../SizedButton";
 import DisplayMessage from "../DisplayMessage";
 import DropDownPicker from "react-native-dropdown-picker";
 import { fetchData } from "../../utils/fetchData";
-import SocketIOClient, { connect } from "socket.io-client";
 const config = require("../../config.js");
 const { BACKEND } = config;
 
-export default function Votes(token, socket) {
+export default function Votes({token, socket}) {
   const [listPlayers1, setListPlayers1] = useState([]);
   const [listPlayers2, setListPlayers2] = useState([]);
   const [selectedPlayer1, setSelectedPlayer1] = useState(null);
   const [selectedPlayer2, setSelectedPlayer2] = useState(null);
   const [open1, setOpen1] = useState(false);
   const [open2, setOpen2] = useState(false);
-
+  const [username, setUsername] = useState("");
   const [modalVisible, setModalVisible] = useState(false);
   const [modalText, setModalText] = useState("");
   
   useEffect(() => {
     AsyncStorage.getItem("idGame").then((idGame) => {
-      
-      console.log(socket.current);
-      if (socket.current) {
-        socket.current.emit("test_vote");
-      }
       // TODO recup nb joueurs
       const nbJoueurs = 17;
       // TODO recup la liste des joueurs pas encore un vote
-      console.log(token);
       fetchData(`game/playerVote/${idGame}`, 'GET')
         .then(json => {
           let list1 = json.playersAvailable;
-          setListPlayers1(
-            list1.map((player) => ({ label: player, value: player }))
-          );
+          list1 = list1.map((player) => ({ label: player, value: player }));
+          setListPlayers1(list1);
+          console.log("Création list1:",listPlayers1)
         })
         .catch(error=>console.log(error));
       fetchData(`game/listRatification/${idGame}`, 'GET')
       .then(json=> {
-        const list2 = json.playersRat;
-        console.log(list2);
-        setListPlayers2(
-          list2.map((player, index) => ({
-            label: `[${player.votes}/${nbJoueurs}] - ${player.name}`,
-            value: player.name,
-            key: index.toString(),
-            votes: player.votes,
-          }))
-        );
+        let list2 = json.playersRat;
+        list2 = list2.map((player, index) => ({
+          label: `[${player.votes}/${nbJoueurs}] - ${player.name}`,
+          value: player.name,
+          key: index.toString(),
+          votes: player.votes,
+        }));
+        setListPlayers2(list2);
+        console.log("Création list2:",list2)
       })
       .catch(error=>console.log(error));
     });
+
+    socket.current.on("recepVote", (usernameVote) => {
+      console.log("recep vote", usernameVote);
+      console.log("Création list2:",listPlayers1);
+      console.log("Création list1:",listPlayers2)
+      const index = listPlayers1.indexOf({label: usernameVote, value: usernameVote});
+      console.log(index)
+      if (index != -1) {
+        setListPlayers1(listPlayers1.splice(index, 1));
+      }
+      setListPlayers2(listPlayers2.push(usernameVote));
+    });
+    fetchData("whoami", "GET")
+    .then(json=>setUsername(json.username));
       // TODO recup la liste des joueurs deja un vote et nb votes
   }, []);
 
@@ -62,8 +68,10 @@ export default function Votes(token, socket) {
     setOpen1(false);
     setOpen2(false);
     if (selectedPlayer1 !== null) {
-      // TODO A FAIRE
-
+      // TODO A FAIRE 
+      if (socket.current) {
+        socket.current.emit("propVote", username,selectedPlayer1)
+      }
       console.log("Creer vote contre " + selectedPlayer1);
       setSelectedPlayer1(null);
       setModalText(`Vous avez créé un nouveau vote contre ${selectedPlayer1}`);

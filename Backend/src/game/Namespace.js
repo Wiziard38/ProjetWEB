@@ -42,7 +42,6 @@ function initNamespace(game) {
 
   // Function call on connection
   namespace.on('connection', (socket) => {
-    console.log("youpiii")
     // game.setPlayerRoom( socket.id);
     game.setPlayerRoom(socket.id);
     // socket.setTimeout(20000);
@@ -50,7 +49,7 @@ function initNamespace(game) {
     //console.log('utilisateur se connecte dans ' + gameID + " avec la socket : " + socket.id);
     socket.on('disconnect', async () => {
       // When the user disconnect
-      socket.disconnect();const usergameVotant = await usersgames.findOne({where: {userIdUser: userVotant.idUser}, include: {model: games, where: {idGame: gameID}}});
+      socket.disconnect();
       console.log("user disconnected");
     })
     socket.on("TEST", (mes) => {
@@ -69,16 +68,19 @@ function initNamespace(game) {
 
       const player = game.getPlayerBySocket(socket.id);
       player.sendMessage(mes);
-
     });
-    socket.on("test_vote", ()=>console.log("youpi"));
-    socket.on("propVote", async (userNameVotant, usernameVote) => {
-      console.log("Le joueur "+userNameVotant+" vote "+usernameVote);
-      const userVotant = await users.findOne({where: {username: userNameVotant}});
-      const usergameVotant = await usersgames.findOne({where: {userIdUser: userVotant.idUser}, include: {model: games, where: {idGame: gameID}}});
-      const userVote = await users.findOne({where: {username: usernameVote}});
-      const usergameVote = await usersgames.findOne({where: {userIdUser: userVote.idUser}, include: {model: games, where: {idGame: gameID}}});
-      const propVote = await propositionVote.create({})
+    socket.on("propVote", (userNameVotant, usernameVote) => {
+      console.log("Vote recu");
+      socket.emit("receive_msg", `Le joueur ${userNameVotant} a voté contre ${usernameVote}`, "Serveur");
+      socket.emit("recepVote", usernameVote);
+      socket.broadcast.emit("receive_msg", `Le joueur ${userNameVotant} a voté contre ${usernameVote}`, "Serveur");
+      socket.broadcast.emit("recepVote", usernameVote);
+      // console.log("Le joueur "+userNameVotant+" vote "+usernameVote);
+      // const userVotant = await users.findOne({where: {username: userNameVotant}});
+      // const usergameVotant = await usersgames.findOne({where: {userIdUser: userVotant.idUser}, include: {model: games, where: {idGame: gameID}}});
+      // const userVote = await users.findOne({where: {username: usernameVote}});
+      // const usergameVote = await usersgames.findOne({where: {userIdUser: userVote.idUser}, include: {model: games, where: {idGame: gameID}}});
+      // const propVote = await propositionVote.create({})
     });
 
     socket.on('vote', async (username) => {
