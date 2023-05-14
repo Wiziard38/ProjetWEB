@@ -177,19 +177,19 @@ const vivants = require("../models/vivants");
   });
 
   await vivants.create({
-    etatId:3,
+    etatId:5,
     typeVivant: "humain",
     pouvoir: "spiritisme"
   });
 
   await vivants.create({
-    etatId:3,
+    etatId:6,
     typeVivant: "humain",
     pouvoir: "insomnie"
   });
 
   await vivants.create({
-    etatId:3,
+    etatId:7,
     typeVivant: "humain",
     pouvoir: "voyance"
   });
