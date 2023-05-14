@@ -19,13 +19,27 @@ const timeToText = (date) => {
   return time;
 };
 
-const secondsToText = (nbSeconds) => {
+const secondsToHHMM = (nbSeconds) => {
   const time =
     Math.floor(nbSeconds / 3600).toString() +
     "h" +
     ((nbSeconds / 60) % 60).toString().padStart(2, "0") +
     "min";
   return time;
+};
+
+const secondsToHHMMSS = (totalSeconds) => {
+  const hours = Math.floor(totalSeconds / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+
+  const formattedTime =
+    (hours > 0 ? `${hours.toString().padStart(2, "0")}h` : "") +
+    (hours > 0 || minutes > 0
+      ? `${minutes.toString().padStart(2, "0")}min`
+      : "") +
+    `${seconds.toString().padStart(2, "0")}s`;
+  return formattedTime;
 };
 
 const isToday = (date) => {
@@ -47,4 +61,21 @@ const messageTime = (date) => {
   return time;
 };
 
-module.exports = { dateToText, timeToText, isToday, secondsToText, messageTime };
+const timeDifference = (date) => {
+  const currentTime = new Date();
+  const targetTime = new Date(date);
+
+  const time = targetTime.getTime() - currentTime.getTime();
+
+  return Math.floor(time / 1000);
+};
+
+module.exports = {
+  dateToText,
+  timeToText,
+  isToday,
+  secondsToHHMM,
+  secondsToHHMMSS,
+  messageTime,
+  timeDifference,
+};

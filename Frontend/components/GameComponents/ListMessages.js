@@ -4,13 +4,13 @@ import SizedText from "../SizedText";
 import PropTypes from "prop-types";
 import Message from "./Message";
 
-export default function ListMessages({ messages, flatListRef }) {
+export default function ListMessages({ messages, flatListRef, noMessageText }) {
   const renderItem = ({ item }) => <Message item={item} />;
 
   function noGames() {
     return (
       <SizedText
-        label={"Soyez le premier a envoyer un message !"}
+        label={noMessageText}
         size={"normal"}
         textStyle={styles.noMessage}
       />
@@ -43,20 +43,20 @@ export default function ListMessages({ messages, flatListRef }) {
 const styles = StyleSheet.create({
   listContainer: {
     flex: 1,
-    backgroundColor: "lightblue",
-    paddingRight: 20,
     paddingTop: 10,
   },
   noMessage: {
-    paddingVertical: 10,
-    paddingHorizontal: 20,
+    paddingVertical: 5,
+    paddingLeft: 15,
+    paddingRight: 50,
     marginVertical: 6,
     marginHorizontal: 15,
-    backgroundColor: "#f9b6b6",
+    backgroundColor: "#ffffffcc",
   },
 });
 
 ListMessages.propTypes = {
   messages: PropTypes.array.isRequired,
   flatListRef: PropTypes.object.isRequired,
+  noMessageText: PropTypes.string.isRequired,
 };

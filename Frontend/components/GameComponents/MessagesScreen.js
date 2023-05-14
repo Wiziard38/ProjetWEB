@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect, useContext } from "react";
 import PropTypes from "prop-types";
 import {
   View,
@@ -13,18 +13,37 @@ import {
   Keyboard,
 } from "react-native";
 import ListMessages from "./ListMessages";
+import GameContext from "./GameContext";
 
 export default function MessagesScreen({ setMenuDepth, socket }) {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
   const flatListRef = useRef(null);
+  const gameInfos = useContext(GameContext);
+
+  useEffect(() => {
+    if (socket.current !== null) {
+      socket.current.on("receive_msg", (msg, username) => {
+        console.log(username);
+        console.log("new message");
+        setMessages([
+          ...messages,
+          { text: msg, date: new Date(), sender: username },
+        ]);
+      });
+    }
+    return () => {
+      socket.current.off("receive_msg");
+    };
+  });
 
   const handleSend = () => {
     if (message !== "") {
-      setMessages([
-        ...messages,
-        { text: message, date: new Date(), sender: "me" },
-      ]);
+      // setMessages([
+      //   ...messages,
+      //   { text: message, date: new Date(), sender: "me" },
+      // ]);
+      socket.current.emit("message", message);
       setMessage("");
     }
   };
@@ -36,40 +55,50 @@ export default function MessagesScreen({ setMenuDepth, socket }) {
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <KeyboardAvoidingView
         behavior={Platform.OS === "ios" ? "padding" : "margin"}
-        keyboardVerticalOffset={Platform.OS === "ios" ? 70 : 0}
+        keyboardVerticalOffset={Platform.OS === "ios" ? 110 : 0}
         style={styles.container}
       >
-        <ListMessages messages={messages} flatListRef={flatListRef} />
+        <ListMessages
+          messages={messages}
+          flatListRef={flatListRef}
+          noMessageText={
+            gameInfos.role === "mort"
+              ? "Il n'y a pas encore de messages envoyés pour l'instant"
+              : "Soyez le premier a envoyer un message !"
+          }
+        />
 
-        <View style={styles.footerStyle}>
-          <TextInput
-            onFocus={() => setMenuDepth(0)}
-            value={message}
-            onChangeText={setMessage}
-            onSubmitEditing={handleSend}
-            placeholder="Type a message"
-            style={[
-              styles.input,
-              { width: Dimensions.get("window").width - 15 * 2 - 30 },
-            ]}
-            // multiline={true}
-          />
-          <TouchableOpacity
-            activeOpacity={0.7}
-            style={styles.buttonStyle}
-            onPress={() => {
-              handleSend();
-              Keyboard.dismiss();
-            }}
-          >
-            <Image
-              style={styles.sendImage}
-              source={require("../../assets/images/send.png")}
-              resizeMethod="scale"
-              resizeMode="contain"
+        {(gameInfos.role !== "mort" || gameInfos.isElectedSpiritism) && (
+          <View style={styles.footerStyle}>
+            <TextInput
+              onFocus={() => setMenuDepth(0)}
+              value={message}
+              onChangeText={setMessage}
+              onSubmitEditing={handleSend}
+              placeholder="Type a message"
+              style={[
+                styles.input,
+                { width: Dimensions.get("window").width - 15 * 2 - 30 },
+              ]}
+              // multiline={true}
             />
-          </TouchableOpacity>
-        </View>
+            <TouchableOpacity
+              activeOpacity={0.7}
+              style={styles.buttonStyle}
+              onPress={() => {
+                handleSend();
+                Keyboard.dismiss();
+              }}
+            >
+              <Image
+                style={styles.sendImage}
+                source={require("../../assets/images/send.png")}
+                resizeMethod="scale"
+                resizeMode="contain"
+              />
+            </TouchableOpacity>
+          </View>
+        )}
       </KeyboardAvoidingView>
     </TouchableWithoutFeedback>
   );
@@ -78,7 +107,7 @@ export default function MessagesScreen({ setMenuDepth, socket }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#fff",
+    paddingRight: 20,
   },
   footerStyle: {
     flexDirection: "row",
@@ -105,4 +134,5 @@ const styles = StyleSheet.create({
 
 MessagesScreen.propTypes = {
   setMenuDepth: PropTypes.func.isRequired,
+  socket: PropTypes.object.isRequired,
 };
