@@ -9,6 +9,17 @@ const dateToText = (date) => {
   return time;
 };
 
+const dateToTextWeb = (date) => {
+  const newDate = new Date(date);
+  const time =
+    newDate.getFullYear() +
+    "-" +
+    (newDate.getMonth() + 1).toString().padStart(2, "0") +
+    "-" +
+    newDate.getDate();
+  return time;
+};
+
 const timeToText = (date) => {
   const newDate = new Date(date);
   const time =
@@ -16,6 +27,15 @@ const timeToText = (date) => {
     "h" +
     newDate.getMinutes().toString().padStart(2, "0") +
     "min";
+  return time;
+};
+
+const timeToTextWeb = (date) => {
+  const newDate = new Date(date);
+  const time =
+    newDate.getHours().toString().padStart(2, "0") +
+    ":" +
+    newDate.getMinutes().toString().padStart(2, "0");
   return time;
 };
 
@@ -72,7 +92,9 @@ const timeDifference = (date) => {
 
 module.exports = {
   dateToText,
+  dateToTextWeb,
   timeToText,
+  timeToTextWeb,
   isToday,
   secondsToHHMM,
   secondsToHHMMSS,

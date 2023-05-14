@@ -1,11 +1,15 @@
 import { useState, React, useEffect } from "react";
 import PropTypes from "prop-types";
-import { StyleSheet, View, Text } from "react-native";
+import { StyleSheet, View } from "react-native";
 import { fetchData } from "../utils/fetchData";
 import SizedButton from "./SizedButton";
 import SizedText from "./SizedText";
 import DisplayMessage from "./DisplayMessage";
-import { BarScrollInt, TimeChoose, ProbaIntSlider } from "./CreateGameComponents";
+import {
+  BarScrollInt,
+  TimeChoose,
+  ProbaIntSlider,
+} from "./CreateGameComponents";
 
 export default function CreateNewGame({ setMenuState, onDisconnect }) {
   const [dureeJour, setDureeJour] = useState(new Date());
@@ -127,7 +131,8 @@ export default function CreateNewGame({ setMenuState, onDisconnect }) {
             setDureePeriode={setDateDeb}
           />
 
-          <Text style={styles.beginText}>à</Text>
+          <SizedText label=" à " size="normal" />
+
           <TimeChoose
             mode={"time"}
             minDate={true}

@@ -1,11 +1,10 @@
 import React from "react";
-import { View } from "react-native";
+import { View, Platform } from "react-native";
 import Slider from "@react-native-community/slider";
 import SizedText from "../SizedText";
 import PropTypes from "prop-types";
 
 export default function ProbaIntSlider({ proba, setProba, labelProba }) {
-
   const numFactor = 1000;
 
   return (
@@ -30,10 +29,14 @@ export default function ProbaIntSlider({ proba, setProba, labelProba }) {
         maximumTrackTintColor="rgb(0,0,255)"
         value={proba * numFactor}
         onValueChange={(value) => {
-          clearTimeout(this.sliderTimeoutId);
-          this.sliderTimeoutId = setTimeout(() => {
+          if (Platform.OS !== "web") {
+            clearTimeout(this.sliderTimeoutId);
+            this.sliderTimeoutId = setTimeout(() => {
+              setProba(value / numFactor);
+            }, 5);
+          } else {
             setProba(value / numFactor);
-          }, 5);
+          }
         }}
       />
     </View>

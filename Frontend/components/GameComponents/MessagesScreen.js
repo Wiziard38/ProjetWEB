@@ -12,13 +12,16 @@ import {
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
+import { TextInput as WebTextInput } from "react-native-web";
 import ListMessages from "./ListMessages";
 import GameContext from "./GameContext";
 
 export default function MessagesScreen({ setMenuDepth, socket }) {
   const [message, setMessage] = useState("");
   const [messages, setMessages] = useState([]);
+  const [needsFocus, setNeedsFocus] = useState(false);
   const flatListRef = useRef(null);
+  const textInputRef = useRef(null);
   const gameInfos = useContext(GameContext);
 
   useEffect(() => {
@@ -48,8 +51,7 @@ export default function MessagesScreen({ setMenuDepth, socket }) {
     }
   };
   socket.current.on("receive_msg", (msg, sender) => {
-    setMessages([...messages,
-      {text: msg, date: new Date(), sender: sender}]);
+    setMessages([...messages, { text: msg, date: new Date(), sender: sender }]);
   });
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
@@ -58,30 +60,53 @@ export default function MessagesScreen({ setMenuDepth, socket }) {
         keyboardVerticalOffset={Platform.OS === "ios" ? 110 : 0}
         style={styles.container}
       >
-        <ListMessages
-          messages={messages}
-          flatListRef={flatListRef}
-          noMessageText={
-            gameInfos.role === "mort"
-              ? "Il n'y a pas encore de messages envoyés pour l'instant"
-              : "Soyez le premier a envoyer un message !"
-          }
-        />
+        <View style={{ flex: 1, paddingRight: 20 }}>
+          <ListMessages
+            messages={messages}
+            flatListRef={flatListRef}
+            noMessageText={
+              gameInfos.role === "mort"
+                ? "Il n'y a pas encore de messages envoyés pour l'instant"
+                : "Soyez le premier a envoyer un message !"
+            }
+          />
+        </View>
 
         {(gameInfos.role !== "mort" || gameInfos.isElectedSpiritism) && (
           <View style={styles.footerStyle}>
-            <TextInput
-              onFocus={() => setMenuDepth(0)}
-              value={message}
-              onChangeText={setMessage}
-              onSubmitEditing={handleSend}
-              placeholder="Type a message"
-              style={[
-                styles.input,
-                { width: Dimensions.get("window").width - 15 * 2 - 30 },
-              ]}
-              // multiline={true}
-            />
+            {Platform.OS === "web" ? (
+              <WebTextInput
+                ref={textInputRef}
+                onFocus={() => {
+                  setMenuDepth(0);
+                  setNeedsFocus(true);
+                }}
+                onBlur={() => {
+                  needsFocus && textInputRef.current.focus();
+                  setNeedsFocus(false)
+                }}
+                value={message}
+                onChangeText={setMessage}
+                onSubmitEditing={handleSend}
+                placeholder="Type a message"
+                style={[
+                  styles.input,
+                  { width: Dimensions.get("window").width - 15 * 2 - 30 },
+                ]}
+              />
+            ) : (
+              <TextInput
+                onFocus={() => setMenuDepth(0)}
+                value={message}
+                onChangeText={setMessage}
+                onSubmitEditing={handleSend}
+                placeholder="Type a message"
+                style={[
+                  styles.input,
+                  { width: Dimensions.get("window").width - 15 * 2 - 30 },
+                ]}
+              />
+            )}
             <TouchableOpacity
               activeOpacity={0.7}
               style={styles.buttonStyle}
@@ -107,7 +132,6 @@ export default function MessagesScreen({ setMenuDepth, socket }) {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    paddingRight: 20,
   },
   footerStyle: {
     flexDirection: "row",

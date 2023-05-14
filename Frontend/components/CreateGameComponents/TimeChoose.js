@@ -1,9 +1,15 @@
 import { React, useState, useEffect } from "react";
 import { StyleSheet, View, Platform, Pressable } from "react-native";
+import { createElement } from "react-native-web";
 import SizedText from "../SizedText";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import PropTypes from "prop-types";
-import { dateToText, timeToText } from "../../utils/dateFunctions";
+import {
+  dateToText,
+  dateToTextWeb,
+  timeToText,
+  timeToTextWeb,
+} from "../../utils/dateFunctions";
 
 export default function TimeChoose({
   mode,
@@ -14,14 +20,27 @@ export default function TimeChoose({
   const [TextDureePeriode, setTextDureePeriode] = useState("heures:minutes");
   const [androidShow, setAndroidShow] = useState(false);
   const isAndroid = Platform.OS === "android";
+  const isWeb = Platform.OS === "web";
+  const minimumDate = new Date();
+  minimumDate.setHours(minimumDate.getHours() + 1);
 
   useEffect(() => {
     let textTime;
-    if (mode === "time") {
-      textTime = timeToText(dureePeriode);
+
+    if (isWeb) {
+      if (mode === "time") {
+        textTime = timeToTextWeb(dureePeriode);
+      } else {
+        textTime = dateToTextWeb(dureePeriode);
+      }
     } else {
-      textTime = dateToText(dureePeriode);
+      if (mode === "time") {
+        textTime = timeToText(dureePeriode);
+      } else {
+        textTime = dateToText(dureePeriode);
+      }
     }
+    console.log(textTime);
 
     setTextDureePeriode(textTime);
   }, [dureePeriode]);
@@ -30,8 +49,32 @@ export default function TimeChoose({
     setAndroidShow(true);
   }
 
-  const minimumDate = new Date();
-  minimumDate.setHours(minimumDate.getHours() + 1);
+  if (isWeb) {
+    return createElement("input", {
+      type: mode,
+      value: TextDureePeriode,
+      onInput: (event) => {
+        const selectedTime = event.target.value;
+        if (mode === "time") {
+          const [hours, minutes] = selectedTime.split(":");
+          const newDate = new Date(dureePeriode);
+          newDate.setHours(parseInt(hours));
+          newDate.setMinutes(parseInt(minutes));
+
+          setDureePeriode(newDate);
+        } else {
+          console.log(selectedTime);
+          const [year, month, day] = selectedTime.split("-");
+          const newDate = new Date(dureePeriode);
+          newDate.setFullYear(parseInt(year));
+          newDate.setMonth(parseInt(month));
+          newDate.setDate(parseInt(day));
+
+          setDureePeriode(newDate);
+        }
+      },
+    });
+  }
 
   return (
     <View style={styles.container}>
