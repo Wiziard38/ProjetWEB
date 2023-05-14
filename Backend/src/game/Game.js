@@ -1,27 +1,53 @@
 const GameState = require("./GameState");
+const usersgamesModel = require("../models/usersgames.js");
+const vivantsModel = require("../models/vivants.js");
 const io = require('../ws/websockets.js');
 const AbstractGameState = require("./AbstractGameState");
 const Player = require("./Player");
-
+const users = require("../models/users");
+const etats = require("../models/etats");
+const morts = require("../models/morts");
+const usersgames = require("../models/usersgames.js");
+const vivants = require("../models/vivants.js");
+const games = require("../models/games");
+const discussions = require("../models/discussions");
+const messages = require("../models/messages");
 
 class Game {
   #gameState;
   #loopID;
   #gameID;
-  #beginTime = 1000;
-  #dayDuration = 150000;
-  #nightDuration = 15000;
   #namespace;
   #electedPlayer;
+  #nbPlayersRequired;
+  #beginTime;
+  #dayDuration;
+  #nightDuration;
+  #probaPower;
+  #probaWerewolf
 
   #playerDir = new Map(); // Link socketID to player object
   #socketDir = new Map(); // Link username to socketID
 
-  constructor(gameID) {
-    this.#gameID = gameID;
-    this.#namespace = '/' + gameID;
-  }
+  #switchDate; //Quand le jour/nuit change on met a jour cette variable
 
+  constructor(id, nbJoueur, dureeJour, dureeNuit, dateDeb, probaPouv, probaLoup) {
+    console.log("constructor")
+    console.log("beginTime: " + dateDeb);
+    //console.log("beginTime: " + dateDeb.getTime());
+    console.log("dayDuration: " + dureeJour * 1000);
+    console.log("nightDuration: " + dureeNuit * 1000);
+    console.log("date actuelle: " + new Date());
+    this.#gameID = id;
+    this.#nbPlayersRequired = nbJoueur;
+    this.#beginTime = dateDeb; // TODO: traduire date en millisecondes
+    this.#dayDuration = dureeJour * 1000; // traduction de secondes en millisecondes
+    this.#nightDuration = dureeNuit * 1000; // traduction de secondes en millisecondes
+    this.#probaPower = probaPouv;
+    this.#probaWerewolf = probaLoup;
+    this.#namespace = '/' + id;
+    this.create();
+  }
   /**
    * Link the socket to the user and user to socket
    * @param {*} player 
@@ -58,34 +84,6 @@ class Game {
     return this.#gameState === GameState.NIGHT;
   }
 
-  create() {
-    const initNamespace = require('./Namespace');
-    initNamespace(this);
-    setTimeout(() => {
-      this.begin();
-    }, this.#beginTime);
-  }
-
-  /**
-   * Begin of the game, this start the game loop.
-   */
-  begin() {
-    this.gameLoop()
-    // The first loop is called after the wait time
-    this.#loopID = setInterval(() => this.gameLoop(), this.#dayDuration + this.#nightDuration);
-  }
-
-  /**
-   * Gameloop, day/night cycle
-   */
-  gameLoop() {
-    this.dayChange();
-
-    setTimeout(() => {
-      this.nightChange();
-    }, this.#dayDuration);
-  }
-
   /**
    * End the game and close all connections
    */
@@ -98,30 +96,141 @@ class Game {
     // TODO remove from gamemanager
   }
 
-  /**
-   * Change the game to day
-   */
-  dayChange() {
-    this.#gameState = GameState.DAY;
-    io.of(this.#namespace).emit('day', 'nuit -> jour', this.#dayDuration);
-    // io.of(this.#namespace).emit('receive_msg', 'message de test', "test");
+  async sendMessages(socketID) {
+    /** @type {Player} */
+    const player = this.#playerDir.get(socketID);
+    const States = require("./States.js")
+    const discussion = this.isDay() ? "jour" : player.getState() == States.WEREWOLF ? "repaire" : this.getElectedPlayer() === player.getUsername() ? "spiritisme" : "none";
+
+    const listMessages = [];
+
+    if(discussion !== "none") {
+      const { idDiscussion } = await discussions.findOne({
+        attributes: ["idDiscussion"],
+        where: { date: this.getSwitchTime(), typeDiscussion: discussion },
+        raw: true
+      });
+
+      const msgs = await messages.findAll({
+        attributes: ["contenu", "createdAt"],
+        where: {discussionIdDiscussion: idDiscussion},
+        include: {
+          model: usersgames,
+          attributes: [],
+          include: {
+            model: users,
+            attributes: ["username"]
+          }
+        },
+        raw: true
+      })
+      msgs.forEach(element => {
+        const {contenu, createdAt} = element
+        const sender = element['usersgame.user.username']
+        const msg = {
+          "contenu": contenu,
+          "date": createdAt,
+          "user": sender
+        }
+        listMessages.push(msg)
+      });
+      
+
+    }
+    this.getSocket(socketID).emit("messages", JSON.stringify(listMessages));
+
   }
-
-  /**
-   * Change the game to night
-   */
-  nightChange() {
-    this.#gameState = GameState.NIGHT;
-    io.of(this.#namespace).emit('night', 'jour -> nuit', this.#nightDuration);
-  }
-
-
   /**
    * Send to the player the current state of the game
    * @param {*} socketID 
    */
-  getGameData(socketID) {
-    //Send to the player game data
+  async getGameData(socketID) {
+    /** @type {Player} */
+    const player = this.#playerDir.get(socketID);
+    const players = await users.findAll({
+      attributes: ['username'],
+      include: {
+        model: usersgamesModel,
+        attributes: [],
+        where: { gameIdGame: this.#gameID }
+      },
+      raw: true
+    });
+    const listPlayers = players.map(obj => obj.username);
+
+    const deads = await morts.findAll({
+      attributes: [],
+      required: true,
+      include: {
+        model: etats,
+        attributes: [],
+        required: true,
+        include: {
+          model: usersgames,
+          attributes: [],
+          required: true,
+          include: {
+            model: users,
+            required: true,
+            attributes: ["username"],
+          }
+        }
+      },
+      raw: true
+    });
+    const listDeads = deads.map(obj => obj['etat.usersgame.user.username']);
+
+    const alive = await vivants.findAll({
+      attributes: [],
+      required: true,
+      include: {
+        model: etats,
+        attributes: [],
+        required: true,
+        include: {
+          model: usersgames,
+          attributes: [],
+          required: true,
+          include: {
+            model: users,
+            required: true,
+            attributes: ["username"],
+          }
+        }
+      },
+      raw: true
+    });
+
+    const listAlive = alive.map(obj => obj['etat.usersgame.user.username']);
+
+    const gameDates = await games.findOne({ attributes: ["dateDeb", "createdAt"], where: { idGame: this.#gameID }, raw: true })
+
+    const currentDate = new Date();
+    const elapsedTime = currentDate - this.#switchDate;
+    const timeLeft = this.isDay() ? this.#dayDuration - elapsedTime : this.#nightDuration - elapsedTime;
+    console.log(timeLeft)
+    const gameData = {
+      isDay: this.isDay(),
+      role: player.getState().toString(),
+      power: player.getPower().toString(),
+      powerUsed: false,
+      switchTime: timeLeft,
+      infos: {
+        createdAt: gameDates.createdAt,
+        dateDeb: gameDates.dateDeb,
+        dureeJour: this.#dayDuration,
+        dureeNuit: this.#nightDuration,
+        idGame: this.#gameID,
+        nbJoueur: listPlayers.length,
+        probaLoup: this.#probaWerewolf,
+        probaPouv: this.#probaPower
+      },
+      listeJoueurs: listPlayers,
+      listeJoueursMorts: listDeads,
+      listeJoueursVivants: listAlive
+    };
+
+    this.getSocket(socketID).emit("game_data", JSON.stringify(gameData));
   }
 
   /**
@@ -142,9 +251,9 @@ class Game {
       socket.join(state.toString());
     } else {
       console.log("[Game.js] setPlayerRoom : SocketID Invalid")
+      /* constructeur d'une partie - initialisation des champs */
     }
   }
-
   /**
    * @returns the game's namespace
    */
@@ -166,7 +275,7 @@ class Game {
   getID() {
     return this.#gameID;
   }
-  
+
   /** @return {AbstractGameState} */
   getGameState() {
     return this.#gameState;
@@ -185,6 +294,151 @@ class Game {
     const name = p.getUsername();
     this.#playerDir.delete(socketid);
     this.#socketDir.delete(name);
+  }
+  create() {
+    console.log("create")
+    const initNamespace = require('./Namespace');
+    initNamespace(this);
+    setTimeout(() => {
+      this.begin();
+    }, this.#beginTime);
+  }
+
+  /* initialise les données de la partie qui va commencer */
+  async init() {
+    console.log("init")
+    // création des loups-garous
+    const nbWerewolves = Math.max(1, Math.ceil(this.#probaWerewolf * this.#nbPlayersRequired));
+
+    // création des pouvoirs
+    // TODO:
+
+    // création des humains
+    const nbHumans = this.#nbPlayersRequired - nbWerewolves;
+
+    const villagers = await usersgamesModel.findAll({ where: { gameIdGame: this.#gameID } });
+    // console.log(villagers);
+
+    // TODO: mélanger aléatoirement le tableau villagers
+
+    for (let i = 0; i < villagers.length; i++) {
+      // console.log("idUser : " + villagers[i].userIdUser);
+      if (i >= 0 && i < nbWerewolves) {
+        // c'est un loup-garou
+        await vivantsModel.create({ typeVivant: "loup-garou", usersgameIdUsergame: villagers[i].idUsergame });
+      } else {
+        // c'est un humain
+        await vivantsModel.create({ typeVivant: "humain", usersgameIdUsergame: villagers[i].idUsergame });
+      }
+    }
+
+    // TODO: changer le champ aCommence false->true
+
+  }
+
+  /* méthode appelée lorsque l'horaire de début de partie est atteint */
+  async begin() {
+    console.log("begin")
+    const nbPlayersRegistered = await usersgamesModel.count({ where: { gameIdGame: this.#gameID } });
+    if (nbPlayersRegistered == this.#nbPlayersRequired || 1) {
+      //TODO virer le || 1 utilisé ici pour bypass le test durant la phase de test
+      // la partie est lancée si le nombre de joueurs requis est atteint
+      this.init()
+      this.#gameState = GameState.DAY;
+      this.dayChange();
+      this.#loopID = setInterval(() => {
+        this.nightChange();
+        setTimeout(() => {
+          this.dayChange();
+        }, this.#nightDuration)
+      }, this.#dayDuration + this.#nightDuration);
+    } else {
+      // sinon la partie est annulée
+      // TODO:
+    }
+  }
+
+  finish() {
+    clearInterval(this.#loopID);
+    io.of('/' + this.#gameID).removeAllListeners();
+    // delete
+    delete io.npst[this.#gameID];
+    GameState.remove(this.#gameID);
+  }
+
+  async dayChange() {
+    if (this.#switchDate !== undefined) {
+      await discussions.update({ Archivee: true }, {
+        where: { date: this.#switchDate }
+      });
+    }
+    this.#switchDate = new Date();
+    this.#gameState = GameState.DAY;
+    await discussions.create({
+      date: this.#switchDate,
+      typeDiscussion: "jour",
+      Archivee: false,
+      gameIdGame: this.#gameID
+    })
+    io.of(this.#namespace).emit('day', 'nuit -> jour', this.#dayDuration);
+  }
+
+  async nightChange() {
+    await discussions.update({ Archivee: true }, {
+      where: { date: this.#switchDate }
+    });
+
+    this.#switchDate = new Date();
+    this.#gameState = GameState.NIGHT;
+
+    await discussions.create({
+      date: this.#switchDate,
+      typeDiscussion: "repaire",
+      Archivee: false,
+      gameIdGame: this.#gameID
+    });
+
+    await discussions.create({
+      date: this.#switchDate,
+      typeDiscussion: "spiritisme",
+      Archivee: false,
+      gameIdGame: this.#gameID
+    });
+
+    io.of(this.#namespace).emit('night', 'jour -> nuit', this.#nightDuration);
+  }
+
+  setPlayerRoom(socketID) {
+    const player = this.getPlayerBySocket(socketID);
+    const power = player.getPower();
+    const state = player.getState();
+    const socket = io.of(this.#namespace).sockets.get(socketID);
+
+    if (socket) {
+      // TODO: changer cela pour prendre en compte le vrai "Power"
+      if (power.toString() !== "none") {
+        socket.join(power.toString());
+      }
+      socket.join(state.toString());
+    } else {
+      console.log("[Game.js] setPlayerRoom : SocketID Invalid")
+    }
+  }
+
+  getNamespace() {
+    return this.#namespace;
+  }
+
+  getSocket(socketID) {
+    return io.of(this.#namespace).sockets.get(socketID);
+  }
+
+  getID() {
+    return this.#gameID;
+  }
+
+  getSwitchTime() {
+    return this.#switchDate;
   }
 }
 

@@ -2,58 +2,85 @@ const Game = require("./Game.js");
 const Power = require("./powers/Power.js");
 const State = require("./states/State.js")
 const Team = require("./States.js");
+const messages = require("../models/messages.js");
+const discussions = require("../models/discussions.js");
 
 class Player {
-    /** @type {State} */
-    #state; // Human, Death, Werewolf
-    /** @type {Power} */
-    #power;
-    /** @type {Game} */
-    #game;
-    #socketID;
-    #userName;
+  /** @type {State} */
+  #state; // Human, Death, Werewolf
+  /** @type {Power} */
+  #power;
+  /** @type {Game} */
+  #game;
+  #socketID;
+  #userName;
+  #userGameID
 
-    constructor(socketID, username, game, state, power) {
-        this.#socketID = socketID;
-        this.#userName = username;
-        this.#game = game;
-        this.#state = state;
-        this.#power = power;
-    }
-    // sendMessage(msg) {
-    //     // Send a message based on power, if the player have no power, send a message according to team
-    //     // Example : Spiritism will return false on day and true on nigth
-    //     if(this.#power.sendMessage(msg, this.#game) === false) {
-    //         if(this.#state.sendMessage(msg, this.#game) === false) {
-                
-    //             this.#game.getSocket(this.#socketID).emit("receive_msg", "[Server] You can't send message for now...");
-    //         };
-    //     }
-    // }
+  constructor(socketID, username, game, state, power, userGameID) {
+    this.#socketID = socketID;
+    this.#userName = username;
+    this.#game = game;
+    this.#state = state;
+    this.#power = power;
+    this.#userGameID = userGameID;
+  }
+  // sendMessage(msg) {
+  //     // Send a message based on power, if the player have no power, send a message according to team
+  //     // Example : Spiritism will return false on day and true on nigth
+  //     if(this.#power.sendMessage(msg, this.#game) === false) {
+  //         if(this.#state.sendMessage(msg, this.#game) === false) {
 
-    sendMessageDay(msg) {
-        this.#state.sendMessageDay(msg, this.#game, this.#userName);
+  //             this.#game.getSocket(this.#socketID).emit("receive_msg", "[Server] You can't send message for now...");
+  //         };
+  //     }
+  // }
+
+  async sendMessageDay(msg) {
+    console.log(this.#state.toString())
+    if (this.#state.sendMessageDay(msg, this.#game, this.#userName, this) === false) {
+      this.#game.getSocket(this.#socketID).emit("receive_msg", "[Server] You cannot send message...", "Server");
+    } else {
+      // await messages.create( {
+      //   contenu: mes,
+      //   usersgameIdUsergame: -1,
+      //   discussionIdDiscussion: -1
+      // });
+    }
+  }
+
+  async sendMessageNight(msg) {
+    //First try to send the message with the player state
+    if (this.#state.sendMessageNight(msg, this.#game, this.#userName, this) === false) {
+      if (this.#power.sendMessageNight(msg, this.#game, this.#userName, this) === false) {
+        this.#game.getSocket(this.#socketID).emit("receive_msg", "[Server] You cannot send message for now...", "Server");
+        
+      } else {
+        // MSG from power
+
+      }
+    } else {
+      // MSG from state
+
     }
 
-    sendMessageNight(msg) {
-        if(this.#state.sendMessageNight(msg, this.#game, this.#userName) === false) {
-            if(this.#power.sendMessageNight(msg, this.#game, this.#userName) === false) {
-                this.#game.getSocket(this.#socketID).emit("receive_msg", "[Server] You cannot send message for now...", "Server");
-            }
-        }
-    }
+  }
 
-    getUsername() {
-        return this.#userName;
-    }
 
-    getState() {
-        return this.#state;
-    }
+  getUsername() {
+    return this.#userName;
+  }
 
-    getPower() {
-        return this.#power;
-    }
+  getState() {
+    return this.#state;
+  }
+
+  getPower() {
+    return this.#power;
+  }
+
+  getID() {
+    return this.#userGameID;
+  }
+
 }
-
 module.exports = Player;

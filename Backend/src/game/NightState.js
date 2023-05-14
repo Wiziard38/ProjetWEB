@@ -1,7 +1,7 @@
 AbstractGameState = require("./AbstractGameState.js");
 
 class NightState extends AbstractGameState {
-    sendMessage(player, msg) {
+    async sendMessage(player, msg) {
         player.sendMessageNight(msg);
     }
 }

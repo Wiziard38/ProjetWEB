@@ -4,6 +4,7 @@ const Player = require('./Player.js')
 const getUserNameByToken = require("../middleware/decode.js");
 const usersgames = require('../models/usersgames.js');
 const users = require('../models/users.js');
+const messages = require('../models/messages.js');
 
 function initNamespace(/** @type {Game} */ game) {
   const gameID = game.getID();
@@ -21,6 +22,7 @@ function initNamespace(/** @type {Game} */ game) {
     if (await users.findOne({ where: { username: username }, include: { model: usersgames, where: { gameIdGame: gameID } } }) === null) {
       console.log("dec")
       socket.disconnect();
+      return 0; // ?
     }
     console.log(username);
     console.log(socket.id);
@@ -33,29 +35,36 @@ function initNamespace(/** @type {Game} */ game) {
     }
 
     // Give the user game_data when loading
+    const {idUsergame} = await usersgames.findOne({
+      attributes: ["idUsergame"],
+      include: {
+        model: users,
+        attributes: [],
+        where: {username: username}
+      },
+      where: {gameIdGame: gameID},
+      raw: true
+    });
 
     const power = await GameManager.getUserRole(userName, gameID);
     const state = await GameManager.getUserTeam(userName, gameID);
 
+    
     // Créer des objets
-    const player = new Player(socket.id, username, game, state, power);
+    const player = new Player(socket.id, username, game, state, power, idUsergame);
     // Add the player to the game, it let us find the user with its socket.
     game.addPlayer(player, socket.id);
 
-    // Send all the game data for the player
-    const gameData = await game.getGameData(socket.id);
-    socket.emit("game_data", gameData);
-    // socket.emit("game_data", )
-    // TODO DELETE_ALL_TEST_MSG
-    socket.emit("info_TEST", username, power.toString(), state.toString())
     next();
   })
   
 
   // Function call on connection
-  namespace.on('connection', (socket) => {
+  namespace.on('connection', async (socket) => {
     // game.setPlayerRoom( socket.id);
     game.setPlayerRoom(socket.id);
+    await game.getGameData(socket.id);
+    await game.sendMessages(socket.id);
     // socket.setTimeout(20000);
     // Géré les multiconnection ?
     // console.log('utilisateur se connecte dans ' + gameID + " avec la socket : " + socket.id);
@@ -68,7 +77,7 @@ function initNamespace(/** @type {Game} */ game) {
     socket.on("TEST", (mes) => {
       console.log(mes);
     })
-    socket.on('message', (mes) => {
+    socket.on('message', async (mes) => {
       // Fonction utiliser quand l'utilisateur envoie un message dans le chat
       // Il faut vérifier si l'utilisateur à bien le droit de faire cette opération
       // Ajouter le message à la discution si c'est pertinant
@@ -82,7 +91,7 @@ function initNamespace(/** @type {Game} */ game) {
 
       const player = game.getPlayerBySocket(socket.id);
       //player.sendMessage(mes);
-      game.getGameState().sendMessage(player, mes);
+      await game.getGameState().sendMessage(player, mes)
     })
     
     socket.on("propVote", (userNameVotant, usernameVote) => {
