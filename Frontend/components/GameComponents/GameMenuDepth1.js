@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import { View, StyleSheet, Image, Pressable } from "react-native";
+import { View, StyleSheet, Image, Pressable, Platform } from "react-native";
 import PropTypes from "prop-types";
 import SizedButton from "../SizedButton";
 import GameContext from "./GameContext";
@@ -11,6 +11,9 @@ export default function GameMenuDepth1({ setMenuDepth, setMenuSelection }) {
     setMenuSelection(selection);
     setMenuDepth(2);
   };
+
+  const menuWidth = Platform.OS === "web" ? 300 : 150;
+  const menuStyle = { ...styles.menuButton, width: menuWidth };
 
   return (
     <View style={styles.container}>
@@ -26,7 +29,7 @@ export default function GameMenuDepth1({ setMenuDepth, setMenuSelection }) {
         buttonLabel="Infos partie"
         onPress={() => handlePress("infos")}
         size="large"
-        buttonStyle={styles.menuButton}
+        buttonStyle={menuStyle}
         buttonLabelStyle={styles.menuButtonText}
       />
       {gameInfos.role !== "mort" && (
@@ -35,7 +38,7 @@ export default function GameMenuDepth1({ setMenuDepth, setMenuSelection }) {
             buttonLabel="Votes"
             onPress={() => handlePress("votes")}
             size="large"
-            buttonStyle={styles.menuButton}
+            buttonStyle={menuStyle}
             buttonLabelStyle={styles.menuButtonText}
           />
           {gameInfos.power !== null && (
@@ -43,7 +46,7 @@ export default function GameMenuDepth1({ setMenuDepth, setMenuSelection }) {
               buttonLabel="Pouvoir"
               onPress={() => handlePress("power")}
               size="large"
-              buttonStyle={styles.menuButton}
+              buttonStyle={menuStyle}
               buttonLabelStyle={styles.menuButtonText}
             />
           )}
@@ -53,7 +56,7 @@ export default function GameMenuDepth1({ setMenuDepth, setMenuSelection }) {
         buttonLabel="Règles du jeu"
         onPress={() => handlePress("rules")}
         size="large"
-        buttonStyle={styles.menuButton}
+        buttonStyle={menuStyle}
         buttonLabelStyle={styles.menuButtonText}
       />
       {gameInfos.role === "mort" && (
@@ -61,7 +64,7 @@ export default function GameMenuDepth1({ setMenuDepth, setMenuSelection }) {
           buttonLabel="Archives"
           onPress={() => handlePress("archive")}
           size="large"
-          buttonStyle={styles.menuButton}
+          buttonStyle={menuStyle}
           buttonLabelStyle={styles.menuButtonText}
         />
       )}
@@ -78,7 +81,6 @@ const styles = StyleSheet.create({
   },
   menuButton: {
     backgroundColor: "#eee",
-    width: 150,
     padding: 10,
     borderRadius: 5,
     borderColor: "black",
