@@ -47,10 +47,6 @@ export default function MessagesScreen({ setMenuDepth, socket }) {
       setMessage("");
     }
   };
-  socket.current.on("receive_msg", (msg, sender) => {
-    setMessages([...messages,
-      {text: msg, date: new Date(), sender: sender}]);
-  });
   return (
     <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
       <KeyboardAvoidingView

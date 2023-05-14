@@ -22,16 +22,26 @@ export default function Votes({socket}) {
   const [nbJoueur, setNbJoueur] = useState(17);
   
   useEffect(() => {
-    socket.current.on("recepVote", (usernameVote) => {
-      console.log("recep vote", usernameVote);
+    if (socket.current) {
+      socket.current.on("recepVote", (usernameVotant, usernameVote) => {
+        console.log("recep vote", usernameVote);
+        const newRat = {label: `[1/${nbJoueur}] - ${usernameVote}` , value: usernameVote};
+        if (usernameVotant !== username){
+          setListPlayers2((prev) => ([...prev, newRat]));
+        }
+        setListPlayers1(prevList => prevList.filter(item => item.value !== usernameVote));
+      });
 
-      if (listPlayers1.includes({label: usernameVote, value: usernameVote})) {
-        setListPlayers1(listPlayers1.filter((item) => item !== {label: usernameVote, value: usernameVote}));
-      }
-      console.log(listPlayers2);
-      const newRat = {label: `[1/${nbJoueur}] - ${usernameVote}` , value: usernameVote};
-      setListPlayers2([...listPlayers2, newRat]);
-    });
+      socket.current.on("recepRat", (usernameVote, nbVotant) => {
+        setListPlayers2(prevList => [...prevList.filter(item => item.value !== usernameVote), {label: `[${nbVotant}/${nbJoueur}] - ${usernameVote}`, value: usernameVote}]);
+        setModalText(
+          `Vous avez ratifié le vote contre ${usernameVote}.\n\n Il y a ${
+            nbVotant
+          } votes contre ${usernameVote} actuellement.`
+        );
+        setModalVisible(true);  
+      })
+    };
     fetchData("whoami", "GET")
     .then(json=>setUsername(json.username));
       // TODO recup la liste des joueurs deja un vote et nb votes
@@ -43,21 +53,17 @@ export default function Votes({socket}) {
         .then(json => {
           const list1 = json.playersAvailable;
           const list2 = list1.map((player) => ({ label: player, value: player }));
-          console.log("list1:",list2)
           setListPlayers1(list2);
-          console.log("Création list1:",listPlayers1)
         })
         .catch(error=>console.log(error));
       fetchData(`game/listRatification/${idGame}`, 'GET')
       .then(json=> {
         const list1 = json.playersRat;
-        const list2 = list1.map((player, index) => ({
+        const list2 = list1.map((player) => ({
           label: `[${player.votes}/${nbJoueurs}] - ${player.name}`,
           value: player.name,
         }));
-        console.log("list2:",list2)
         setListPlayers2(list2);
-        console.log("Création list2:",listPlayers2)
       })
       .catch(error=>console.log(error));
     });
@@ -86,15 +92,13 @@ export default function Votes({socket}) {
         (player) => player.value === selectedPlayer2
       );
       // TODO A FAIRE
-      
+      if (socket.current) {
+        socket.current.emit("ratification", username,selectedPlayer2)
+      }
       console.log("Creer vote contre " + selectedPlayer2);
       setSelectedPlayer2(null);
-      setModalText(
-        `Vous avez ratifié le vote contre ${selectedPlayer.value}.\n\n Il y a ${
-          selectedPlayer.votes + 1
-        } votes contre ${selectedPlayer.value} actuellement.`
-      );
-      setModalVisible(true);
+      
+      
     }
   }
 
