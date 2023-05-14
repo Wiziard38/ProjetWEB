@@ -11,14 +11,6 @@ const usersgames = db.define(
       type: Sequelize.INTEGER,
       autoIncrement: true,
     },
-    pouvoir: {
-      type: Sequelize.DataTypes.ENUM("spiritisme", "insomnie", "voyance", "contamination"),
-      allowNull: true,
-    },
-    used: {
-      type: Sequelize.BOOLEAN,
-      defaultValue: false
-    }
   }
 );
 
