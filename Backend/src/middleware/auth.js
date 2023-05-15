@@ -3,6 +3,7 @@ const gamesModel = require("../models/games.js");
 const getUserNameByToken = require('./decode.js')
 
 async function verifyToken(req, res, next) {
+
   const token =
     req.body.token || req.query.token || req.headers["x-access-token"];
 
@@ -13,9 +14,9 @@ async function verifyToken(req, res, next) {
   }
   try {
     const username = getUserNameByToken(token);
-    const user = await usersModel.findOne({ where: { username } });
-
+    const user = await usersModel.findOne({ where: { username: username } });
     req.user = user.dataValues;
+
   } catch (err) {
     return res
       .status(401)

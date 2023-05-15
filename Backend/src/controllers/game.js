@@ -6,8 +6,19 @@ const { Op } = require("sequelize");
 const users = require("../models/users.js");
 const ratifications = require("../models/ratifiacations.js");
 module.exports = {
+  async deleteGame(req, res) {
+    const user = req.user;
+    const idGame = req.params.idGame;
+    if (user.admin) {
+      await gamesModel.findOne({where: {idGame : idGame}}).destroy();
+      res.json({status: true});
+    }
+    else {
+      res.json({status: false, message:"Vous n'êtes pas admin, vous ne pouvez pas supprimer de partie"});
+    }
+  },
+
   async createGame(req, res) {
-    console.log("createGame");
     try {
       const data = req.body;
       //console.log(data);
@@ -44,8 +55,9 @@ module.exports = {
         ]});
       const playersRat = [];
       for (prop of propositions) {
-          console.log("prop:",prop);
-          playersRat.push({name: prop.usernameVote.user.username, votes: propositionVoteModel.nbVotant || 0});
+          console.log("vote:", prop.usernameVote.user.username)
+          console.log("prop votant:",prop.nbVotant);
+          playersRat.push({name: prop.usernameVote.user.username, votes: prop.nbVotant});
       }
       res.json({status: true, playersRat: playersRat});
     }
