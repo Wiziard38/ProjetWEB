@@ -88,8 +88,6 @@ class Game {
     console.log("begin");
     const nbPlayersRegistered = await usersgamesModel.count({ where: {gameIdGame:this.#gameID} });
     // la partie est lancée si le nombre de joueurs requis est atteint
-    //console.log("nombre de joueurs requis: " + this.#nbPlayersRequired);
-    //console.log("nombre de joueurs inscrits: " + nbPlayersRegistered);
     if (nbPlayersRegistered != this.#nbPlayersRequired) {
       // la partie est annulée
       await gamesModel.update({ statusGame: 'annulee'}, { where: {idGame: this.#gameID}});
@@ -109,31 +107,54 @@ class Game {
     console.log("init");
     // On détermine le nombre de loups-garous ...
     const nbWerewolves = Math.max(1, Math.ceil(this.#probaWerewolf * this.#nbPlayersRequired));
-    // ... le nombre de pouvoirs ...
-    // TODO: implémenter l'attribution des pouvoirs
-    // ... et le nombre d'humains.
-    const nbHumans = this.#nbPlayersRequired - nbWerewolves;
-    const villagers = await usersgamesModel.findAll({ attributes: ['userIdUser', 'idUsergame'], where: {gameIdGame:this.#gameID} });
-    //console.log(villagers);
+    var villagers = await usersgamesModel.findAll({ attributes: ['userIdUser', 'idUsergame'], where: {gameIdGame:this.#gameID} });
     // TODO: mélanger aléatoirement le tableau villagers
     // attribution des rôles
     for (let i = 0; i < villagers.length; i++) {
       // on crée une instance d'état et de vivant dans la base de données pour chaque joueur
       const etatVillageois = await etatsModel.create({usersgameIdUsergame: villagers[i].idUsergame});
-      //console.log("idUser : " + villagers[i].userIdUser);
-      //console.log("idUsergame: " + villagers[i].idUsergame);
-      //console.log("etatId: " + etatVillageois.id);
       if (i >= 0 && i < nbWerewolves) {
         // c'est un loup-garou
         const vivant = await vivantsModel.create({typeVivant: "loup-garou", etatId: etatVillageois.id });
-        //console.log("etatId - idVivant - rôle du joueur: " + vivant.etatId + " " + vivant.idVivant + " " + vivant.typeVivant);
       } else {
         // c'est un humain
         const vivant = await vivantsModel.create({typeVivant: "humain", etatId: etatVillageois.id });
-        //console.log("etatId - idVivant - rôle du joueur: " + vivant.etatId + " " + vivant.idVivant + " " + vivant.typeVivant);
       }
     }
+    // détermine l'existence des pouvoirs et attribue les pouvoirs
+    if (existencePower()) {
+      villagers = assignmentPower(villagers, 0, nbWerewolves, "contamination");
+    }
+    if (existencePower()) {
+      villagers = assignmentPower(villagers, nbWerewolves, villagers.length, "insomnie");
+    }
+    if (existencePower()) {
+      villagers = assignmentPower(villagers, 0, villagers.length, "spiritisme");
+    }
+    if (existencePower()) {
+      villagers = assignmentPower(villagers, 0, villagers.length, "voyance");
+    }
     // TODO: émettre un message pour dire que la partie a commencé
+  }
+
+  /* attribution d'un pouvoir */
+  async assignmentPower(villagers, borneMin, borneMax, namePower) {
+    for (let i = borneMin; i < borneMax; i++) {
+      if (villagers[i] != null) {
+        await usersgamesModel.update({ pouvoir: namePower}, { where: {idUsergame: villagers[i].idUsergame}});
+        villagers[i] = null;
+        break;
+      }
+    }
+    return villagers;
+  }
+
+  /* détermine si un pouvoir existe en fonction de la probabilité définie lors de la création de la partie */
+  existencePower() {
+    const res = console.log(Math.random());
+    console.log("proba pouvoir: " + this.#probaPower);
+    console.log("tirage: " + res);
+    return (res < this.#probaPower);
   }
 
   /**
