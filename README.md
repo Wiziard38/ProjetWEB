@@ -7,6 +7,7 @@ Il s'agit d'une application mobile pour un jeu de loup-garou en ligne dans une v
 ## Installation et Lancement
 
 Nous n'avons pas eu le temps de déployer notre projet sous forme d'application mobile (sous forme de package apk).
+Nous n'avons pas non plus eu le temps de déployer le serveur de l'application (backend) sur scalingo.
 
 ### Installation
 
@@ -24,15 +25,28 @@ cd ProjetACOLWEB_camille_colin1_camille_lefevre_jules_fauchon_luca_bitaudeau_mat
 ```shell
 cd Frontend
 npm install
+cd ../Backend
+npm install
+cd ..
 ```
 
 ### Lancement
 
-4. Lancer l'application :
+4. Lancer l'application (Frontend) :
 ```shell
+cd Frontend
 npx expo start
 ```
 Puis suivre les instructions expo qui apparaissent sur le terminal pour ouvrir le projet (scanner un QR code, ou taper sur la touche 'w' pour ouvrir en mode web).
+
+Dans un autre terminal :
+```shell
+cd Backend
+npm run updatedb
+npm run startdev
+```
+
+La commande updatedb permet d'initialiser la base de donnée, puis la commande startdev permet de lancer le serveur localement.
 
 ## Avancement du projet
 
@@ -55,7 +69,12 @@ npx cypress run
 Il faut avoir lancé l'application en mode web au préalable (sé référer au [lancement](#lancement))
 
 ### Backend
-Des tests pour le Backend ont étés réalisés avec supertest.
+Des tests pour le Backend ont étés réalisés avec supertest. Pour les lancer :
+
+```shell
+cd Backend
+npm run test
+```
 
 ## Auteurs
 Mathis Girault
