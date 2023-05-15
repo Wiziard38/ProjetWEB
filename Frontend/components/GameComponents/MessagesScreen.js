@@ -79,14 +79,24 @@ export default function MessagesScreen({ setMenuDepth, socket }) {
             messages={messages}
             flatListRef={flatListRef}
             noMessageText={
-              gameInfos.role === "mort"
+              !gameInfos.isDay &&
+              ((gameInfos.power === "spiritisme" && gameInfos.powerUsed) ||
+                gameInfos.isElectedSpiritism)
+                ? "Bienvenue sur la discussion du spiritisme !"
+                : !gameInfos.isDay &&
+                  gameInfos.role === "humain" &&
+                  gameInfos.power !== "insomnie"
+                ? "Vous n'avez pas accès au repaire des loup-garous !"
+                : gameInfos.role === "mort"
                 ? "Il n'y a pas encore de messages envoyés pour l'instant"
                 : "Soyez le premier a envoyer un message !"
             }
           />
         </View>
 
-        {(gameInfos.role !== "mort" || gameInfos.isElectedSpiritism) && (
+        {(gameInfos.role === "loup-garou" ||
+          gameInfos.isElectedSpiritism ||
+          (gameInfos.role === "humain" && gameInfos.isDay)) && (
           <View style={styles.footerStyle}>
             {Platform.OS === "web" ? (
               <WebTextInput

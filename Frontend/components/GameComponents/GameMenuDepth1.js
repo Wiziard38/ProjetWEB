@@ -35,14 +35,16 @@ export default function GameMenuDepth1({ setMenuDepth, setMenuSelection }) {
       />
       {gameInfos.role !== "mort" && (
         <>
-          <SizedButton
-            buttonLabel="Votes"
-            onPress={() => handlePress("votes")}
-            size="large"
-            buttonStyle={menuStyle}
-            buttonLabelStyle={styles.menuButtonText}
-          />
-          {gameInfos.power !== null && (
+          {(gameInfos.isDay || gameInfos.role === "loup-garou") && (
+            <SizedButton
+              buttonLabel="Votes"
+              onPress={() => handlePress("votes")}
+              size="large"
+              buttonStyle={menuStyle}
+              buttonLabelStyle={styles.menuButtonText}
+            />
+          )}
+          {(gameInfos.power !== null && !gameInfos.isDay) && (
             <SizedButton
               buttonLabel="Pouvoir"
               onPress={() => handlePress("power")}
