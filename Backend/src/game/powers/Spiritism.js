@@ -3,6 +3,7 @@ const States = require("../States");
 const Power = require('./Power.js');
 const Game = require('../Game');
 const messages = require('../../models/messages');
+const discussions = require('../../models/discussions');
 
 class Spiritism extends Power {
     

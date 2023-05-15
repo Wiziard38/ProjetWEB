@@ -29,35 +29,73 @@ function initNamespace(/** @type {Game} */ game) {
     console.log("Fin");
     // Que faire dans ce cas ? on deco l'autre utilisateur et on co celui là ?
     // Déco l'ancienne socket ! A FAIRE
-    if(game.userAlreadyRegistred(username)) {
+    if (game.userAlreadyRegistred(username)) {
       console.log("[Namespace.js] user already connected");
       socket.disconnect();
     }
 
     // Give the user game_data when loading
-    const {idUsergame} = await usersgames.findOne({
+    const { idUsergame } = await usersgames.findOne({
       attributes: ["idUsergame"],
       include: {
         model: users,
         attributes: [],
-        where: {username: username}
+        where: { username: username }
       },
-      where: {gameIdGame: gameID},
+      where: { gameIdGame: gameID },
       raw: true
     });
 
-    const power = await GameManager.getUserRole(userName, gameID);
-    const state = await GameManager.getUserTeam(userName, gameID);
+    // const power = await GameManager.getUserRole(userName, gameID);
+    // const state = await GameManager.getUserTeam(userName, gameID);
+    const { power, role, spiritisme } = await game.getUserInfos(username);
 
-    
+    console.log("Nouvelles")
+    console.log(power)
+    console.log(role)
+    console.log(spiritisme)
+    let playerRole;
+    const States = require('./States.js');
+    if(role === null) {
+      playerRole = States.DEATH;
+      if(spiritisme === 1) {
+        game.setElected(username);
+      }
+    } else {
+      if(role === 'humain') {
+        playerRole = States.HUMAN;
+      } else {
+        playerRole = States.WEREWOLF;
+      }
+    }
+    let playerPower;
+    const Powers = require("./Powers.js")
+    switch(power) {
+      case 'spiritisme':
+        playerPower = Powers.SPIRITISM;
+        break;
+      case 'insomnie':
+        playerPower = Powers.INSOMNIA;
+        break;
+      case 'voyance':
+        playerPower = Powers.PSYCHIC;
+        break;
+      case 'contamination':
+        playerPower = Powers.CONTAMINATION;
+        break;
+      default:
+        playerPower = Powers.NONE;
+    }
+
+
     // Créer des objets
-    const player = new Player(socket.id, username, game, state, power, idUsergame);
+    const player = new Player(socket.id, username, game, playerRole, playerPower, idUsergame);
     // Add the player to the game, it let us find the user with its socket.
     game.addPlayer(player, socket.id);
 
     next();
   })
-  
+
 
   // Function call on connection
   namespace.on('connection', async (socket) => {
@@ -95,7 +133,7 @@ function initNamespace(/** @type {Game} */ game) {
       //player.sendMessage(mes);
       await game.getGameState().sendMessage(player, mes)
     })
-    
+
     socket.on("propVote", (userNameVotant, usernameVote) => {
       console.log("Vote recu");
       socket.emit("receive_msg", `Le joueur ${userNameVotant} a voté contre ${usernameVote}`, "Serveur");
@@ -110,7 +148,7 @@ function initNamespace(/** @type {Game} */ game) {
       // const propVote = await propositionVote.create({})
     });
 
-    
+
     socket.on('vote', async (username) => {
       // When the player send a vote
       // const state = GameManager.states.get(gameID)

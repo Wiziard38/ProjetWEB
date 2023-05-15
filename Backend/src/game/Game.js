@@ -18,7 +18,7 @@ class Game {
   #loopID;
   #gameID;
   #namespace;
-  #electedPlayer;
+  #electedPlayer = "Luca";
   #nbPlayersRequired;
   #beginTime;
   #dayDuration;
@@ -104,7 +104,7 @@ class Game {
 
     const listMessages = [];
 
-    if(discussion !== "none") {
+    if (discussion !== "none") {
       const { idDiscussion } = await discussions.findOne({
         attributes: ["idDiscussion"],
         where: { date: this.getSwitchTime(), typeDiscussion: discussion },
@@ -112,31 +112,31 @@ class Game {
       });
 
       const msgs = await messages.findAll({
-        attributes: ["contenu", "createdAt"],
-        where: {discussionIdDiscussion: idDiscussion},
+        where: { discussionIdDiscussion: idDiscussion },
         include: {
           model: usersgames,
-          attributes: [],
           include: {
-            model: users,
-            attributes: ["username"]
+            model: users
           }
-        },
-        raw: true
+        }
       })
+      // console.log(msgs);
       msgs.forEach(element => {
-        const {contenu, createdAt} = element
-        const sender = element['usersgame.user.username']
+        const { contenu, createdAt } = element
+        const ug = element["usersgame"];
+        const us = ug["user"];
+
         const msg = {
           "contenu": contenu,
           "date": createdAt,
-          "user": sender
+          "user": us["username"]
         }
         listMessages.push(msg)
       });
-      
+
 
     }
+    // console.log(listMessages);
     this.getSocket(socketID).emit("messages", listMessages);
 
   }
@@ -439,6 +439,50 @@ class Game {
 
   getSwitchTime() {
     return this.#switchDate;
+  }
+
+  async getUserInfos(username) {
+    // await vivants.findOne({
+    //   attributes: ["typeVivant", "pouvoir"],
+    //   include: {
+    //     model: etats
+    //   }
+    // })
+    const infos = await usersgames.findOne({
+      include: [{
+        attributes: ['username'],
+        model: users,
+        where: { username: username }
+      }, {
+        model: games,
+        attributes: [],
+        where: { idGame: this.#gameID}
+      }, {
+        model: etats,
+        attributes: [],
+        include: [{
+          attributes: ['typeVivant', 'pouvoir'],
+          model: vivants
+        }, {
+          attributes: ['eluSpiritisme'],
+          model: morts
+        }
+      ]
+      }
+      ],
+      raw: true
+    })
+    
+    console.log(infos)
+    return {
+      role: infos['etat.vivant.typeVivant'],
+      power: infos['etat.vivant.pouvoir'],
+      spiritisme: infos['etat.mort.eluSpiritisme']
+    };
+  }
+
+  setElected(username) {
+    this.#electedPlayer = username;
   }
 }
 

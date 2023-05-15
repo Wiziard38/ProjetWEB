@@ -18,6 +18,7 @@ export default function ListMyGames({ setMenuState, onDisconnect }) {
           onDisconnect();
           window.alert("You are not authentified, please reconnect");
         } else {
+          // console.log(data);
           setParties(data);
         }
       })
