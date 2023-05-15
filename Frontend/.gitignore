@@ -20,3 +20,7 @@ package-lock.json
 
 # config for personnal localhost
 config.js
+
+# Cypress output
+cypress/videos/*
+cypress/screenshots/*

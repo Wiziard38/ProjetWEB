@@ -23,7 +23,6 @@ export default function DropDownPicker({
 }) {
   const pickerMaxHeight = 180;
   const [flatListHeight, setFlatListHeight] = useState(pickerMaxHeight);
-  const [computedPickerHeight, setComputedPickerHeight] = useState(50);
   const flatListRef = useRef(null);
 
   function selectItem(item) {
