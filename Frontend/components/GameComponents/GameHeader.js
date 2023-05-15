@@ -24,7 +24,7 @@ export default function GameHeader() {
 
   const restartTimer = () => {
     clearInterval(timerRef.current);
-    setTime(gameInfos.switchTime / 1000);
+    setTime(Math.floor(gameInfos.switchTime / 1000));
     startTimer();
   };
 

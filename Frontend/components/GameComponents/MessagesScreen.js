@@ -50,11 +50,9 @@ export default function MessagesScreen({ setMenuDepth, socket }) {
   };
 
   const handleMessages = (msg) => {
-    const messageList = JSON.parse(msg);
-    console.log(messageList);
-    const transformedList = messageList.map(({ contenu, date, user }) => ({
+    const transformedList = msg.map(({ contenu, date, user }) => ({
       text: contenu,
-      date: new Date(Date.parse(date)),
+      date: new Date(date),
       sender: user,
     }));
     console.log(transformedList);

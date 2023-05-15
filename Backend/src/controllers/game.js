@@ -133,6 +133,8 @@ module.exports = {
         where: { userIdUser: req.user.idUser },
         include: [{ model: gamesModel }],
       });
+      // console.log(records);
+      // console.log(records.map((record) => record.game));
       res.json(records.map((record) => record.game));
     } catch (error) {
       console.error(error);
