@@ -85,11 +85,11 @@ const daytimes = require("../models/daytimes");
 
   await gamesModel.create({
     nbJoueur: 7,
-    dureeJour: 1*3600,
-    dureeNuit: 1*3600,
+    dureeJour: 6000,
+    dureeNuit: 180000,
     dateDeb: "2023-01-17T04:33:12.000Z",
-    probaPouv: 0,
-    probaLoup: 0,
+    probaPouv: 0.2,
+    probaLoup: 0.3,
     aCommence: true
   });
 
@@ -196,7 +196,7 @@ const daytimes = require("../models/daytimes");
 
   // await vivants.create({
   //   etatId:6,
-  //   typeVivant: "humain",
+  //   typeVivant: "humain",  
   //   pouvoir: "insomnie"
   // });
 

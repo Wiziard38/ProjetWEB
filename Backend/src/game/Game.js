@@ -21,14 +21,14 @@ class Game {
   #playerVoted;
   #namespace;
   #electedPlayer;
-  #nbJoueurTot;
   #nbPlayersRequired;
   #beginTime;
   #dayDuration;
   #nightDuration;
   #probaPower;
   #probaWerewolf
-
+  #UsernameEat
+  #nbWerewolf
   #playerDir = new Map(); // Link socketID to player object
   #socketDir = new Map(); // Link username to socketID
 
@@ -96,6 +96,13 @@ class Game {
     return this.#gameState === GameState.NIGHT;
   }
 
+  getUsernameEat() {
+    return this.#UsernameEat
+  }
+
+  setusernameEat(username) {
+    this.#UsernameEat = username
+  }
   /**
    * End the game and close all connections
    */
@@ -160,6 +167,9 @@ class Game {
     return this.#playerVoted;
   }
 
+  getNbWerewolf(){
+    return this.#nbWerewolf
+  }
   setPlayerVoted(bool) {
     this.#playerVoted = bool;
   }
@@ -202,9 +212,7 @@ class Game {
       },
       raw: true
     });
-    console.log("Les morts sont:", deads);
     const listDeads = deads.map(obj => obj['etat.usersgame.user.username']);
-    console.log("La listes des noms des morts et donc: ", listDeads);
 
     const alive = await vivants.findAll({
       attributes: [],
@@ -262,8 +270,8 @@ class Game {
       listeJoueursMorts: listDeads,
       listeJoueursVivants: listAlive
     };
-
-    // console.log(gameData);
+    this.#nbWerewolf = gameData.nbLoup;
+    console.log(gameData);
     this.getSocket(socketID).emit("game_data", JSON.stringify(gameData));
   }
 
@@ -422,6 +430,9 @@ class Game {
 
   async dayChange() {
     const currentDaytime = await daytimes.findOne({where: {current: true}});
+    if (this.#UsernameEat) {
+      io.of(this.#namespace).emit("receive_msg", `Le joueur ${this.#UsernameEat} s'est fait miammiaaaam hier soir`, 'Serveur');
+    }
     if (currentDaytime) {
       await currentDaytime.update({current: false});
       await currentDaytime.save();
