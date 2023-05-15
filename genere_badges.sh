@@ -1,6 +1,6 @@
 JSFILEFRONT=js_report_front.txt
 JSFILEBACK=js_report_back.txt
-# CYFILE=cypress_report.txt
+CYFILE=cypress_report.txt
 # STFILE=Jtest_report.txt
 
 # =========================================
@@ -57,21 +57,21 @@ fi
 #       Badge pour les tests
 # ====================================
 
-# if test -f "$CYFILE"; then
-#     # On recupere pour le test si il est passé ou non
-#     PASSING=$(cat $CYFILE | grep -e "✔" | grep -e "frontendTests.cy.js" | wc -l);
-#     if [[ "$PASSING" -eq "1" ]]; then
-#         # Le test est passé
-#         echo "==========================================="
-#         wget https://img.shields.io/badge/tests-success-green?style=plastic -O cy_tests.svg
-#     else 
-#         # Le test est raté
-#         wget https://img.shields.io/badge/tests-failed-red?style=plastic -O cy_tests.svg
-#     fi
-# else
-#     # Le fichier de rapport n'existe pas
-#     wget https://img.shields.io/badge/tests-unknown-lightgray?style=plastic -O cy_tests.svg
-# fi
+if test -f "$CYFILE"; then
+    # On recupere pour le test si il est passé ou non
+    PASSING=$(cat $CYFILE | grep -e "✔" | grep -e "frontendTests.cy.js" | wc -l);
+    if [[ "$PASSING" -eq "1" ]]; then
+        # Le test est passé
+        echo "==========================================="
+        wget https://img.shields.io/badge/tests-success-green?style=plastic -O cy_tests.svg
+    else 
+        # Le test est raté
+        wget https://img.shields.io/badge/tests-failed-red?style=plastic -O cy_tests.svg
+    fi
+else
+    # Le fichier de rapport n'existe pas
+    wget https://img.shields.io/badge/tests-unknown-lightgray?style=plastic -O cy_tests.svg
+fi
 
 # if test -f "$STFILE"; then
 #     # On recupere pour le test si il est passé ou non
