@@ -160,6 +160,9 @@ class Game {
     return this.#playerVoted;
   }
 
+  setPlayerVoted(bool) {
+    this.#playerVoted = bool;
+  }
   /**
    * Send to the player the current state of the game
    * @param {*} socketID 
@@ -199,7 +202,9 @@ class Game {
       },
       raw: true
     });
+    console.log("Les morts sont:", deads);
     const listDeads = deads.map(obj => obj['etat.usersgame.user.username']);
+    console.log("La listes des noms des morts et donc: ", listDeads);
 
     const alive = await vivants.findAll({
       attributes: [],

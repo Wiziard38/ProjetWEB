@@ -11,6 +11,7 @@ const etats = require("../../models/etats");
 const games = require('../../models/games');
 const ratifications = require("../../models/ratifiacations");
 const daytimes = require('../../models/daytimes');
+const morts = require("../../models/morts");
 const vivants = require('../../models/vivants');
 class Alive extends State {
 
@@ -116,7 +117,7 @@ class Alive extends State {
                 await prop.update({ nbVotant: prop.nbVotant + 1 });
                 await prop.save();
                 io.of(game.getNamespace()).emit("receive_msg", `Le joueur ${player.getUsername()} a ratifié le vote contre ${usernameVote} `, 'Serveur');
-                
+                console.log(prop.nbVotant, game.getNbJoueur());
                 if (prop.nbVotant > game.getNbJoueur() / 2) {
                   await morts.create({
                     eluSpiritisme: false,
