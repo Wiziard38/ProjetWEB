@@ -133,8 +133,6 @@ function initNamespace(/** @type {Game} */ game) {
       } else {
         socket.emit("receive_msg", "Attention le vote a déjà été décidé, vous ne pouvez plus voter ou ratifier de vote")
       }
-      
-      
     });
 
     socket.on("ratification", async (usernameVotant, usernameVote) => {
@@ -145,8 +143,8 @@ function initNamespace(/** @type {Game} */ game) {
         if (game.isDay() || usergamesVotant.etat.vivant.typeVivant === "loup-garou") {
           const prop = await propositionVotes.findOne({
             include: {
-              model: usersgames, 
-              as: "usernameVote", 
+              model: usersgames,
+              as: "usernameVote",
               include: [
                 {model: users, where: {username: usernameVote}},
               ],

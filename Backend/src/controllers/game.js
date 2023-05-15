@@ -10,7 +10,8 @@ module.exports = {
     const user = req.user;
     const idGame = req.params.idGame;
     if (user.admin) {
-      await gamesModel.findOne({where: {idGame : idGame}}).destroy();
+      const game = await gamesModel.findOne({where: {idGame : idGame}})
+      await game.destroy();
       res.json({status: true});
     }
     else {
