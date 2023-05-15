@@ -138,73 +138,73 @@ const daytimes = require("../models/daytimes");
     userIdUser: 9
   });
 
-  await etats.create({
-    usersgameIdUsergame: 1
-  });
+  // await etats.create({
+  //   usersgameIdUsergame: 1
+  // });
 
-  await etats.create({
-    usersgameIdUsergame: 2
-  });
+  // await etats.create({
+  //   usersgameIdUsergame: 2
+  // });
 
-  await etats.create({
-    usersgameIdUsergame: 3
-  });
+  // await etats.create({
+  //   usersgameIdUsergame: 3
+  // });
 
-  await etats.create({
-    usersgameIdUsergame: 4
-  });
+  // await etats.create({
+  //   usersgameIdUsergame: 4
+  // });
 
-  await etats.create({
-    usersgameIdUsergame: 5
-  });
+  // await etats.create({
+  //   usersgameIdUsergame: 5
+  // });
 
-  await etats.create({
-    usersgameIdUsergame: 6
-  });
+  // await etats.create({
+  //   usersgameIdUsergame: 6
+  // });
 
-  await etats.create({
-    usersgameIdUsergame: 7
-  });
+  // await etats.create({
+  //   usersgameIdUsergame: 7
+  // });
 
-  await morts.create({
-    etatId:1,
-    eluSpiritisme: true
-  });
+  // await morts.create({
+  //   etatId:1,
+  //   eluSpiritisme: true
+  // });
 
-  await vivants.create({
-    etatId:2,
-    typeVivant: "humain",
-    pouvoir: null,
-  });
+  // await vivants.create({
+  //   etatId:2,
+  //   typeVivant: "humain",
+  //   pouvoir: null,
+  // });
 
-  await vivants.create({
-    etatId:3,
-    typeVivant: "loup-garou"
-  });
+  // await vivants.create({
+  //   etatId:3,
+  //   typeVivant: "loup-garou"
+  // });
 
-  await vivants.create({
-    etatId:4,
-    typeVivant: "loup-garou",
-    pouvoir: "contamination"
-  });
+  // await vivants.create({
+  //   etatId:4,
+  //   typeVivant: "loup-garou",
+  //   pouvoir: "contamination"
+  // });
 
-  await vivants.create({
-    etatId:5,
-    typeVivant: "humain",
-    pouvoir: "spiritisme"
-  });
+  // await vivants.create({
+  //   etatId:5,
+  //   typeVivant: "humain",
+  //   pouvoir: "spiritisme"
+  // });
 
-  await vivants.create({
-    etatId:6,
-    typeVivant: "humain",
-    pouvoir: "insomnie"
-  });
+  // await vivants.create({
+  //   etatId:6,
+  //   typeVivant: "humain",
+  //   pouvoir: "insomnie"
+  // });
 
-  await vivants.create({
-    etatId:7,
-    typeVivant: "humain",
-    pouvoir: "voyance"
-  });
+  // await vivants.create({
+  //   etatId:7,
+  //   typeVivant: "humain",
+  //   pouvoir: "voyance"
+  // });
 
   // Ajouter ici le code permettant d'initialiser par défaut la base de donnée
 })();

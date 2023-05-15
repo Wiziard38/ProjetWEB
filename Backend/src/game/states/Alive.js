@@ -72,6 +72,7 @@ class Alive extends State {
 
     async ratifJour(game, usernameVote, player) {
         console.log("ratification recu de ", player.getUsername(), "sur", usernameVote);
+        console.log(game.getPlayerVoted());
         if (!game.getPlayerVoted()) {
             const usergamesVote = await usersgames.findOne({
                 include: [
@@ -119,16 +120,18 @@ class Alive extends State {
                 io.of(game.getNamespace()).emit("receive_msg", `Le joueur ${player.getUsername()} a ratifié le vote contre ${usernameVote} `, 'Serveur');
                 console.log(prop.nbVotant, game.getNbJoueur());
                 if (prop.nbVotant > game.getNbJoueur() / 2) {
-                  await morts.create({
-                    eluSpiritisme: false,
-                    etatId: usergamesVote.etat.etatId,
-                  });
-                  if (usergamesVote.etat.vivant) {
-                    await usergamesVote.etat.vivant.destroy();
-                  }
-                  io.of(game.getNamespace()).removeAllListeners("ratification");
-                  io.of(game.getNamespace()).removeAllListeners("propVote");
-                  io.of(game.getNamespace()).emit("receive_msg", `Le joueur ${usernameVote} a été voté a plus de 50% et donc est eliminé `, 'Serveur');
+                    game.setPlayerVoted(true);
+                    console.log('etatId', usergamesVote.etat.id);
+                    await morts.create({
+                        eluSpiritisme: false,
+                        etatId: usergamesVote.etat.id,
+                    });
+                    if (usergamesVote.etat.vivant) {
+                        await usergamesVote.etat.vivant.destroy();
+                    }
+                    io.of(game.getNamespace()).removeAllListeners("ratification");
+                    io.of(game.getNamespace()).removeAllListeners("propVote");
+                    io.of(game.getNamespace()).emit("receive_msg", `Le joueur ${usernameVote} a été voté a plus de 50% et donc est eliminé `, 'Serveur');
                 } else {
                     io.of(game.getNamespace()).emit("recepRat", usernameVote, prop.nbVotant);
                 }

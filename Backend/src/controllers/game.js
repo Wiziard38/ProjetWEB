@@ -106,18 +106,22 @@ module.exports = {
             model: usersgamesModel,
             as: "usernameVote",
             where: { gameIdGame: idGame },
+            include: {model: users}
           },
           {model: daytimes, where: {current: true}}
         ],
       });
 
+      
       let deadPlayers = await morts.findAll({
-        include: {model:etats, include: {model: usersgamesModel, include: {model: users, attributes: ["username"]}}},
+        include: {model:etats, require: true, include: {model: usersgamesModel, require: true, include: {model: users, required: true}}},
         });
+        console.log(deadPlayers)
       deadPlayers = deadPlayers.map(
-        (obj) => obj['etat.usersgame.user.username']
+        (obj) => obj.etat.usersgame.user.username
       );
       console.log("deadPlayers",deadPlayers);
+      console.log("prop:", propositions)
       const playersVoted = propositions.map(
         (prop) => prop.usernameVote.user.username
       );
