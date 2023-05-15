@@ -43,7 +43,7 @@ class Game {
     console.log("date actuelle: " + new Date());
     this.#gameID = id;
     this.#nbPlayersRequired = nbJoueur;
-    this.#beginTime = dateDeb.getTime() - new Date().getTime(); // TODO: traduire date en millisecondes
+    this.#beginTime = Math.max(dateDeb.getTime() - new Date().getTime(), 0); // TODO: traduire date en millisecondes
     console.log("durée avant début : " + this.#beginTime);
     this.#dayDuration = dureeJour * 1000; // traduction de secondes en millisecondes
     this.#nightDuration = dureeNuit * 1000; // traduction de secondes en millisecondes
