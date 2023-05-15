@@ -43,6 +43,7 @@ export default function ConnectedHeader({
 
         <Pressable onPress={onDisconnect} style={{ marginLeft: 10 }}>
           <Image
+            nativeID="disconnectButton"
             style={styles.headerIcon}
             source={require("../assets/images/logout-icon.png")}
             resizeMethod="scale"

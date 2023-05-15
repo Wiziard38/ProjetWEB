@@ -24,13 +24,13 @@ export default function GameHeader() {
 
   const restartTimer = () => {
     clearInterval(timerRef.current);
-    setTime(gameInfos.switchTime / 1000);
+    setTime(Math.floor(gameInfos.switchTime / 1000));
     startTimer();
   };
 
   useEffect(() => {
     restartTimer(); // Reset the timer when isDay or switchTime changes
-    
+
     return () => {
       clearInterval(timerRef.current);
     };
@@ -46,6 +46,7 @@ export default function GameHeader() {
 
       <View>
         <Image
+          testID="gameHeaderIcon"
           style={styles.gameTimeIcon}
           source={
             gameInfos.isDay
@@ -57,7 +58,7 @@ export default function GameHeader() {
         />
       </View>
 
-      <View style={styles.timeContainer}>
+      <View style={styles.timeContainer} testID="gameHeaderTimer">
         <SizedText
           label={`${secondsToHHMMSS(time)}`}
           size="normal"

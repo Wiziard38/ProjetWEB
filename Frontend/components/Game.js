@@ -18,53 +18,53 @@ export default function Game({ token }) {
   useEffect(() => {
     AsyncStorage.getItem("idGame").then((idGame) => {
       // TODO RECUP TOUTES LES INFOS DE LA PARTIE
-      setGameInfos({
-        isDay: true,
-        role: "LG",
-        power: "Voyance",
-        powerUsed: false,
-        isElectedSpiritism: false,
-        switchTime: 0,
-        infos: {
-          createdAt: "2023-04-27T08:19:34.987Z",
-          dateDeb: "2023-01-17T04:33:12.000Z",
-          dureeJour: 3600,
-          dureeNuit: 3600,
-          idGame: 1,
-          nbJoueur: 7,
-          probaLoup: 0,
-          probaPouv: 0,
-        },
-        listeJoueurs: [
-          "mathis",
-          "lucacao",
-          "marcel",
-          "marcelle",
-          "camilleCosmique",
-          "joueur1",
-          "joueur2",
-          "joue",
-          "joueur4",
-          "joueur5",
-        ],
-        listeJoueursMorts: [
-          "mathis",
-          "marcel",
-          "camilleCosmique",
-          "joueur1",
-          "joueur2",
-          "joueur4",
-        ],
-        listeJoueursVivants: [
-          "lucacao",
-          "marcelle",
-          "joue",
-          "joueur5",
-          "joueur1214432",
-          "joueur6",
-          "joueur7",
-        ],
-      });
+      // setGameInfos({
+      //   isDay: true,
+      //   role: "LG",
+      //   power: "Voyance",
+      //   powerUsed: false,
+      //   isElectedSpiritism: false,
+      //   switchTime: 0,
+      //   infos: {
+      //     createdAt: "2023-04-27T08:19:34.987Z",
+      //     dateDeb: "2023-01-17T04:33:12.000Z",
+      //     dureeJour: 3600,
+      //     dureeNuit: 3600,
+      //     idGame: 1,
+      //     nbJoueur: 7,
+      //     probaLoup: 0,
+      //     probaPouv: 0,
+      //   },
+      //   listeJoueurs: [
+      //     "mathis",
+      //     "lucacao",
+      //     "marcel",
+      //     "marcelle",
+      //     "camilleCosmique",
+      //     "joueur1",
+      //     "joueur2",
+      //     "joue",
+      //     "joueur4",
+      //     "joueur5",
+      //   ],
+      //   listeJoueursMorts: [
+      //     "mathis",
+      //     "marcel",
+      //     "camilleCosmique",
+      //     "joueur1",
+      //     "joueur2",
+      //     "joueur4",
+      //   ],
+      //   listeJoueursVivants: [
+      //     "lucacao",
+      //     "marcelle",
+      //     "joue",
+      //     "joueur5",
+      //     "joueur1214432",
+      //     "joueur6",
+      //     "joueur7",
+      //   ],
+      // });
     });
   }, []);
 
@@ -79,7 +79,7 @@ export default function Game({ token }) {
       });
 
       socket.current.on("connect", () => {
-        console.log("Connected to server");
+        socket.current.emit("ask_game_data");
         // socket.emit('proposal', 'bin voui c ez');
       });
 
@@ -89,7 +89,9 @@ export default function Game({ token }) {
       });
 
       socket.current.on("game_data", (msg) => {
-        // console.log(msg);
+        // console.log(msg)
+        console.log("game_data reçu")
+        setGameInfos(JSON.parse(msg));
       });
 
       socket.current.on("day", (msg, dayDuration) => {

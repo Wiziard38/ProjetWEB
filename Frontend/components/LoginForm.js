@@ -12,8 +12,8 @@ export default function LoginForm(props) {
   const [passwordPlaceholder, setPasswordPlaceholder] = useState("Password");
   const [placeholderColor, setPlaceholderColor] = useState("#d1d1d1");
 
-  const [switchText, setSwitchText] = useState("Je m'inscrit");
   const [submitText, setSubmitText] = useState("Se connecter");
+  const [switchText, setSwitchText] = useState("Je m'inscris");
 
   useEffect(() => {
     if (props.loggingState) {

@@ -1,5 +1,12 @@
 import React from "react";
-import { StyleSheet, View, Pressable, Image, Dimensions } from "react-native";
+import {
+  StyleSheet,
+  View,
+  Pressable,
+  Image,
+  Dimensions,
+  Platform,
+} from "react-native";
 import PropTypes from "prop-types";
 import InfosGame from "./InfosGame";
 import Votes from "./Votes";
@@ -7,9 +14,19 @@ import Powers from "./Powers";
 import Rules from "./Rules";
 import Archives from "./Archives";
 
-export default function GameMenuDepth2({ socket, setMenuDepth, menuSelection }) {
-  const windowWidth = Dimensions.get("window").width * 0.87;
-  const windowHeight = Dimensions.get("window").height * 0.73;
+export default function GameMenuDepth2({
+  socket,
+  setMenuDepth,
+  menuSelection,
+}) {
+  const windowWidth =
+    Platform.OS !== "web"
+      ? Dimensions.get("window").width * 0.87
+      : Dimensions.get("window").width * 0.92;
+  const windowHeight =
+    Platform.OS !== "web"
+      ? Dimensions.get("window").height * 0.73
+      : Dimensions.get("window").height * 0.87;
 
   return (
     <View
@@ -27,7 +44,7 @@ export default function GameMenuDepth2({ socket, setMenuDepth, menuSelection }) 
         {menuSelection === "infos" ? (
           <InfosGame />
         ) : menuSelection === "votes" ? (
-          <Votes socket = {socket}/>
+          <Votes socket={socket} />
         ) : menuSelection === "power" ? (
           <Powers />
         ) : menuSelection === "rules" ? (

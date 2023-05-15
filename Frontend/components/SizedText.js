@@ -9,17 +9,17 @@ export default function SizedText({ label, size, textStyle }) {
 
   // Set textSize based on size prop
   if (size === "mini") {
-    textSize = width / 30;
+    textSize = width < 400 ? width / 30 : width / 44;
   } else if (size === "small") {
-    textSize = width / 26;
+    textSize = width < 400 ? width / 26 : width / 40;
   } else if (size === "normal") {
-    textSize = width / 24;
+    textSize = width < 400 ? width / 24 : width / 36;
   } else if (size === "large") {
-    textSize = width / 20;
+    textSize = width < 400 ? width / 20 : width / 32;
   } else if (size === "xlarge") {
-    textSize = width / 16;
+    textSize = width < 400 ? width / 16 : width / 28;
   } else if (size === "xxlarge") {
-    textSize = width / 14;
+    textSize = width < 400 ? width / 14 : width / 24;
   }
 
   return (

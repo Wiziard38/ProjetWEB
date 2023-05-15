@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Pressable,
   Image,
+  Platform,
 } from "react-native";
 import PropTypes from "prop-types";
 import SizedText from "../SizedText";
@@ -22,6 +23,7 @@ export default function DropDownPicker({
 }) {
   const pickerMaxHeight = 180;
   const [flatListHeight, setFlatListHeight] = useState(pickerMaxHeight);
+  const [computedPickerHeight, setComputedPickerHeight] = useState(50);
   const flatListRef = useRef(null);
 
   function selectItem(item) {
@@ -64,13 +66,15 @@ export default function DropDownPicker({
           style={[
             styles.container,
             openDirection === "TOP"
-              ? {
-                  flexDirection: "column-reverse",
-                  marginTop: -flatListHeight,
-                }
+              ? { flexDirection: "column-reverse", marginTop: -flatListHeight }
               : { flexDirection: "column", marginBottom: -flatListHeight },
             open && { zIndex: 8888 },
-            { height: 50 + flatListHeight },
+            {
+              height:
+                Platform.OS === "web"
+                  ? 60 + flatListHeight
+                  : 50 + flatListHeight,
+            },
           ]}
         >
           <Pressable
@@ -110,6 +114,7 @@ export default function DropDownPicker({
               resizeMode="contain"
             />
           </Pressable>
+
           {open && (
             <View style={{ height: flatListHeight }}>
               <FlatList

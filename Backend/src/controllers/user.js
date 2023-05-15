@@ -99,7 +99,7 @@ module.exports = {
     console.log(user);
 
     if (user != null) {
-      res.status(201).json({ status: true, username: user.username });
+      res.status(201).json({ status: true, username: user.username, admin: user.admin });
     } else {
       res.status(401).json({ status: false, message: "No user found" });
     }
