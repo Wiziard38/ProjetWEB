@@ -23,7 +23,6 @@ export default function DropDownPicker({
 }) {
   const pickerMaxHeight = 180;
   const [flatListHeight, setFlatListHeight] = useState(pickerMaxHeight);
-  const [computedPickerHeight, setComputedPickerHeight] = useState(50);
   const flatListRef = useRef(null);
 
   function selectItem(item) {
@@ -31,6 +30,9 @@ export default function DropDownPicker({
   }
 
   function renderItem({ item }) {
+    if (item === null) {
+      return ;
+    }
     return (
       <TouchableOpacity
         onPress={() => {

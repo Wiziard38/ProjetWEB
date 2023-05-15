@@ -82,5 +82,25 @@ class Player {
     return this.#userGameID;
   }
 
+  getSocketId() {
+    return this.#socketID;
+  }
+
+  async voteJour(game, usernameVote) {
+      this.#state.voteJour(game, usernameVote, this);
+  }
+
+  async voteNuit(game, usernameVote) { {
+      this.#state.voteNuit(game, usernameVote, this);
+    }
+  }
+
+  async ratifJour(game, usernameVote) {
+      this.#state.ratifJour(game, usernameVote, this);
+  }
+
+  async ratifNuit(game, usernameVote) {
+    this.#state.ratifNuit(game, usernameVote, this);
+}
 }
 module.exports = Player;

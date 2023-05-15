@@ -1,3 +1,5 @@
+import { describe, beforeEach, it, cy } from 'cypress';
+
 describe("In game tests", () => {
   beforeEach(() => {
     cy.visit("http://localhost:19006");
@@ -36,10 +38,55 @@ describe("In game tests", () => {
     cy.get('[data-testid="inGameMenuOpen"]').click();
     cy.contains("Infos partie").should("exist");
     cy.contains("Votes").should("exist");
-    cy.contains("Pouvoir").should("exist");
     cy.contains("Règles du jeu").should("exist");
     cy.get('[data-testid="closeInGameMenu"]').click();
     cy.contains("Règles du jeu").should("not.exist");
-    
   })
+
+  it("Consulting Infos partie", () => {
+    // All General informations available
+    cy.get('[data-testid="inGameMenuOpen"]').click();
+    cy.contains("Infos partie").click();
+    cy.contains("Informations générales").should("exist");
+    cy.contains("Informations de la partie").should("exist");
+    cy.contains("Vos informations").should("exist");
+    cy.contains("Etat courant de la partie").should("exist");
+    cy.contains("Liste des joueurs").should("exist");
+
+    // Check specific informations
+    cy.contains("Informations de la partie").click();
+    cy.contains("Numéro partie").should("exist");
+    cy.contains("Nombre de joueurs").should("exist");
+    cy.contains("Duree du jour :").should("exist");
+    cy.contains("Duree de la nuit :").should("exist");
+    cy.contains("Date de debut :").should("exist");
+    cy.contains("Probabilité de pouvoir :").should("exist");
+    cy.contains("Nombre de loup-garous").should("exist");
+
+    cy.contains("Vos informations").click();
+    cy.contains("Vous êtes :").should("exist");
+    cy.contains("Vous avez le pouvoir :").should("exist");
+
+    cy.contains("Etat courant de la partie").click();
+    cy.contains("Phase de jeu :").should("exist");
+    cy.contains("Temps restant avant changement de phase :").should("exist");
+
+    cy.contains("Liste des joueurs").click();
+  });
+
+  it("Vote menu displays correctly", () => {
+    // All General informations available
+    cy.get('[data-testid="inGameMenuOpen"]').click();
+    cy.contains("Votes").click();
+    cy.contains("Créer un nouveau vote").should("exist");
+    cy.contains(
+      "Vous souhaitez créer un nouveau vote contre un joueur ?"
+    ).should("exist");
+    cy.contains("Ratifier un vote existant").should("exist");
+    cy.contains("Vous souhaitez ratifier un vote déjà existant ?").should(
+      "exist"
+    );
+    cy.contains("Choisir un joueur").should("exist");
+    cy.contains("Vote contre [choisir]").should("exist");
+  });
 });

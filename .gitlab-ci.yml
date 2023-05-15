@@ -31,19 +31,23 @@ lint-js-back: # Vérification de la qualité du code javascript pour le front
     paths:
       - js_report_back.txt
 
-# jobcypress:
-#   stage: test
-#   tags:
-#     - docker  # Comme on utilise une image pour isoler on doit utiliser un runner docker
-#   image: cypress/base:16.18.1 # Image fournie par cypress avec ce qu'il faut
-#   script:
-#     - cd backendsqlite && npm i # Installe ce qui est décrit dans package.json
-#     - npm run startdev & # Lance le serveur
-#     - npx cypress run > ../cypress_report.txt # Lance les tests
-#     # - kill -9 $(ps | grep node | awk '{print $1}') # Cette ligne pourrait permettre de tuer serve
-#   artifacts:            # Le rapport sera disponible pour d'autres jobs
-#     paths:
-#       - cypress_report.txt
+jobcypress:
+  stage: test
+  tags:
+    - docker  # Comme on utilise une image pour isoler on doit utiliser un runner docker
+  image: cypress/base:16.18.1 # Image fournie par cypress avec ce qu'il faut
+  before_script:
+    - apt-get update && apt-get install -y tmux
+  script:
+    - cd Frontend && npm i # Installe ce qui est décrit dans package.json
+    - tmux new-session -d -s expo 'npx expo start -w' # Lancer sur un autre terminal car expo ne peut pas etre lancé en background
+    - sleep 10 # Wait for Expo to start 
+    - npx cypress run > ../cypress_report.txt # Lance les tests
+    - kill $(lsof -t -i:19000)  # kill serveur expo apres tests
+  artifacts:            # Le rapport sera disponible pour d'autres jobs
+    paths:
+      - cypress_report.txt
+  when: always
 
 # jobsuppertest:
 #   stage: test
@@ -97,13 +101,13 @@ badges:
   dependencies:
     - lint-js-front
     - lint-js-back
-    # - jobcypress
+    - jobcypress
     # - jobsuppertest
   artifacts:
     paths:
       # These svg will be used by gitlab for displaying badges.
       - js_lint_front.svg
       - js_lint_back.svg
+      - cy_tests.svg
       # - Jtests.svg
-      # - cy_tests.svg
   when: always # Et quoiqu'il arrive la génération des badges devra se faire.

@@ -1,3 +1,5 @@
+import { describe, beforeEach, it, cy } from 'cypress';
+
 describe("Verification of the LoginForm errors", () => {
   beforeEach(() => {
     cy.visit("http://localhost:19006");

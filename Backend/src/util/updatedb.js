@@ -8,6 +8,7 @@ const morts = require("../models/morts");
 const propVote = require("../models/propositionVotes");
 const ratifications = require("../models/ratifiacations");
 const vivants = require("../models/vivants");
+const daytimes = require("../models/daytimes");
 // Ajouter ici les nouveaux require des nouveaux modèles
 
 // eslint-disable-next-line no-unexpected-multiline
@@ -19,13 +20,14 @@ const vivants = require("../models/vivants");
   await usersModel.sync({ force: true });
   await gamesModel.sync({ force: true });
   await usersgamesModel.sync({ force: true });
-  await discussions.sync({ force: true });
   await etats.sync({ force: true });
-  await messages.sync({ force: true });
   await morts.sync({ force: true });
+  await daytimes.sync({force: true});
   await propVote.sync({ force: true });
   await ratifications.sync({ force: true });
   await vivants.sync({ force: true });
+  await discussions.sync({ force: true });
+  await messages.sync({ force: true });
   // Initialise la base avec quelques données
   await usersModel.create({
     username: "Luca",
@@ -83,11 +85,11 @@ const vivants = require("../models/vivants");
 
   await gamesModel.create({
     nbJoueur: 7,
-    dureeJour: 1*3600,
-    dureeNuit: 1*3600,
+    dureeJour: 6000,
+    dureeNuit: 180000,
     dateDeb: "2023-01-17T04:33:12.000Z",
-    probaPouv: 0,
-    probaLoup: 0,
+    probaPouv: 0.2,
+    probaLoup: 0.3,
     aCommence: true
   });
 
@@ -136,84 +138,73 @@ const vivants = require("../models/vivants");
     userIdUser: 9
   });
 
-  await etats.create({
-    usersgameIdUsergame: 1
-  });
+  // await etats.create({
+  //   usersgameIdUsergame: 1
+  // });
 
-  await etats.create({
-    usersgameIdUsergame: 2
-  });
+  // await etats.create({
+  //   usersgameIdUsergame: 2
+  // });
 
-  await etats.create({
-    usersgameIdUsergame: 3
-  });
+  // await etats.create({
+  //   usersgameIdUsergame: 3
+  // });
 
-  await etats.create({
-    usersgameIdUsergame: 4
-  });
+  // await etats.create({
+  //   usersgameIdUsergame: 4
+  // });
 
-  await etats.create({
-    usersgameIdUsergame: 5
-  });
+  // await etats.create({
+  //   usersgameIdUsergame: 5
+  // });
 
-  await etats.create({
-    usersgameIdUsergame: 6
-  });
+  // await etats.create({
+  //   usersgameIdUsergame: 6
+  // });
 
-  await etats.create({
-    usersgameIdUsergame: 7
-  });
+  // await etats.create({
+  //   usersgameIdUsergame: 7
+  // });
 
-  await morts.create({
-    etatId:1,
-    eluSpiritisme: true
-  });
+  // await morts.create({
+  //   etatId:1,
+  //   eluSpiritisme: true
+  // });
 
-  await vivants.create({
-    etatId:2,
-    typeVivant: "humain",
-    pouvoir: null,
-  });
+  // await vivants.create({
+  //   etatId:2,
+  //   typeVivant: "humain",
+  //   pouvoir: null,
+  // });
 
-  await vivants.create({
-    etatId:3,
-    typeVivant: "loup-garou"
-  });
+  // await vivants.create({
+  //   etatId:3,
+  //   typeVivant: "loup-garou"
+  // });
 
-  await vivants.create({
-    etatId:4,
-    typeVivant: "loup-garou",
-    pouvoir: "contamination"
-  });
+  // await vivants.create({
+  //   etatId:4,
+  //   typeVivant: "loup-garou",
+  //   pouvoir: "contamination"
+  // });
 
-  await vivants.create({
-    etatId:5,
-    typeVivant: "humain",
-    pouvoir: "spiritisme"
-  });
+  // await vivants.create({
+  //   etatId:5,
+  //   typeVivant: "humain",
+  //   pouvoir: "spiritisme"
+  // });
 
-  await vivants.create({
-    etatId:6,
-    typeVivant: "humain",
-    pouvoir: "insomnie"
-  });
+  // await vivants.create({
+  //   etatId:6,
+  //   typeVivant: "humain",  
+  //   pouvoir: "insomnie"
+  // });
 
-  await vivants.create({
-    etatId:7,
-    typeVivant: "humain",
-    pouvoir: "voyance"
-  });
-
-  await propVote.create({
-    idProp: 1,
-    usernameVotantId: 1,
-    usernameVotantIdUsergame: 1,
-    usernameVoteIdUsergame: 2,  
-    usernameVoteId: 2,
-    nbVotant: 1
-  });
-
-  
+  // await vivants.create({
+  //   etatId:7,
+  //   typeVivant: "humain",
+  //   pouvoir: "voyance"
+  // });
 
   // Ajouter ici le code permettant d'initialiser par défaut la base de donnée
 })();

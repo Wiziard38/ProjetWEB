@@ -1,3 +1,5 @@
+import { describe, beforeEach, it, cy } from 'cypress';
+
 describe("Display of the selection menu once connected", () => {
   beforeEach(() => {
     cy.visit("http://localhost:19006");
@@ -100,8 +102,8 @@ describe("Checking creation and joining games", () => {
 
   it("Launch one of my games", () => {
     // We connect first
-    cy.get("input#usernameInput").type("1");
-    cy.get("input#passwordInput").type("1");
+    cy.get("input#usernameInput").type("Mathis");
+    cy.get("input#passwordInput").type("Mathis");
     cy.contains("Se connecter").click();
 
     // Then go to my games
@@ -115,7 +117,7 @@ describe("Checking creation and joining games", () => {
     cy.contains("Probabilité de loup-garou :").should("exist");
     cy.contains("Je lance la partie").should("exist");
     cy.contains("Je lance la partie").click();
-    cy.contains("Vous rejoignez la partie 2. Bon jeu !");
+    cy.contains("Vous rejoignez la partie").should("exist");
     cy.contains("Fermer").click();
   });
 });

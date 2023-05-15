@@ -2,7 +2,7 @@ import React, { useRef, useState, useEffect } from "react";
 import PropTypes from "prop-types";
 import { View, StyleSheet, ImageBackground } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import SocketIOClient, { connect } from "socket.io-client";
+import SocketIOClient from "socket.io-client";
 import MessagesScreen from "./GameComponents/MessagesScreen";
 import GameMenuDepth0 from "./GameComponents/GameMenuDepth0";
 import GameHeader from "./GameComponents/GameHeader";
@@ -20,9 +20,7 @@ export default function Game({ token }) {
     AsyncStorage.getItem("idGame").then((idGame) => {
       if (socket.current === null) {
         socket.current = SocketIOClient(`${BACKEND}/${idGame}`, {
-          auth: {
-            token: token,
-          },
+          auth: { token },
         });
 
         socket.current.on("connect", () => {
@@ -48,6 +46,7 @@ export default function Game({ token }) {
             isDay: true,
             switchTime: dayDuration,
           }));
+          setMenuDepth(0);
         });
 
         socket.current.on("night", (msg, nightDuration) => {
@@ -57,6 +56,7 @@ export default function Game({ token }) {
             isDay: false,
             switchTime: nightDuration,
           }));
+          setMenuDepth(0);
         });
 
         socket.current.on("begin", (msg) => {
