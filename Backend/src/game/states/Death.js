@@ -37,6 +37,7 @@ class Death extends State {
       return false;
     }
   }
+
 }
 
 module.exports = Death;

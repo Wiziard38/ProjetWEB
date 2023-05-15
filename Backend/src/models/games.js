@@ -34,7 +34,7 @@ const games = db.define("games", {
   aCommence: {
     type: Sequelize.BOOLEAN,
     allowNull: false,
-  }
+  },
 });
 
 module.exports = games;

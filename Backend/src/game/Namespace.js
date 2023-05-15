@@ -4,12 +4,6 @@ const Player = require("./Player.js");
 const getUserNameByToken = require("../middleware/decode.js");
 const usersgames = require("../models/usersgames.js");
 const users = require("../models/users.js");
-const ratifications = require("../models/ratifiacations.js");
-const propositionVotes = require("../models/propositionVotes.js");
-const games = require("../models/games.js");
-const etats = require("../models/etats.js");
-const vivants = require("../models/vivants");
-const morts = require("../models/morts.js");
 function initNamespace(/** @type {Game} */ game) {
   const gameID = game.getID();
   const GameManager = require("./GameManager.js");
@@ -148,187 +142,16 @@ function initNamespace(/** @type {Game} */ game) {
       game.getGameState().sendMessage(player, mes);
     });
 
-    socket.on("propVote", async (userNameVotant, usernameVote) => {
-      console.log("Vote recu");
-      const usergamesVotant = await usersgames.findOne({
-        include: [
-          { model: users, where: { username: usernameVotant } },
-          { model: etats, include: { model: vivants } },
-        ],
-      });
-      const usergamesVote = await usersgames.findOne({
-        include: [
-          { model: users, where: { username: usernameVote } },
-          { model: etats, include: { model: morts } },
-        ],
-      });
-      if (!game.getPlayerVoted) {
-        if (game.isDay()) {
-          await propositionVotes.create({
-            usernameVotantId: usergamesVotant.idUsergame,
-            nbVotant: 1,
-            usernameVotantIdUsergame: usergamesVotant.idUsergame,
-            usernameVoteId: usergamesVote.idUsergame,
-            usernameVoteIdUsergame: usergamesVote.idUsergame,
-          });
-          socket.emit(
-            "receive_msg",
-            `Le joueur ${usernameVotant} a voté contre ${usernameVote}`,
-            "Serveur"
-          );
-          socket.broadcast.emit(
-            "receive_msg",
-            `Le joueur ${usernameVotant} a voté contre ${usernameVote}`,
-            "Serveur"
-          );
-          socket.broadcast.emit("recepVote", usernameVotant, usernameVote);
-          socket.emit("recepVote", usernameVotant, usernameVote);
-        } else if (usergamesVotant.etat.vivant.typeVivant === "loup-garou") {
-          if (!usergamesVote.etat.mort) {
-            await propositionVotes.create({
-              usernameVotantId: usergamesVotant.idUsergame,
-              nbVotant: 1,
-              usernameVotantIdUsergame: usergamesVotant.idUsergame,
-              usernameVoteId: usergamesVote.idUsergame,
-              usernameVoteIdUsergame: usergamesVote.idUsergame,
-            });
-            socket.emit(
-              "receive_msg",
-              `Le joueur ${usernameVotant} a voté contre ${usernameVote}`,
-              "Serveur"
-            );
-            socket.broadcast.emit(
-              "receive_msg",
-              `Le joueur ${usernameVotant} a voté contre ${usernameVote}`,
-              "Serveur"
-            );
-            socket.broadcast.emit("recepVote", usernameVotant, usernameVote);
-            socket.emit("recepVote", usernameVotant, usernameVote);
-          } else {
-            socket.emit(
-              "receive_msg",
-              `Attention petit tricheur je te vois`,
-              "Serveur"
-            );
-            socket.broadcast.emit(
-              "receive_msg",
-              `Attention petit tricheur je te vois`,
-              "Serveur"
-            );
-          }
-        }
-      } else {
-        socket.emit(
-          "receive_msg",
-          "Attention le vote a déjà été décidé, vous ne pouvez plus voter ou ratifier de vote"
-        );
-      }
+    socket.on("propVote", async (usernameVotant, usernameVote) => {
+      console.log("Vote recu", usernameVotant, usernameVote);
+      const playerVotant = game.getPlayerBySocket(socket.id);
+      game.getGameState().vote(game, playerVotant, usernameVote)
     });
 
     socket.on("ratification", async (usernameVotant, usernameVote) => {
       console.log("ratification recu de ", usernameVotant, "sur", usernameVote);
-      if (!game.getPlayerVoted) {
-        const usergamesVotant = await usersgames.findOne({
-          include: [
-            { model: users, where: { username: usernameVotant } },
-            { model: etats, include: { model: vivants } },
-          ],
-        });
-        const usergamesVote = await usersgames.findOne({
-          include: [{ model: users, where: { username: usernameVote } }],
-        });
-        if (
-          game.isDay() ||
-          usergamesVotant.etat.vivant.typeVivant === "loup-garou"
-        ) {
-          const prop = await propositionVotes.findOne({
-            include: {
-              model: usersgames,
-              as: "usernameVote",
-              include: [{ model: users, where: { username: usernameVote } }],
-              where: { gameIdGame: game.getID() },
-            },
-          });
-          const tricheur = await ratifications.findOne({
-            where: {
-              usersgameIdUsergame: usergamesVotant.idUsergame,
-              propositionVoteIdProp: prop.idProp,
-            },
-          });
-          const tricheurBis = await propositionVotes.findOne({
-            where: {
-              usernameVotantIdUsergame: usergamesVotant.idUsergame,
-              usernameVoteIdUsergame: usergamesVote.idUsergame,
-            },
-          });
-          console.log(tricheur);
-          if (!tricheur && !tricheurBis) {
-            await ratifications.create({
-              usersgameIdUsergame: usergamesVotant.idUsergame,
-              propositionVoteIdProp: prop.idProp,
-              etat: false,
-            });
-            console.log(prop);
-            await prop.update({ nbVotant: prop.nbVotant + 1 });
-            await prop.save();
-            socket.emit(
-              "receive_msg",
-              `Le joueur ${usernameVotant} a ratifié le vote contre ${usernameVote}`,
-              "Serveur"
-            );
-            socket.broadcast.emit(
-              "receive_msg",
-              `Le joueur ${usernameVotant} a ratifié le vote contre ${usernameVote}`,
-              "Serveur"
-            );
-            if (prop.nbVotant > game.getNbJoueur() / 2) {
-              const usersgameVote = await usersgames.findOne({
-                include: [
-                  { model: users, where: { username: usernameVote } },
-                  { model: etats, include: { model: vivants } },
-                ],
-                where: {
-                  gameIdGame: game.getID(),
-                },
-              });
-              await morts.create({
-                eluSpiritisme: false,
-                etatId: usersgameVote.etat.etatId,
-              });
-              console.log(usersgameVote.etat);
-              if (usersgameVote.etat.vivant) {
-                await usersgameVote.etat.vivant.destroy();
-              }
-              socket.removeAllListeners("ratification");
-              socket.removeAllListeners("propVote");
-              socket.emit(
-                "receive_msg",
-                `Le joueur ${usernameVote} a été désigné à plus de 50%, il est donc éliminé`,
-                "Serveur"
-              );
-              socket.broadcast.emit(
-                "receive_msg",
-                `Le joueur ${usernameVote} a été désigné à plus de 50%, il est donc éliminé`,
-                "Serveur"
-              );
-            } else {
-              socket.emit("recepRat", usernameVote, prop.nbVotant);
-              socket.broadcast.emit("recepRat", usernameVote, prop.nbVotant);
-            }
-          } else {
-            socket.emit(
-              "receive_msg",
-              `Attention petit tricheur je te vois`,
-              "Serveur"
-            );
-          }
-        }
-      } else {
-        socket.emit(
-          "receive_msg",
-          "Attention le vote a déjà été décidé, vous ne pouvez plus voter ou ratifier de vote"
-        );
-      }
+      const playerVotant = game.getPlayerBySocket(socket.id);
+      game.getGameState().ratif(game, playerVotant, usernameVote)
     });
 
     socket.on("vote", async (username) => {

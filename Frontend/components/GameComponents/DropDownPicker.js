@@ -30,6 +30,9 @@ export default function DropDownPicker({
   }
 
   function renderItem({ item }) {
+    if (item === null) {
+      return ;
+    }
     return (
       <TouchableOpacity
         onPress={() => {

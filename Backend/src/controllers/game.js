@@ -4,7 +4,11 @@ const Sequelize = require("sequelize");
 const propositionVoteModel = require("../models/propositionVotes");
 const { Op } = require("sequelize");
 const users = require("../models/users.js");
-const ratifications = require("../models/ratifiacations.js");
+const daytimes = require("../models/daytimes.js");
+const games = require("../models/games.js");
+const etats = require("../models/etats.js");
+const morts = require("../models/morts.js");
+const vivants = require("../models/vivants.js");
 
 module.exports = {
   async deleteGame(req, res) {
@@ -73,6 +77,7 @@ module.exports = {
             include: { model: users },
             where: { gameIdGame: idGame },
           },
+          {model: daytimes, where: {current: true}}
         ],
       });
       const playersRat = [];
@@ -100,22 +105,34 @@ module.exports = {
           {
             model: usersgamesModel,
             as: "usernameVote",
-            include: { model: users },
             where: { gameIdGame: idGame },
+            include: {model: users}
           },
+          {model: daytimes, where: {current: true}}
         ],
       });
+
+      
+      let deadPlayers = await morts.findAll({
+        include: {model:etats, require: true, include: {model: usersgamesModel, require: true, include: {model: users, required: true}}},
+        });
+        console.log(deadPlayers)
+      deadPlayers = deadPlayers.map(
+        (obj) => obj.etat.usersgame.user.username
+      );
+      console.log("deadPlayers",deadPlayers);
+      console.log("prop:", propositions)
       const playersVoted = propositions.map(
         (prop) => prop.usernameVote.user.username
       );
-      console.log("propositions:", playersVoted);
       const players = await usersgamesModel.findAll({
         where: { gameIdGame: idGame },
         include: { model: users },
       });
       const playerAvailable = [];
       for (player of players) {
-        if (!playersVoted.includes(player.user.username)) {
+        console.log(player.user);
+        if (!playersVoted.includes(player.user.username) && !deadPlayers.includes(player.user.username)) {
           playerAvailable.push(player.user.username);
         }
       }

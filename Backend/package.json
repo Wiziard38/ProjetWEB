@@ -10,7 +10,7 @@
         "start": "npm run doc && npm run updatedb  && node src/server.js",
         "deploiement": "CONFIG='deploiement' node src/util/updatedb.js && node src/server.js && npm run doc ",
         "startdev": "CONFIG='local' nodemon src/server.js && npm run doc",
-        "test": "DB=bmttest.sqlite npm run updatedb && DB=bmttest.sqlite jest"
+        "test": "DB=bmttest.sqlite npm run updatedb && DB=bmttest.sqlite node ./node_modules/jest/bin/jest.js"
     },
     "keywords": [
         "express",
@@ -51,8 +51,8 @@
         "eslint-plugin-node": "^11.1.0",
         "eslint-plugin-prettier": "^4.2.1",
         "eslint-plugin-promise": "^6.1.1",
-        "jest": "^27.4.7",
+        "jest": "^27.5.1",
         "prettier": "^2.8.7",
-        "supertest": "^6.2.2"
+        "supertest": "^6.3.3"
     }
 }

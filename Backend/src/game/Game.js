@@ -12,6 +12,7 @@ const vivants = require("../models/vivants.js");
 const games = require("../models/games");
 const discussions = require("../models/discussions");
 const messages = require("../models/messages");
+const daytimes = require("../models/daytimes");
 
 class Game {
   #gameState;
@@ -159,6 +160,9 @@ class Game {
     return this.#playerVoted;
   }
 
+  setPlayerVoted(bool) {
+    this.#playerVoted = bool;
+  }
   /**
    * Send to the player the current state of the game
    * @param {*} socketID 
@@ -198,7 +202,9 @@ class Game {
       },
       raw: true
     });
+    console.log("Les morts sont:", deads);
     const listDeads = deads.map(obj => obj['etat.usersgame.user.username']);
+    console.log("La listes des noms des morts et donc: ", listDeads);
 
     const alive = await vivants.findAll({
       attributes: [],
@@ -415,6 +421,17 @@ class Game {
   }
 
   async dayChange() {
+    const currentDaytime = await daytimes.findOne({where: {current: true}});
+    if (currentDaytime) {
+      await currentDaytime.update({current: false});
+      await currentDaytime.save();
+    }
+    
+    await daytimes.create({
+      current: true,
+      gameIdGame: this.#gameID
+    });
+    this.#playerVoted = false;
     if (this.#switchDate !== undefined) {
       await discussions.update({ Archivee: true }, {
         where: { date: this.#switchDate }
@@ -432,6 +449,16 @@ class Game {
   }
 
   async nightChange() {
+    const currentDaytime = await daytimes.findOne({where: {current: true}});
+    if (currentDaytime) {
+      await currentDaytime.update({current: false});
+      await currentDaytime.save();
+    }
+    await daytimes.create({
+      current: true,
+      gameIdGame: this.#gameID
+    });
+    this.#playerVoted = false;
     await discussions.update({ Archivee: true }, {
       where: { date: this.#switchDate }
     });
