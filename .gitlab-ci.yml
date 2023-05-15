@@ -45,6 +45,7 @@ jobcypress:
   artifacts:            # Le rapport sera disponible pour d'autres jobs
     paths:
       - cypress_report.txt
+  when: always
 
 # jobsuppertest:
 #   stage: test
@@ -98,13 +99,13 @@ badges:
   dependencies:
     - lint-js-front
     - lint-js-back
-    # - jobcypress
+    - jobcypress
     # - jobsuppertest
   artifacts:
     paths:
       # These svg will be used by gitlab for displaying badges.
       - js_lint_front.svg
       - js_lint_back.svg
+      - cy_tests.svg
       # - Jtests.svg
-      # - cy_tests.svg
   when: always # Et quoiqu'il arrive la génération des badges devra se faire.
