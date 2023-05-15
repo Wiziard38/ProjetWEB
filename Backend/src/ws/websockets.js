@@ -8,7 +8,6 @@ const io = SocketIO(server, {
 });
 
 
-
 // What happen on connection
 io.on('connection', function (socket) {
 

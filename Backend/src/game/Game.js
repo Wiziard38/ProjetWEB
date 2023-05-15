@@ -234,7 +234,7 @@ class Game {
     const currentDate = new Date();
     const elapsedTime = currentDate - this.#switchDate;
     const timeLeft = this.isDay() ? this.#dayDuration - elapsedTime : this.#nightDuration - elapsedTime;
-    console.log(timeLeft)
+    // console.log(timeLeft)
     const gameData = {
       isDay: this.isDay(),
       role: player.getState().toString(),
@@ -257,7 +257,7 @@ class Game {
       listeJoueursVivants: listAlive
     };
 
-    console.log(gameData);
+    // console.log(gameData);
     this.getSocket(socketID).emit("game_data", JSON.stringify(gameData));
   }
 

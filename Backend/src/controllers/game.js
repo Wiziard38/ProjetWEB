@@ -12,7 +12,7 @@ module.exports = {
     const idGame = req.params.idGame;
     if (user.admin) {
       const game = await gamesModel.findOne({ where: { idGame: idGame } });
-      console.log(game)
+      // console.log(game)
       await game.destroy();
       res.json({ status: true });
     } else {
