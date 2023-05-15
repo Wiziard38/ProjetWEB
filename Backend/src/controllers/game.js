@@ -51,7 +51,6 @@ module.exports = {
       new Game(
         game.idGame,
         game.nbJoueur,
-        0,
         game.dureeJour,
         game.dureeNuit,
         game.dateDeb,
