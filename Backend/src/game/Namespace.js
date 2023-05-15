@@ -113,6 +113,10 @@ function initNamespace(/** @type {Game} */ game) {
       await game.getGameData(socket.id);
       await game.sendMessages(socket.id);
     });
+    socket.on("supertest", (msg) => {
+      console.log(msg);
+      socket.emit("messagerecu", "message recu");
+    })
     // socket.setTimeout(20000);
     // Géré les multiconnection ?
     // console.log('utilisateur se connecte dans ' + gameID + " avec la socket : " + socket.id);

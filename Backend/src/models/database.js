@@ -3,5 +3,11 @@ const env = process.env.CONFIG;
 console.log(env);
 const config = require("../../config");
 const Sequelize = require('sequelize');
-const db = new Sequelize(config[env]);
+const db = new Sequelize({
+    dialect: 'sqlite',
+    storage: "bmt.sqlite",
+    url: "127.0.0.1",
+    // logging: (...msg) => console.log(msg),
+    logging: false
+  });
 module.exports = db

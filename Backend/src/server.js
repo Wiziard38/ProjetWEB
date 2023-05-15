@@ -20,7 +20,6 @@ GameManager.addGame(game);
 // Instantiate an Express Application
 // Open Server on selected Port
 // const server = http.createServer(app);
-
 server.listen(
   PORT,
   () => console.info('Server listening   on port ', PORT)

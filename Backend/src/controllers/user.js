@@ -47,7 +47,6 @@ module.exports = {
 
   async signin(req, res) {
     const { username, password } = req.body;
-
     // Verify fields
     if (
       username.length < 1 ||
