@@ -112,7 +112,7 @@ class Werewolf extends Alive {
             await prop.save();
             io.of(game.getNamespace()).emit("receive_msg", `Le joueur ${player.getUsername()} a ratifié le vote contre ${usernameVote} `, 'Serveur');
             
-            if (prop.nbVotant > game.getNbJoueur() / 2) {
+            if (prop.nbVotant > game.getNbWerewolf() / 2) {
               game.setPlayerVoted(true);
               await morts.create({
                 eluSpiritisme: false,
