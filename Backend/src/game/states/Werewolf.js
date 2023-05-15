@@ -25,7 +25,7 @@ class Werewolf extends Alive {
   async sendMessageNight(msg, /** @type {Game} */ game, userName, player) {
     const States = require("../States");
     const Powers = require('../Powers');
-    io.of(game.getNamespace()).to(States.WEREWOLF.toString()).to(Powers.INSOMNIA.toString()).emit("receive_msg", msg, userName);
+    io.of(game.getNamespace()).to(States.WEREWOLF.toString()).to(Powers.INSOMNIA.toString()).to(States.DEATH.toString()).emit("receive_msg", msg, userName);
 
     const { idDiscussion } = await discussions.findOne({
       attributes: ["idDiscussion"],

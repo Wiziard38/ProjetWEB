@@ -77,6 +77,7 @@ const styles = StyleSheet.create({
 });
 
 GameMenuDepth2.propTypes = {
+  socket: PropTypes.object.isRequired,
   setMenuDepth: PropTypes.func.isRequired,
   menuSelection: PropTypes.string.isRequired,
 };

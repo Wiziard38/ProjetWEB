@@ -4,7 +4,7 @@ import { StyleSheet, View, Pressable, Image, Keyboard } from "react-native";
 import GameMenuDepth1 from "./GameMenuDepth1";
 import GameMenuDepth2 from "./GameMenuDepth2";
 
-export default function GameMenu({ menuDepth, setMenuDepth, token, socket }) {
+export default function GameMenu({ menuDepth, setMenuDepth, socket }) {
   const [menuSelection, setMenuSelection] = useState(null);
 
   const menuButtonStyle =
@@ -41,7 +41,6 @@ export default function GameMenu({ menuDepth, setMenuDepth, token, socket }) {
           <GameMenuDepth2
             setMenuDepth={setMenuDepth}
             menuSelection={menuSelection}
-            token = {token}
             socket = {socket}
           />
         )}
@@ -96,4 +95,5 @@ const styles = StyleSheet.create({
 GameMenu.propTypes = {
   menuDepth: PropTypes.number.isRequired,
   setMenuDepth: PropTypes.func.isRequired,
+  socket: PropTypes.object.isRequired,
 };

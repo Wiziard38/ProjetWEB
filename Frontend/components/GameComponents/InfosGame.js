@@ -21,7 +21,7 @@ export default function InfosGame() {
             `Duree de la nuit : ${secondsToHHMM(gameInfos.infos.dureeNuit)}`,
             `Date de debut : ${dateToText(gameInfos.infos.dateDeb)}`,
             `Probabilité de pouvoir : ${gameInfos.infos.probaPouv}`,
-            `Probabilité de loup-garou : ${gameInfos.infos.probaLoup}`,
+            `Nombre de loup-garous : ${gameInfos.infos.nbLoup}`,
           ],
         },
         {

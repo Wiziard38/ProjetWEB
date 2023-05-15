@@ -6,9 +6,9 @@ const None = require('./powers/None')
 
 const Room = {
     CONTAMINATION: new Contamination("contamination"),
-    SPIRITISM: new Spiritism("spiritism"),
-    INSOMNIA: new Insomnia("insomnia"),
-    PSYCHIC: new Psychic("psychic"),
+    SPIRITISM: new Spiritism("spiritisme"),
+    INSOMNIA: new Insomnia("insomnie"),
+    PSYCHIC: new Psychic("voyance"),
     //ELECTED: 'elected',
     NONE: new None() // new ...
 }

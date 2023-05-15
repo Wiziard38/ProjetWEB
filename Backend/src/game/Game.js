@@ -34,17 +34,18 @@ class Game {
 
   #switchDate; //Quand le jour/nuit change on met a jour cette variable
 
-  constructor(id, nbJoueur, nbJoueurTot, dureeJour, dureeNuit, dateDeb, probaPouv, probaLoup) {
+  constructor(id, nbJoueur, dureeJour, dureeNuit, dateDeb, probaPouv, probaLoup) {
     console.log("constructor")
     console.log("beginTime: " + dateDeb);
+    console.log("game id : " + id);
     //console.log("beginTime: " + dateDeb.getTime());
     console.log("dayDuration: " + dureeJour * 1000);
     console.log("nightDuration: " + dureeNuit * 1000);
     console.log("date actuelle: " + new Date());
     this.#gameID = id;
-    this.#nbJoueurTot = nbJoueurTot;
     this.#nbPlayersRequired = nbJoueur;
-    this.#beginTime = dateDeb; // TODO: traduire date en millisecondes
+    this.#beginTime = dateDeb.getTime() - new Date().getTime(); // TODO: traduire date en millisecondes
+    console.log("durée avant début : " + this.#beginTime);
     this.#dayDuration = dureeJour * 1000; // traduction de secondes en millisecondes
     this.#nightDuration = dureeNuit * 1000; // traduction de secondes en millisecondes
     this.#probaPower = probaPouv;
@@ -78,7 +79,8 @@ class Game {
    * @returns the total number of players in the game 
    */
   getNbJoueur() {
-    return this.#nbJoueurTot;
+    return this.#nbPlayersRequired;
+    //TODO change to calculate the number of player when starting the game
   }
   /**
    * @returns true if the current state is day, else false
@@ -150,7 +152,7 @@ class Game {
     this.getSocket(socketID).emit("messages", listMessages);
 
   }
-  
+
   /**
    * Return if a player had been already voted 
    */
@@ -187,6 +189,7 @@ class Game {
           model: usersgames,
           attributes: [],
           required: true,
+          where: { gameIdGame: this.#gameID },
           include: {
             model: users,
             required: true,
@@ -201,7 +204,7 @@ class Game {
     const alive = await vivants.findAll({
       attributes: [],
       required: true,
-      include: {
+      include: [{
         model: etats,
         attributes: [],
         required: true,
@@ -209,19 +212,25 @@ class Game {
           model: usersgames,
           attributes: [],
           required: true,
+          where: { gameIdGame: this.#gameID },
           include: {
             model: users,
             required: true,
             attributes: ["username"],
           }
         }
-      },
+      }],
       raw: true
     });
 
     const listAlive = alive.map(obj => obj['etat.usersgame.user.username']);
 
-    const gameDates = await games.findOne({ attributes: ["dateDeb", "createdAt"], where: { idGame: this.#gameID }, raw: true })
+    const gameDates = await games.findOne({ 
+      attributes: ["dateDeb", "createdAt"], 
+      where: { idGame: this.#gameID }
+    });
+
+    // console.log(gameDates);
 
     const currentDate = new Date();
     const elapsedTime = currentDate - this.#switchDate;
@@ -233,11 +242,12 @@ class Game {
       power: player.getPower().toString(),
       powerUsed: false,
       switchTime: timeLeft,
+      nbLoup: Math.max(1, Math.ceil(this.#probaWerewolf * this.#nbPlayersRequired)),
       infos: {
         createdAt: gameDates.createdAt,
         dateDeb: gameDates.dateDeb,
-        dureeJour: this.#dayDuration,
-        dureeNuit: this.#nightDuration,
+        dureeJour: Math.floor(this.#dayDuration / 1000),
+        dureeNuit: Math.floor(this.#nightDuration / 1000),
         idGame: this.#gameID,
         nbJoueur: listPlayers.length,
         probaLoup: this.#probaWerewolf,
@@ -248,6 +258,7 @@ class Game {
       listeJoueursVivants: listAlive
     };
 
+    console.log(gameData);
     this.getSocket(socketID).emit("game_data", JSON.stringify(gameData));
   }
 
@@ -336,24 +347,44 @@ class Game {
 
     const villagers = await usersgamesModel.findAll({ where: { gameIdGame: this.#gameID } });
     // console.log(villagers);
-
+    this.shuffle(villagers);
     // TODO: mélanger aléatoirement le tableau villagers
+    let contaminationFlag = true;
+    const powers = ["voyance", "spiritisme", "insomnie"]
+    this.shuffle(powers);
+    let k = 0;
 
     for (let i = 0; i < villagers.length; i++) {
       // console.log("idUser : " + villagers[i].userIdUser);
+      const etat = await etats.create({ usersgameIdUsergame: villagers[i].idUsergame })
       if (i >= 0 && i < nbWerewolves) {
         // c'est un loup-garou
-        await vivantsModel.create({ typeVivant: "loup-garou", usersgameIdUsergame: villagers[i].idUsergame });
+        if(Math.random() < this.#probaPower && contaminationFlag) {
+          await vivantsModel.create({ typeVivant: "loup-garou", etatId: etat.id, pouvoir: "contamination" });
+          contaminationFlag = false;
+
+        } else {
+          await vivantsModel.create({ typeVivant: "loup-garou", etatId: etat.id });
+        }
       } else {
         // c'est un humain
-        await vivantsModel.create({ typeVivant: "humain", usersgameIdUsergame: villagers[i].idUsergame });
+        if(Math.random() < this.#probaPower && k < 3) {
+          await vivantsModel.create({ typeVivant: "humain", etatId: etat.id, pouvoir: powers[i] });
+          k = k + 1;
+        } else {
+          await vivantsModel.create({ typeVivant: "humain", etatId: etat.id });
+        }
+
       }
     }
 
     // TODO: changer le champ aCommence false->true
 
   }
-
+  shuffle(array) {
+    array.sort(() => Math.random() - 0.5);
+  }
+  
   /* méthode appelée lorsque l'horaire de début de partie est atteint */
   async begin() {
     console.log("begin")
@@ -495,7 +526,7 @@ class Game {
       }, {
         model: games,
         attributes: [],
-        where: { idGame: this.#gameID}
+        where: { idGame: this.#gameID }
       }, {
         model: etats,
         attributes: [],
@@ -506,12 +537,12 @@ class Game {
           attributes: ['eluSpiritisme'],
           model: morts
         }
-      ]
+        ]
       }
       ],
       raw: true
     })
-    
+
     console.log(infos)
     return {
       role: infos['etat.vivant.typeVivant'],
