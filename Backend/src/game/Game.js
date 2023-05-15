@@ -203,7 +203,7 @@ class Game {
     const alive = await vivants.findAll({
       attributes: [],
       required: true,
-      include: {
+      include: [{
         model: etats,
         attributes: [],
         required: true,
@@ -218,7 +218,7 @@ class Game {
             attributes: ["username"],
           }
         }
-      },
+      }],
       raw: true
     });
 
@@ -241,6 +241,7 @@ class Game {
       power: player.getPower().toString(),
       powerUsed: false,
       switchTime: timeLeft,
+      nbLoup: Math.max(1, Math.ceil(this.#probaWerewolf * this.#nbPlayersRequired)),
       infos: {
         createdAt: gameDates.createdAt,
         dateDeb: gameDates.dateDeb,
@@ -345,25 +346,44 @@ class Game {
 
     const villagers = await usersgamesModel.findAll({ where: { gameIdGame: this.#gameID } });
     // console.log(villagers);
-
+    this.shuffle(villagers);
     // TODO: mélanger aléatoirement le tableau villagers
+    let contaminationFlag = true;
+    const powers = ["voyance", "spiritisme", "insomnie"]
+    this.shuffle(powers);
+    let k = 0;
 
     for (let i = 0; i < villagers.length; i++) {
       // console.log("idUser : " + villagers[i].userIdUser);
       const etat = await etats.create({ usersgameIdUsergame: villagers[i].idUsergame })
       if (i >= 0 && i < nbWerewolves) {
         // c'est un loup-garou
-        await vivantsModel.create({ typeVivant: "loup-garou", etatId: etat.id });
+        if(Math.random() < this.#probaPower && contaminationFlag) {
+          await vivantsModel.create({ typeVivant: "loup-garou", etatId: etat.id, pouvoir: "contamination" });
+          contaminationFlag = false;
+
+        } else {
+          await vivantsModel.create({ typeVivant: "loup-garou", etatId: etat.id });
+        }
       } else {
         // c'est un humain
-        await vivantsModel.create({ typeVivant: "humain", etatId: etat.id });
+        if(Math.random() < this.#probaPower && k < 3) {
+          await vivantsModel.create({ typeVivant: "humain", etatId: etat.id, pouvoir: powers[i] });
+          k = k + 1;
+        } else {
+          await vivantsModel.create({ typeVivant: "humain", etatId: etat.id });
+        }
+
       }
     }
 
     // TODO: changer le champ aCommence false->true
 
   }
-
+  shuffle(array) {
+    array.sort(() => Math.random() - 0.5);
+  }
+  
   /* méthode appelée lorsque l'horaire de début de partie est atteint */
   async begin() {
     console.log("begin")
