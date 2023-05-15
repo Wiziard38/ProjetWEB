@@ -133,27 +133,27 @@ export default function Votes({socket}) {
         emptyListLabel={"Aucun joueur possible"}
         onOpenTrigger={() => setOpen2(false)}
       />
-
-      <SizedButton
-        buttonLabel={`Vote contre ${
-          selectedPlayer1 !== null
-            ? selectedPlayer1.length > 12
-              ? selectedPlayer1.slice(0, 9) + "..."
-              : selectedPlayer1
-            : "[choisir]"
-        }`}
-        onPress={createVote}
-        size="normal"
-        buttonStyle={[
-          styles.submitButton,
-          selectedPlayer1 === null && { backgroundColor: "gray" },
-        ]}
-        buttonLabelStyle={[
-          styles.submitButtonLabel,
-          selectedPlayer1 === null && { color: "#000000" },
-        ]}
-      />
-
+      <View style={!open1 && { zIndex: 9999 }}>
+        <SizedButton
+          buttonLabel={`Vote contre ${
+            selectedPlayer1 !== null
+              ? selectedPlayer1.length > 12
+                ? selectedPlayer1.slice(0, 9) + "..."
+                : selectedPlayer1
+              : "[choisir]"
+          }`}
+          onPress={createVote}
+          size="normal"
+          buttonStyle={[
+            styles.submitButton,
+            selectedPlayer1 === null && { backgroundColor: "gray" },
+          ]}
+          buttonLabelStyle={[
+            styles.submitButtonLabel,
+            selectedPlayer1 === null && { color: "#000000" },
+          ]}
+        />
+      </View>
       <View style={styles.separator} />
 
       <View>
@@ -180,26 +180,27 @@ export default function Votes({socket}) {
         openDirection="TOP"
         onOpenTrigger={() => setOpen1(false)}
       />
-
-      <SizedButton
-        buttonLabel={`Vote contre ${
-          selectedPlayer2 !== null
-            ? selectedPlayer2.length > 12
-              ? selectedPlayer2.slice(0, 9) + "..."
-              : selectedPlayer2
-            : "[choisir]"
-        }`}
-        onPress={ratifyVote}
-        size="normal"
-        buttonStyle={[
-          styles.submitButton,
-          selectedPlayer2 === null && { backgroundColor: "gray" },
-        ]}
-        buttonLabelStyle={[
-          styles.submitButtonLabel,
-          selectedPlayer2 === null && { color: "#000000" },
-        ]}
-      />
+      <View style={!open2 && { zIndex: 9999 }}>
+        <SizedButton
+          buttonLabel={`Vote contre ${
+            selectedPlayer2 !== null
+              ? selectedPlayer2.length > 12
+                ? selectedPlayer2.slice(0, 9) + "..."
+                : selectedPlayer2
+              : "[choisir]"
+          }`}
+          onPress={ratifyVote}
+          size="normal"
+          buttonStyle={[
+            styles.submitButton,
+            selectedPlayer2 === null && { backgroundColor: "gray" },
+          ]}
+          buttonLabelStyle={[
+            styles.submitButtonLabel,
+            selectedPlayer2 === null && { color: "#000000" },
+          ]}
+        />
+      </View>
     </View>
   );
 }

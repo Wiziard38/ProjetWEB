@@ -15,9 +15,10 @@ class Game {
   #gameState;
   #loopID;
   #gameID;
+  #playerVoted;
   #namespace;
   #electedPlayer;
-  #nbJoueur;
+  #nbJoueurTot;
   #nbPlayersRequired;
   #beginTime;
   #dayDuration;
@@ -30,7 +31,7 @@ class Game {
 
   #switchDate; //Quand le jour/nuit change on met a jour cette variable
 
-  constructor(id, nbJoueur, dureeJour, dureeNuit, dateDeb, probaPouv, probaLoup) {
+  constructor(id, nbJoueur, nbJoueurTot, dureeJour, dureeNuit, dateDeb, probaPouv, probaLoup) {
     console.log("constructor")
     console.log("beginTime: " + dateDeb);
     //console.log("beginTime: " + dateDeb.getTime());
@@ -38,6 +39,7 @@ class Game {
     console.log("nightDuration: " + dureeNuit * 1000);
     console.log("date actuelle: " + new Date());
     this.#gameID = id;
+    this.#nbJoueurTot = nbJoueurTot;
     this.#nbPlayersRequired = nbJoueur;
     this.#beginTime = dateDeb; // TODO: traduire date en millisecondes
     this.#dayDuration = dureeJour * 1000; // traduction de secondes en millisecondes
@@ -73,7 +75,7 @@ class Game {
    * @returns the total number of players in the game 
    */
   getNbJoueur() {
-    return this.#nbJoueur;
+    return this.#nbJoueurTot;
   }
   /**
    * @returns true if the current state is day, else false
@@ -128,12 +130,19 @@ class Game {
     //GameState.remove(this.#gameID);
     // TODO remove from gamemanager
   }
-
+  
+  /**
+   * Return if a player had been already voted 
+   */
+  getPlayerVoted() {
+    return this.#playerVoted;
+  }
   /**
    * Change the game to day
    */
   dayChange() {
     this.#gameState = GameState.DAY;
+    this.#playerVoted = false;
     io.of(this.#namespace).emit('day', 'nuit -> jour', this.#dayDuration);
     // io.of(this.#namespace).emit('receive_msg', 'message de test', "test");
   }
@@ -143,6 +152,7 @@ class Game {
    */
   nightChange() {
     this.#gameState = GameState.NIGHT;
+    this.#playerVoted = false;
     io.of(this.#namespace).emit('night', 'jour -> nuit', this.#nightDuration);
   }
 

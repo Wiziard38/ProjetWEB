@@ -29,6 +29,10 @@ const users = db.define(
         this.setDataValue('password', hash);
       },
     },
+    admin: {
+      type: Sequelize.BOOLEAN,
+      allowNull: false
+    },
   },
   { timestamps: false }
 );

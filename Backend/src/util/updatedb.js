@@ -30,46 +30,55 @@ const vivants = require("../models/vivants");
   await usersModel.create({
     username: "Luca",
     password: "nullos",
+    admin: false
   });
 
   await usersModel.create({
     username: "DarkJL",
     password: "oui",
+    admin: false
   });
 
   await usersModel.create({
     username: "1",
     password: "1",
+    admin: false
   });
 
   await usersModel.create({
     username: "2",
     password: "2",
+    admin: false
   });
 
   await usersModel.create({
     username: "Camille",
     password: "Camille",
+    admin: false
   });
 
   await usersModel.create({
     username: "CamilleSup",
     password: "CamilleSup",
+    admin: false
   });
 
   await usersModel.create({
     username: "Mathis",
     password: "Mathis",
+    admin: false
   });
 
   await usersModel.create({
     username: "Tit",
     password: "Tit",
+    admin: false
   });
 
   await usersModel.create({
     username: "Jules",
     password: "Jule",
+    admin: true
   });
 
   await gamesModel.create({
@@ -160,9 +169,10 @@ const vivants = require("../models/vivants");
     eluSpiritisme: true
   });
 
-  await morts.create({
+  await vivants.create({
     etatId:2,
-    eluSpiritisme: false
+    typeVivant: "humain",
+    pouvoir: null,
   });
 
   await vivants.create({
