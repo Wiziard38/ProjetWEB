@@ -279,12 +279,14 @@ describe("my awesome project", () => {
   //   clientSocket.emit("message", "mon message");
   //   clientSocket.emit("ask_game_data");
   //   clientSocket.on("game_data", (msg) => {
+  //     expect(msg === null).toBe(false);
   //     // expect(msg).toBe("mon message");
   //     // TODO faire la vérification correct du message
   //     fin(done);
   //   });
   //   clientSocket.on("messages", (msg) => {
-  //     // expect(msg).toBe("mon message");
+  //     expect(msg.length).toBe(2);
+  //     expect(msg[0].contenu).toBe("mon message");
   //     // TODO faire la vérification correct du message
   //     fin(done);
   //   })
