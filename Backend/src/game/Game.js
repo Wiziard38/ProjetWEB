@@ -246,7 +246,7 @@ class Game {
     // console.log(gameDates);
 
     const currentDate = new Date();
-    const elapsedTime = currentDate - this.#switchDate;
+    const elapsedTime = currentDate.getTime() - this.#switchDate.getTime();
     const timeLeft = this.isDay() ? this.#dayDuration - elapsedTime : this.#nightDuration - elapsedTime;
     // console.log(timeLeft)
     const gameData = {
@@ -441,7 +441,7 @@ class Game {
       await currentDaytime.save();
     }
     
-    await daytimes.create({
+    const newDaytime = await daytimes.create({
       current: true,
       gameIdGame: this.#gameID
     });
@@ -453,13 +453,12 @@ class Game {
     }
     this.#switchDate = new Date();
     this.#gameState = GameState.DAY;
-    // console.log(currentDaytime);
     await discussions.create({
       date: this.#switchDate,
       typeDiscussion: "jour",
       Archivee: false,
       gameIdGame: this.#gameID,
-      daytimeIdDaytime: currentDaytime.idDaytime
+      daytimeIdDaytime: newDaytime.idDaytime
     })
 
     io.of(this.#namespace).emit('day', 'nuit -> jour', this.#dayDuration);
@@ -471,7 +470,7 @@ class Game {
       await currentDaytime.update({current: false});
       await currentDaytime.save();
     }
-    await daytimes.create({
+    const newDaytime = await daytimes.create({
       current: true,
       gameIdGame: this.#gameID
     });
@@ -488,7 +487,7 @@ class Game {
       typeDiscussion: "repaire",
       Archivee: false,
       gameIdGame: this.#gameID,
-      daytimeIdDaytime: currentDaytime.idDaytime
+      daytimeIdDaytime: newDaytime.idDaytime
     });
 
     await discussions.create({
@@ -496,7 +495,7 @@ class Game {
       typeDiscussion: "spiritisme",
       Archivee: false,
       gameIdGame: this.#gameID,
-      daytimeIdDaytime: currentDaytime.idDaytime
+      daytimeIdDaytime: newDaytime.idDaytime
     });
 
     io.of(this.#namespace).emit('night', 'jour -> nuit', this.#nightDuration);
