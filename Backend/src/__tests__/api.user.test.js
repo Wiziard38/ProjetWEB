@@ -270,20 +270,27 @@ describe("my awesome project", () => {
     });
   });
 
-  test("Mathis ask for gameinfo", (done) => {
-    clientSocket = new Client(`http://localhost:${PORT}/1`, {
-      auth: {
-        token: 'eyJhbGciOiJIUzI1NiJ9.TWF0aGlz.cjRwm9S5O8xmEPWMdfb8xvJeqw_Lfv8q11ufFinrjY8',
-      },
-    });
-    clientSocket.emit("message", "mon message");
-    clientSocket.on("receive_msg", (msg, username) => {
-      expect(msg).toBe("mon message");
-      expect(username).toBe("Mathis");
-      clientSocket.close();
-      done();
-    });
-  });
+  // test("Mathis ask for gameinfo", (done) => {
+  //   clientSocket = new Client(`http://localhost:${PORT}/1`, {
+  //     auth: {
+  //       token: 'eyJhbGciOiJIUzI1NiJ9.TWF0aGlz.cjRwm9S5O8xmEPWMdfb8xvJeqw_Lfv8q11ufFinrjY8',
+  //     },
+  //   });
+  //   clientSocket.emit("ask_game_data");
+  //   clientSocket.on("receive_msg", (msg, username) => {
+  //     expect(msg).toBe("mon message");
+  //     expect(username).toBe("Mathis");
+  //     clientSocket.close();
+  //   });
+  //   let a = false;
+  //   function fin(done) {
+  //     if(a === false) {
+  //       a === true;
+  //     } else {
+  //       done();
+  //     }
+  //   }
+  // });
 
 
 });

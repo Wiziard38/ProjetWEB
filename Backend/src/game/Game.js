@@ -453,12 +453,15 @@ class Game {
     }
     this.#switchDate = new Date();
     this.#gameState = GameState.DAY;
+    // console.log(currentDaytime);
     await discussions.create({
       date: this.#switchDate,
       typeDiscussion: "jour",
       Archivee: false,
-      gameIdGame: this.#gameID
+      gameIdGame: this.#gameID,
+      daytimeIdDaytime: currentDaytime.idDaytime
     })
+
     io.of(this.#namespace).emit('day', 'nuit -> jour', this.#dayDuration);
   }
 
@@ -484,14 +487,16 @@ class Game {
       date: this.#switchDate,
       typeDiscussion: "repaire",
       Archivee: false,
-      gameIdGame: this.#gameID
+      gameIdGame: this.#gameID,
+      daytimeIdDaytime: currentDaytime.idDaytime
     });
 
     await discussions.create({
       date: this.#switchDate,
       typeDiscussion: "spiritisme",
       Archivee: false,
-      gameIdGame: this.#gameID
+      gameIdGame: this.#gameID,
+      daytimeIdDaytime: currentDaytime.idDaytime
     });
 
     io.of(this.#namespace).emit('night', 'jour -> nuit', this.#nightDuration);
