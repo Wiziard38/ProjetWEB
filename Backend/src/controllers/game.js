@@ -45,16 +45,19 @@ module.exports = {
       res.json({ status: true });
 
       // Création de la partie côté backend
+      
       const Game = require("../game/Game.js");
+
       new Game(
         game.idGame,
         game.nbJoueur,
+        0,
         game.dureeJour,
         game.dureeNuit,
         game.dateDeb,
         game.probaPouv,
         game.probaLoup
-      );
+        );
     } catch (error) {
       console.error(error);
       res.status(500).json({ error });

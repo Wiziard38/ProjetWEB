@@ -33,7 +33,7 @@ class Game {
 
   #switchDate; //Quand le jour/nuit change on met a jour cette variable
 
-  constructor(id, nbJoueur, nbJoueurTot, dureeJour, dureeNuit, dateDeb, probaPouv, probaLoup) {
+  constructor(id, nbJoueur, dureeJour, dureeNuit, dateDeb, probaPouv, probaLoup) {
     console.log("constructor")
     console.log("beginTime: " + dateDeb);
     //console.log("beginTime: " + dateDeb.getTime());
@@ -41,7 +41,6 @@ class Game {
     console.log("nightDuration: " + dureeNuit * 1000);
     console.log("date actuelle: " + new Date());
     this.#gameID = id;
-    this.#nbJoueurTot = nbJoueurTot;
     this.#nbPlayersRequired = nbJoueur;
     this.#beginTime = dateDeb; // TODO: traduire date en millisecondes
     this.#dayDuration = dureeJour * 1000; // traduction de secondes en millisecondes
@@ -77,7 +76,8 @@ class Game {
    * @returns the total number of players in the game 
    */
   getNbJoueur() {
-    return this.#nbJoueurTot;
+    return this.#nbPlayersRequired;
+    //TODO change to calculate the number of player when starting the game
   }
   /**
    * @returns true if the current state is day, else false
