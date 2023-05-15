@@ -40,8 +40,25 @@ export default function Votes({socket}) {
           } votes contre ${usernameVote} actuellement.`
         );
         setModalVisible(true);  
-      })
-    };
+      });
+
+      socket.current.on("day", (msg, dayDuration) => {
+        setGameInfos((prevGameInfos) => ({
+          ...prevGameInfos, // Copy the previous gameInfos object
+          isDay: true,
+          switchTime: dayDuration,
+        }));
+      });
+
+      socket.current.on("night", (msg, nightDuration) => {
+        console.log(`${msg}, duration nuit : ${nightDuration}ms`);
+        setGameInfos((prevGameInfos) => ({
+          ...prevGameInfos, // Copy the previous gameInfos object
+          isDay: false,
+          switchTime: nightDuration,
+        }));
+    });
+  }
     fetchData("whoami", "GET")
     .then(json=>setUsername(json.username));
       // TODO recup la liste des joueurs deja un vote et nb votes
@@ -75,7 +92,7 @@ export default function Votes({socket}) {
     if (selectedPlayer1 !== null) {
       // TODO A FAIRE 
       if (socket.current) {
-        socket.current.emit("propVote", username,selectedPlayer1)
+        socket.current.emit("propVote", username, selectedPlayer1)
       }
       console.log("Creer vote contre " + selectedPlayer1);
       setSelectedPlayer1(null);
@@ -93,12 +110,10 @@ export default function Votes({socket}) {
       );
       // TODO A FAIRE
       if (socket.current) {
-        socket.current.emit("ratification", username,selectedPlayer2)
+        socket.current.emit("ratification", username, selectedPlayer2)
       }
       console.log("Creer vote contre " + selectedPlayer2);
       setSelectedPlayer2(null);
-      
-      
     }
   }
 

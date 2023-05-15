@@ -8,6 +8,7 @@ const morts = require("../models/morts");
 const propVote = require("../models/propositionVotes");
 const ratifications = require("../models/ratifiacations");
 const vivants = require("../models/vivants");
+const daytimes = require("../models/daytimes");
 // Ajouter ici les nouveaux require des nouveaux modèles
 
 // eslint-disable-next-line no-unexpected-multiline
@@ -19,13 +20,14 @@ const vivants = require("../models/vivants");
   await usersModel.sync({ force: true });
   await gamesModel.sync({ force: true });
   await usersgamesModel.sync({ force: true });
-  await discussions.sync({ force: true });
   await etats.sync({ force: true });
-  await messages.sync({ force: true });
   await morts.sync({ force: true });
+  await daytimes.sync({force: true});
   await propVote.sync({ force: true });
   await ratifications.sync({ force: true });
   await vivants.sync({ force: true });
+  await discussions.sync({ force: true });
+  await messages.sync({ force: true });
   // Initialise la base avec quelques données
   await usersModel.create({
     username: "Luca",
@@ -203,17 +205,6 @@ const vivants = require("../models/vivants");
     typeVivant: "humain",
     pouvoir: "voyance"
   });
-
-  await propVote.create({
-    idProp: 1,
-    usernameVotantId: 1,
-    usernameVotantIdUsergame: 1,
-    usernameVoteIdUsergame: 2,  
-    usernameVoteId: 2,
-    nbVotant: 1
-  });
-
-  
 
   // Ajouter ici le code permettant d'initialiser par défaut la base de donnée
 })();

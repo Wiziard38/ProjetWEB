@@ -12,6 +12,7 @@ const vivants = require("../models/vivants.js");
 const games = require("../models/games");
 const discussions = require("../models/discussions");
 const messages = require("../models/messages");
+const daytimes = require("../models/daytimes");
 
 class Game {
   #gameState;
@@ -384,6 +385,17 @@ class Game {
   }
 
   async dayChange() {
+    const currentDaytime = await daytimes.findOne({where: {current: true}});
+    if (currentDaytime) {
+      await currentDaytime.update({current: false});
+      await currentDaytime.save();
+    }
+    
+    await daytimes.create({
+      current: true,
+      gameIdGame: this.#gameID
+    });
+    this.#playerVoted = false;
     if (this.#switchDate !== undefined) {
       await discussions.update({ Archivee: true }, {
         where: { date: this.#switchDate }
@@ -401,6 +413,16 @@ class Game {
   }
 
   async nightChange() {
+    const currentDaytime = await daytimes.findOne({where: {current: true}});
+    if (currentDaytime) {
+      await currentDaytime.update({current: false});
+      await currentDaytime.save();
+    }
+    await daytimes.create({
+      current: true,
+      gameIdGame: this.#gameID
+    });
+    this.#playerVoted = false;
     await discussions.update({ Archivee: true }, {
       where: { date: this.#switchDate }
     });

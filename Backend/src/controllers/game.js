@@ -4,7 +4,8 @@ const Sequelize = require("sequelize");
 const propositionVoteModel = require("../models/propositionVotes");
 const { Op } = require("sequelize");
 const users = require("../models/users.js");
-const ratifications = require("../models/ratifiacations.js");
+const daytimes = require("../models/daytimes.js");
+const games = require("../models/games.js");
 
 module.exports = {
   async deleteGame(req, res) {
@@ -71,6 +72,7 @@ module.exports = {
             include: { model: users },
             where: { gameIdGame: idGame },
           },
+          {model: daytimes, where: {current: true}}
         ],
       });
       const playersRat = [];
@@ -101,6 +103,7 @@ module.exports = {
             include: { model: users },
             where: { gameIdGame: idGame },
           },
+          {model: daytimes, where: {current: true}}
         ],
       });
       const playersVoted = propositions.map(

@@ -8,6 +8,7 @@ class Human extends Alive {
     sendMessage(msg, game) {
         super.sendMessage(msg, game);
     }
+    
 }
 
 module.exports = Human;

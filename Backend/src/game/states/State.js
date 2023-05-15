@@ -16,6 +16,26 @@ class State {
         return false;
     }
     
+    voteJour(game, usernameVote, player) {
+        console.log("[State.js] voteJour : Error");
+        return false;
+    }
+
+    voteNuit(game, usernameVote, player) {
+        console.log("[State.js] voteNuit : Error");
+        return false;
+    }
+
+    ratifJour(game, usernameVote, player) {
+        console.log("[State.js] voteJour : Error");
+        return false;
+    }
+
+    ratifNuit(game, usernameVote, player) {
+        console.log("[State.js] voteNuit : Error");
+        return false;
+    }
+
     toString() {
         return this.#name;
     }
