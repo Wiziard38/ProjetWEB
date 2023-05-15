@@ -156,25 +156,6 @@ class Game {
   getPlayerVoted() {
     return this.#playerVoted;
   }
-  /**
-   * Change the game to day
-   */
-  dayChange() {
-    this.#gameState = GameState.DAY;
-    this.#playerVoted = false;
-    io.of(this.#namespace).emit('day', 'nuit -> jour', this.#dayDuration);
-    // io.of(this.#namespace).emit('receive_msg', 'message de test', "test");
-  }
-
-  /**
-   * Change the game to night
-   */
-  nightChange() {
-    this.#gameState = GameState.NIGHT;
-    this.#playerVoted = false;
-    io.of(this.#namespace).emit('night', 'jour -> nuit', this.#nightDuration);
-  }
-
 
   /**
    * Send to the player the current state of the game
