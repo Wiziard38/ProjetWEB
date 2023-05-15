@@ -26,6 +26,7 @@ class Game {
   #probaPower;
   #probaWerewolf
 
+  #nbJoueur;
   #playerDir = new Map(); // Link socketID to player object
   #socketDir = new Map(); // Link username to socketID
 
@@ -70,6 +71,12 @@ class Game {
     return this.#playerDir.get(socketID);
   }
 
+  /**
+   * @returns the total number of players in the game 
+   */
+  getNbJoueur() {
+    return this.#nbJoueur;
+  }
   /**
    * @returns true if the current state is day, else false
    */

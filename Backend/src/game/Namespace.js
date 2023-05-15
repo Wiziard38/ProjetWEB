@@ -4,7 +4,9 @@ const Player = require('./Player.js')
 const getUserNameByToken = require("../middleware/decode.js");
 const usersgames = require('../models/usersgames.js');
 const users = require('../models/users.js');
-const messages = require('../models/messages.js');
+const ratifications = require('../models/ratifiacations.js');
+const propositionVotes = require('../models/propositionVotes.js');
+const games = require('../models/games.js');
 
 function initNamespace(/** @type {Game} */ game) {
   const gameID = game.getID();
@@ -19,7 +21,7 @@ function initNamespace(/** @type {Game} */ game) {
     const username = getUserNameByToken(token);
     // Check if the user is member of the game. If not, close the socket.
 
-    if (await users.findOne({ where: { username: username }, include: { model: usersgames, where: { gameIdGame: gameID } } }) === null) {
+    if (await users.findOne({ where: { username: username }, include: { model: usersgames, where: {gameIdGame: gameID} } }) === null) {
       console.log("dec")
       socket.disconnect();
       return 0; // ?
@@ -91,24 +93,49 @@ function initNamespace(/** @type {Game} */ game) {
 
       const player = game.getPlayerBySocket(socket.id);
       //player.sendMessage(mes);
-      await game.getGameState().sendMessage(player, mes)
-    })
+      game.getGameState().sendMessage(player, mes);
+    });
     
-    socket.on("propVote", (userNameVotant, usernameVote) => {
+    socket.on("propVote", async (usernameVotant, usernameVote) => {
       console.log("Vote recu");
-      socket.emit("receive_msg", `Le joueur ${userNameVotant} a voté contre ${usernameVote}`, "Serveur");
-      socket.emit("recepVote", usernameVote);
-      socket.broadcast.emit("receive_msg", `Le joueur ${userNameVotant} a voté contre ${usernameVote}`, "Serveur");
-      socket.broadcast.emit("recepVote", usernameVote);
-      // console.log("Le joueur "+userNameVotant+" vote "+usernameVote);
-      // const userVotant = await users.findOne({where: {username: userNameVotant}});
-      // const usergameVotant = await usersgames.findOne({where: {userIdUser: userVotant.idUser}, include: {model: games, where: {idGame: gameID}}});
-      // const userVote = await users.findOne({where: {username: usernameVote}});
-      // const usergameVote = await usersgames.findOne({where: {userIdUser: userVote.idUser}, include: {model: games, where: {idGame: gameID}}});
-      // const propVote = await propositionVote.create({})
+      const usergamesVotant = await usersgames.findOne({include: {model: users, where: {username: usernameVotant}}});
+      const usergamesVote = await usersgames.findOne({include: {model: users, where: {username: usernameVote}}});
+      await propositionVotes.create({
+        usernameVotantId: usergamesVotant.idUsergame,
+        nbVotant: 1,
+        usernameVotantIdUsergame: usergamesVotant.idUsergame,
+        usernameVoteId: usergamesVote.idUsergame,
+        usernameVoteIdUsergame: usergamesVote.idUsergame,
+      });
+      socket.emit("receive_msg", `Le joueur ${usernameVotant} a voté contre ${usernameVote}`, "Serveur");
+      socket.broadcast.emit("receive_msg", `Le joueur ${usernameVotant} a voté contre ${usernameVote}`, "Serveur");
+      socket.broadcast.emit("recepVote", usernameVotant, usernameVote);
+      socket.emit("recepVote", usernameVotant, usernameVote );
     });
 
-    
+    socket.on("ratification", async (userNameVotant, usernameVote) => {
+      console.log("ratification recu");
+      const usergamesVotant = await usersgames.findOne({include: {model: users, where: {username: userNameVotant}}});
+      const prop = await propositionVotes.findOne({
+        include: {
+          model: usersgames, 
+          as: "usernameVote", 
+          include: [{model: users, where: {username: usernameVote}}, {model: games, where: {idGame: game.getID()}}]}
+        });
+      ratifications.create({
+        usersgameIdUsergame: usergamesVotant.idUsergame,
+        propositionVoteIdProp: prop.idProP
+      });
+      console.log(prop)
+      await prop.update({nbVotant: prop.nbVotant + 1})
+      await prop.save();
+      socket.emit("receive_msg", `Le joueur ${userNameVotant} a ratifié le vote contre ${usernameVote}`, "Serveur");
+      socket.emit("recepRat", usernameVote, prop.nbVotant);
+      socket.broadcast.emit("receive_msg", `Le joueur ${userNameVotant} a ratifié le vote contre ${usernameVote}`, "Serveur");
+      socket.broadcast.emit("recepRat", usernameVote, prop.nbVotant);
+    });
+
+
     socket.on('vote', async (username) => {
       // When the player send a vote
       // const state = GameManager.states.get(gameID)
