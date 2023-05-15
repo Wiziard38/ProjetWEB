@@ -391,7 +391,10 @@ class Game {
     if (nbPlayersRegistered == this.#nbPlayersRequired || 1) {
       //TODO virer le || 1 utilisé ici pour bypass le test durant la phase de test
       // la partie est lancée si le nombre de joueurs requis est atteint
-      this.init()
+      if(this.#gameID !== 1) {
+        this.init()
+      }
+
       this.#gameState = GameState.DAY;
       this.dayChange();
       this.#loopID = setInterval(() => {

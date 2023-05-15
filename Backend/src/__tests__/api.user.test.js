@@ -123,6 +123,18 @@ describe('POST /login', () => {
   })
 })
 
+describe('POST /login', () => {
+  test('Mathis to log in', async () => {
+    const response = await request(app)
+      .post('/login')
+      .send({ "username": "Mathis", "password": "Mathis" })
+    expect(response.statusCode).toBe(201)
+    expect(response.body.data.token).toBe('eyJhbGciOiJIUzI1NiJ9.TWF0aGlz.cjRwm9S5O8xmEPWMdfb8xvJeqw_Lfv8q11ufFinrjY8')
+    expect(response.body.data.username).toBe('Mathis')
+    expect(response.body.status).toBe(true)
+  })
+})
+
 describe('GET /game', () => {
   test('Luca asks for its games', async () => {
     const response = await request(app)
@@ -227,7 +239,7 @@ describe("my awesome project", () => {
     clientSocket.close();
   });
 
-  test("Trying to reach the server", (done) => {
+  test("Luca send a message", (done) => {
     clientSocket = new Client(`http://localhost:${PORT}/1`, {
       auth: {
         token: 'eyJhbGciOiJIUzI1NiJ9.THVjYQ.GiTRCt3k6bdSe11tCcSh_uS8jpqWFzkZmMILNKUzSns',
@@ -237,9 +249,40 @@ describe("my awesome project", () => {
     clientSocket.on("receive_msg", (msg, username) => {
       expect(msg).toBe("[Server] You cannot send message...");
       expect(username).toBe("Server");
+      clientSocket.close();
       done();
     });
-    // io.of('/1').emit("recu", "Message reçu ?");
+  });
+
+
+  test("Mathis send a message", (done) => {
+    clientSocket = new Client(`http://localhost:${PORT}/1`, {
+      auth: {
+        token: 'eyJhbGciOiJIUzI1NiJ9.TWF0aGlz.cjRwm9S5O8xmEPWMdfb8xvJeqw_Lfv8q11ufFinrjY8',
+      },
+    });
+    clientSocket.emit("message", "mon message");
+    clientSocket.on("receive_msg", (msg, username) => {
+      expect(msg).toBe("mon message");
+      expect(username).toBe("Mathis");
+      clientSocket.close();
+      done();
+    });
+  });
+
+  test("Mathis ask for gameinfo", (done) => {
+    clientSocket = new Client(`http://localhost:${PORT}/1`, {
+      auth: {
+        token: 'eyJhbGciOiJIUzI1NiJ9.TWF0aGlz.cjRwm9S5O8xmEPWMdfb8xvJeqw_Lfv8q11ufFinrjY8',
+      },
+    });
+    clientSocket.emit("message", "mon message");
+    clientSocket.on("receive_msg", (msg, username) => {
+      expect(msg).toBe("mon message");
+      expect(username).toBe("Mathis");
+      clientSocket.close();
+      done();
+    });
   });
 
 
